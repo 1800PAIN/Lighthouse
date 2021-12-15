@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+            <h2>Log In to Lighthouse</h2>
+            <form method="post">
+                <label for="email">Email: </label>
+                <input type="email" placeholder="something@mail.com" name="email"></br>
+                <label for="password">Password: </label>
+                <input type="password" name="password"><br/>
+                <input type="submit">
+            </form>
+        </div>
+    </body>
+</html>

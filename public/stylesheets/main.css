@@ -1,6 +1,11 @@
 *{
     font-family: sans-serif;
 }
+
+input{
+    margin-bottom: calc(2em);
+}
+/* IDs */
 #wrapper{
     width: 50vw;
     /* border: 1px solid black; */

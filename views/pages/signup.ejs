@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+            <h2>Sign Up to Lighthouse</h2>
+            <% if (typeof splash == 'string'){  %>
+                <p><%- splash %></p>
+            <% } %>
+            <form method="post" autocomplete="off">
+                <label for="email">Email: </label>
+                <input type="email" autocomplete="off" placeholder="Email" name="email"></br>
+                <label for="username">Username: </label>
+                <input type="username" autocomplete="off" placeholder="Pick something You." name="username"><br/>
+                <label for="password">Password: </label>
+                <input type="password" autocomplete="off" placeholder="Choose something strong!" name="password"><br/>
+                <input type="submit">
+            </form>
+        </div>
+    </body>
+</html>
