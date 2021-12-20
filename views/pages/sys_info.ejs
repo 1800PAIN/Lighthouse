@@ -9,8 +9,21 @@
     <%- include ("../partials/nav.ejs") %>
     <div id="wrapper">
         <section>
-            <h2>About <%=  Buffer.from(sys.sys_alias, 'base64').toString() %></h2>
-            <p>Right now, we don't know much about <%=  Buffer.from(sys.sys_alias, 'base64').toString() %>... Adding alters is coming soon.</p>
+            <h2>About <%= Buffer.from(session.chosenSys.sys_alias, 'base64').toString() %></h2>
+            <p><%= Buffer.from(session.chosenSys.sys_alias, 'base64').toString() %> has <%= alterArr.length %> <% if (alterArr.length == 1){ %>member<% } else { %>members<% } %>.</p>
+            <% if (alterArr.length > 0){ %>
+            <p>Members:</p>
+            <ul>
+                <% for ( i in alterArr) { %>
+                    <li><%= alterArr[i].name %></li>
+                <% } %>
+            </ul>
+            <% } %>
+            <form method="post">
+                <label for="altname">Add New Alter</label>
+                <input type="text" name="altname" placeholder="New Alter Name Here">
+                <input type="submit" name="submit" value="Add">
+            </form>
         </section>
     </div>
     <%- include ("../partials/footer.ejs") %>

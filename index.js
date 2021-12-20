@@ -178,22 +178,39 @@ var sysArr;
     splash=null;
   });
 
-  app.get("/system/:alt", (req, res,next)=>{
-	 if (isLoggedIn(req)){
-		 client.query({text: "SELECT * FROM systems WHERE sys_id=$1",values: [`${req.params.alt}`]}, (err, result) => {
- 			if (err) {
- 			  console.log(err.stack);
- 			  console.log("Oops.")
- 		  } else {
- 			  req.session.chosenSys= result.rows[0];
- 		  }
- 		  // console.table(req.session.sys);
- 		  res.render(`pages/sys_info`, { session: req.session, splash:splash, sys:req.session.chosenSys });
- 		});
-	 } else {
-         res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });
-     }
+	var alterArr;
+  app.get('/system/:id', (req, res, next) => {
+    if (isLoggedIn(req)){
+		client.query({text: "SELECT * FROM systems WHERE sys_id=$1",values: [`${req.params.id}`]}, (err, result) => {
+			if (err) {
+			  console.log(err.stack);
+			  console.log("Oops.")
+		  } else {
+			  req.session.chosenSys= result.rows[0];
+			  // chosenSys.sys_id, chosenSys.user_id, chosenSys.sys_alias
+		  }
+		});
+			client.query({text: "SELECT * FROM alters WHERE sys_id=$1",values: [`${req.params.id}`]}, (err, result) => {
+	            if (err) {
+	              console.log(err.stack);
+	              console.log("Oops.")
+	          } else {
+	              req.session.alters = [];
+	              for (i in (result.rows)){
+	                  // (req.session.sys).push(Buffer.from(result.rows[i].sys_alias, 'base64').toString())
+	                  (req.session.alters).push({name: Buffer.from(result.rows[i].name, 'base64').toString(), id: result.rows[i].sys_id})
+	              }
+	          }
+			  // console.table(req.session.sys);
+	          res.render(`pages/sys_info`, { session: req.session, splash:splash, alterArr: req.session.alters });
+	        });
+
+    } else {
+        res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });
+    }
+    splash=null;
   });
+
 
 	/*
 
@@ -205,7 +222,23 @@ var sysArr;
 
 	*/
 
-  app.post('/system/', function (req, res){
+	app.post("/system/:alt", function(req, res){
+			if (isLoggedIn(req)){
+				client.query({text: "INSERT INTO alters (sys_id, name) VALUES ($1, $2)",values: [`${req.session.chosenSys.sys_id}`, `'${Buffer.from(req.body.altname).toString('base64')}'`]}, (err, result) => {
+					if (err) {
+					  console.log(err.stack);
+					  console.log("Oops.")
+				  } else {
+					  res.redirect(`/system/${req.session.chosenSys.sys_id}`);
+				  }
+			  });
+
+			} else {
+				res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });
+			}
+	});
+
+  app.post('/system', function (req, res){
 	  // console.log(req.body);
 	  // console.log(Object.keys(req.body)[0]);
 	  if (req.body.sysname){
@@ -244,11 +277,18 @@ var sysArr;
               console.log("Oops.")
 		  } else {
 			  if (req.session.u_id= result.rows[0].user_id){
-				  client.query({text: "DELETE FROM systems WHERE sys_id=$1 CASCADE;",values: [`${req.session.chosenSys.sys_id}`]}, (err, result) => {
+				  // DELETE FROM alters WHERE sys_id=$1;
+				  client.query({text: "DELETE FROM alters WHERE sys_id=$1;",values: [`${req.session.chosenSys.sys_id}`]}, (err, result) => {
 					  if (err){
 						  console.log(err.stack);
 						  console.log("Oops.");
 					  } else {
+							  client.query({text: "DELETE FROM systems WHERE sys_id=$1;",values: [`${req.session.chosenSys.sys_id}`]}, (err, result) => {
+								  if (err){
+									  console.log(err.stack);
+									  console.log("Oops.");
+								  }
+							  });
 						  splash=`${Buffer.from(req.session.chosenSys.sys_alias, 'base64').toString()} has been permanently deleted.`;
 						  req.session.chosenSys= null;
 						  res.redirect("/system");
