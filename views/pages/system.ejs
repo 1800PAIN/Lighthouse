@@ -6,10 +6,10 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
-            <h2>Your System</h2>
-            <% if (splash){ %>
-                <p><%- splash %></p>
+            <% if (typeof splash == 'string'){  %>
+                <p class="splash"><%- splash %></p>
             <% } %>
+            <h2>Your System</h2>
             <ul>
             <% for ( i in sysArr) { %>
                 <li><a href="/system/<%= sysArr[i].id %>"><%= sysArr[i].name %></a> &emsp;&emsp;&emsp;&emsp;<a href="/deletesys/<%= sysArr[i].id %>" name="<%= sysArr[i].id %>">Delete</a>&emsp;<a href="/editsys/<%= sysArr[i].id %>" name="<%= sysArr[i].id %>">Edit</a></li>

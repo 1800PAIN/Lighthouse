@@ -12,6 +12,7 @@ dt{
 }
 form{
     width: 100%;
+    height: auto;
     /* border: 1px solid black; */
     margin: 0 auto;
     text-align: center;
@@ -30,9 +31,19 @@ nav ul li, footer ul li {
 #wrapper{
     width: 50vw;
     /* border: 1px solid black; */
+    height: auto;
     padding: calc(2em);
     margin: 0 auto;
 }
+
+#blogpopup{
+    padding: calc(.5em);
+    background: silver;
+    width: 25vw;
+    z-index: 4;
+    position: absolute;
+}
+
 
 /* Classes */
 
@@ -67,4 +78,19 @@ nav ul li, footer ul li {
     display: table-cell;
     vertical-align: middle;
     padding: calc(1em);
+}
+.vtinyimg{
+    width: calc(2em);
+    height: auto;
+}
+.tinyimg{
+    width: calc(4em);
+    height: auto;
+}
+.splash{
+    width: calc(65vw);
+    background: lightyellow;
+    padding: calc(2em);
+    border: 2px solid goldenrod;
+    border-radius: 15px;
 }

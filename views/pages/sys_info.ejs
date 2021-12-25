@@ -9,6 +9,9 @@
     <%- include ("../partials/nav.ejs") %>
     <div id="wrapper">
         <section>
+            <% if (typeof splash == 'string'){  %>
+                <p class="splash"><%- splash %></p>
+            <% } %>
             <h2>About <%= Buffer.from(session.chosenSys.sys_alias, 'base64').toString() %></h2>
             <p><%= Buffer.from(session.chosenSys.sys_alias, 'base64').toString() %> has <%= alterArr.length %> <% if (alterArr.length == 1){ %>member<% } else { %>members<% } %>.</p>
             <% if (alterArr.length > 0){ %>

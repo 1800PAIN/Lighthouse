@@ -7,6 +7,9 @@
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
             <section>
+                <% if (typeof splash == 'string'){  %>
+                    <p class="splash"><%- splash %></p>
+                <% } %>
                 <h2>Crisis Helplines</h2>
                 <p><a href="http://togetherweare-strong.tumblr.com/helpline">Global List of Helplines for a variety of countries can be found here.</a></p>
                 <ul>

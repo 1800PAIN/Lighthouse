@@ -6,6 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (typeof splash == 'string'){  %>
+                <p class="splash"><%- splash %></p>
+            <% } %>
             <h2>Log In to Lighthouse</h2>
             <form method="post">
                 <label for="email">Email: </label>

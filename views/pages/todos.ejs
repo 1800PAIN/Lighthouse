@@ -6,6 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (typeof splash == 'string'){  %>
+                <p class="splash"><%- splash %></p>
+            <% } %>
             <section>
                 <hgroup>
                     <h2>Plans for the app.</h2>

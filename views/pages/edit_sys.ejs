@@ -8,6 +8,9 @@
 <body>
     <%- include ("../partials/nav.ejs") %>
     <div id="wrapper">
+        <% if (typeof splash == 'string'){  %>
+            <p class="splash"><%- splash %></p>
+        <% } %>
         <section>
             <h2>Edit System- <%=  Buffer.from(alt.sys_alias, 'base64').toString() %></h2>
             <p>You can rename the system. Coming up: Move alters across systems.</p>

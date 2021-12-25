@@ -8,6 +8,7 @@ const bcrypt = require("bcrypt");
 const CryptoJS = require("crypto-js");
 const request = require('request');
 const PKAPI = require("pkapi.js");
+const fs = require('fs');
 
 require('dotenv').config();
 
@@ -16,6 +17,8 @@ const api = new PKAPI({
 	version: 1, // api version
 	token: undefined // for authing requests. only set if you're using this for a single system!
 });
+
+
 
 function isLoggedIn(req){
 	return req.session.loggedin == true;
@@ -92,7 +95,6 @@ app.use(bodyParser.urlencoded({extended:true}));
 
   // PAGES- GET REQUEST
   app.get('/', (req, res) => {
-      var imgFolder= path.join(__dirname, 'public/img')
       res.render(`pages/index`, { session: req.session, splash:splash });
       splash=null;
   });
@@ -242,14 +244,30 @@ var sysArr;
 		   } else {
 			   req.session.chosenAlter = result.rows[0];
 		   }
-		   // console.table(req.session.sys);
+		   client.query({text: "SELECT * FROM journals WHERE alt_id=$1;",values: [`${req.params.id}`]}, (err, nresult) => {
+			   if (err) {
+				  console.log(err.stack);
+				  console.log("Oops.")
+			  } else {
+				  req.session.altJournal = nresult.rows;
+			  }
 		   res.render(`pages/alter`, { session: req.session, splash:splash });
+		   });
 		 });
 	 } else {
 		 res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });
 	 }
   });
 
+  app.get('/journal/:id', (req, res)=>{
+
+	 if (isLoggedIn(req)){
+		res.render(`pages/journal`, { session: req.session, splash:splash });
+		splash=null;
+	 } else {
+		 res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });
+	 }
+  });
 
 	/*
 
@@ -260,6 +278,52 @@ var sysArr;
 
 
 	*/
+
+	app.post("/alter/:id", function(req, res){
+			/*
+				{
+				  journ: '7',
+				  priv: 'true',
+				  jPass: 't',
+				  create: "Create A's Journal"
+				}
+			 */
+			let pass= req.body.jPass || null;
+			if (isLoggedIn(req)){
+				if (req.body.create){
+					// Create
+					client.query({text: "INSERT INTO journals (alt_id, password, is_private, skin) VALUES ($1, $2, $3, $4)",values: [`${req.params.id}`, `'${CryptoJS.SHA3(req.body.jPass)}'`, `${req.body.priv}`, `'${req.body.journ}'`]}, (err, result) => {
+						if (err) {
+						  console.log(err.stack);
+						  console.log("Oops.")
+					  } else {
+						  splash=`<strong>All set!</strong> Journal made.`;
+						  res.redirect(`/alter/${req.params.id}`);
+					  }
+				  });
+			  } else {
+				  // Login
+				  client.query({text: "SELECT password FROM journals WHERE alt_id=$1",values: [`${req.params.id}`]}, (err, result) => {
+					  if (err) {
+						console.log(err.stack);
+						console.log("Oops.")
+					} else {
+						// splash=`<strong>All set!</strong> Journal made.`;
+						// res.redirect(`/alter/${req.params.id}`);
+					if (result.rows[0].password == `'${CryptoJS.SHA3(req.body.logPass)}'`){
+						res.redirect(`/journal/${req.params.id}`);
+					} else {
+						splash=`<strong>No, not quite...</strong> That's not the right password.`;
+						res.redirect(`/alter/${req.params.id}`);
+					}
+					}
+				});
+
+			  }
+			} else {
+				res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });
+			}
+	});
 
 	app.post("/system/:alt", function(req, res){
 			if (isLoggedIn(req)){
@@ -409,21 +473,23 @@ var sysArr;
 
  app.post('/login', function(req, res) {
      var query = {
-       text: "SELECT * FROM users WHERE email=$1;",
-       values: [`'${Buffer.from(req.body.email).toString('base64')}'`]
+       text: "SELECT * FROM users WHERE email=$1 AND pass=$2;",
+       values: [`'${Buffer.from(req.body.email).toString('base64')}'`, `'${CryptoJS.SHA3(req.body.password)}'`]
      }
      client.query(query, (err, result) => {
          if (err) {
            console.log(err.stack);
            console.log("Oops.");
        } else {
-           // console.log(res.rows[0]);
-           req.session.loggedin = true;
-		   req.session.username = Buffer.from(result.rows[0].username, 'base64').toString();
-           req.session.u_id= result.rows[0].id;
-           // console.table(result.rows[0])
-           // console.table(req.session)
-           res.redirect('/');
+		   if (result.rows.length == 0){
+			   splash= "Wrong credentials.";
+			   res.redirect('/login');
+		   } else {
+			   req.session.loggedin = true;
+			   req.session.username = Buffer.from(result.rows[0].username, 'base64').toString();
+	           req.session.u_id= result.rows[0].id;
+	           res.redirect('/');
+		   }
        }
    });
  });

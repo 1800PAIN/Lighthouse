@@ -6,10 +6,10 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
-            <h2>Sign Up to Lighthouse</h2>
             <% if (typeof splash == 'string'){  %>
-                <p><%- splash %></p>
+                <p class="splash"><%- splash %></p>
             <% } %>
+            <h2>Sign Up to Lighthouse</h2>
             <form method="post" autocomplete="off">
                 <label for="email">Email: </label>
                 <input type="email" autocomplete="off" placeholder="Email" name="email"></br>

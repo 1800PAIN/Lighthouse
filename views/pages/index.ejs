@@ -7,15 +7,21 @@
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
             <% if (splash){ %>
-                <p><%- splash %></p>
+                <p class="splash"><%- splash %></p>
             <% } %>
         <section>
         <h2>Lighthouse- Journal Together</h2>
-        <p>Create private journals for dissociated parts.</p>
+        <img src="/img/<%= Math.floor(Math.random() * (10 - 1 + 1)) + 1  %>.png" alt="a journal book" style="display:inline; height: 128px; width: auto;">
+            <p>Create private journals for dissociated parts.</p>
             <p>Lighthouse is an app designed specifically for people who are plural to have private and a singular "communal" journal to keep track of day to day life.</p>
             <p>Being plural can mean a few things: People disagnosed with <strong>Dissociative Identity Disorder</strong>, <strong>Otherwise Specified Dissociative Disorder</strong> (typically 1B), and other conditions can make someone plural (sometimes called a <strong>system</strong>). A common issue when one is a system is the memory gaps between dissociated parts. This can cause medicine doses to be skipped, appointments or work missed, or other things that disrupt daily life.</p>
             <p>Lighthouse's goal is to help systems bridge the gap between parts and help to restore or maintain functioning.</p>
             <p>Lighthouse may also benefit people using <a href="https://www.verywellmind.com/what-is-ifs-therapy-internal-family-systems-therapy-5195336" target="_blank">IFS in trauma therapy.</a></p>
+            <!-- <div class="grid">
+                <% for (let i = 0; i < 10; i++) {  %>
+                    <div><img class="tinyimg" src="/img/<%= i+1 %>.png"></div>
+                <% }%>
+            </div> -->
         </section>
         <!-- <script>
             paypal.Buttons().render("body");

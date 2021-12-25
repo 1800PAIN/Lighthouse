@@ -6,6 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (typeof splash == 'string'){  %>
+                <p class="splash"><%- splash %></p>
+            <% } %>
             <h2>Thank you</h2>
             <p>Thank you for signing up. You can now log in.</p>
             <p><strong>Do not refresh!</strong></p>

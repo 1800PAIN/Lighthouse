@@ -8,12 +8,75 @@
 <body>
     <%- include ("../partials/nav.ejs") %>
     <div id="wrapper">
+        <% if (typeof splash == 'string'){  %>
+            <p class="splash"><%- splash %></p>
+        <% } %>
         <section>
-            <h2><%= Buffer.from(session.chosenAlter.name, 'base64').toString() %></h2>
+            <h2><%= Buffer.from(session.chosenAlter.name, 'base64').toString() %>'s page</h2>
             <p><%= Buffer.from(session.chosenAlter.name, 'base64').toString() %> is a part of <%= Buffer.from(session.chosenAlter.sys_alias, 'base64').toString() %>.</p>
+            <% if (session.altJournal.length > 0){ %>
+                <!-- <p><%= session.altJournal[0].is_private %></p> -->
+                <div id="blogpopup" style="display:none;">
+                    <form method="post">
+                        <p>Please put in the journal password.</p>
+                        <input type="password" name="logPass">
+                        <input type="submit" name="log" value="Open Journal">
+                    </form>
+                </div>
+                <% if (session.altJournal[0].is_private == true){ %>
+                    <img src="/img/<%- (session.altJournal[0].skin).replace(/'/gi, '') %>.png" width="400px" id="login" onclick="blogPopup()">
+                <% } else { %>
+                    <a href="/journal/<%- (session.altJournal[0].alt_id) %>"><img src="/img/<%- (session.altJournal[0].skin).replace(/'/gi, '') %>.png" width="400px" id="login"></a>
+                <% } %>
+            <% } else { %>
+                <p>Uh oh! <%= Buffer.from(session.chosenAlter.name, 'base64').toString() %> has no journal. Make one down below.</p>
+                <form method="post">
+                    <p>Pick a colour!</p>
+                    <div class="grid" style="height: calc(15em);margin:auto;">
+                    <% for (let i=0; i < 10; i++){ %>
+                        <div>
+                            <label for="journ"><img src="/img/<%= i+1 %>.png" class="vtinyimg"><%= ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Pink', 'White', 'Black'][i] %></label><br/>
+                            <input type="radio" id="<%= i+1 %>" name="journ" value="<%= i+1 %>">
+                        </div>
+                    <% } %>
+                    </div>
+                    <p>Password Protect this journal?</p>
+                        <input type="radio" id= "true" name="priv" value="true">
+                        <label for="priv">Yes</label><br/>
+
+                        <input type="radio" id= "false" name="priv" value="false">
+                        <label for="priv">No</label>
+                    <div id="more" style="display: none;">
+                        <label for="pass">Journal password</label>
+                        <input type="password" id="pass" onchange="showPass()" name="jPass"><br/><span id="passtext"></span>
+                    </div>
+                    <br/>
+                    <!-- <hr/> -->
+                    <input type="submit" value="Create <%= Buffer.from(session.chosenAlter.name, 'base64').toString() %>'s Journal" name="create">
+                    <p id="passhint" style="display: none;"><strong>Keep your password somewhere safe.</strong> If you forget, it won't be able to be reset until a future date.</p>
+                </form>
+            <% } %>
         </section>
     </div>
     <%- include ("../partials/footer.ejs") %>
+    <script>
+        document.getElementById("true").addEventListener("click", function(){
+            document.getElementById("more").style.display="block";
+            document.getElementById("passhint").style.display="block";
+        });
+        document.getElementById("false").addEventListener("click", function(){
+            document.getElementById("more").style.display="none";
+            document.getElementById("passhint").style.display="none";
+        });
+        function showPass(){
+            document.getElementById("passtext").style.color="gray";
+            return document.getElementById("passtext").innerHTML=`Your password is: ${document.getElementById('pass').value}`;
+        }
+        function blogPopup(){
+            document.getElementById("blogpopup").style.display="block";
+        }
+
+    </script>
 </body>
 
 </html>
