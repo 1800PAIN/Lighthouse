@@ -256,6 +256,7 @@ var sysArr;
 			  } else {
 				  req.session.altJournal = nresult.rows;
 			  }
+			 // console.log(req.session.altJournal[0].j_id);
 		   res.render(`pages/alter`, { session: req.session, splash:splash });
 		   });
 		 });
@@ -278,7 +279,8 @@ var sysArr;
 					  req.session.journalPosts[i].body= decryptWithAES(req.session.journalPosts[i].body);
 					  req.session.journalPosts[i].title= decryptWithAES(req.session.journalPosts[i].title);
 				  }
-				  res.render(`pages/journal`, { session: req.session, splash:splash });
+				  res.render(`pages/journal`, { session: req.session, splash:splash, lang:req.acceptsLanguages()[0] });
+
  			  }
 		  });
 		} else {
@@ -303,9 +305,9 @@ var sysArr;
 	*/
 
 	app.post("/journal/:id", (req, res)=>{
-		if (isLoggedIn(req) && req.session.journalUser == req.params.id){
+		if (isLoggedIn(req)){
 			// session.altJournal[0].j_id
-			client.query({text: "INSERT INTO posts (j_id, created_on, body, title) VALUES ($1, $2, $3, $4);",values: [`${req.session.altJournal[0].j_id}`, `${new Date().toISOString().slice(0, 19).replace('T', ' ')}`, `${encryptWithAES(req.body.j_body)}`, `${encryptWithAES(req.body.j_title)}`]}, (err, result) => {
+			client.query({text: "INSERT INTO posts (j_id, created_on, body, title) VALUES ($1, $2, $3, $4);",values: [`${req.session.altJournal[0].j_id}`, `${new Date().toLocaleString("en-US", { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`, `${encryptWithAES(req.body.j_body)}`, `${encryptWithAES(req.body.j_title)}`]}, (err, result) => {
  			   if (err) {
  				  console.log(err.stack);
  				  console.log("Oops.")

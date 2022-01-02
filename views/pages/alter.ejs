@@ -32,7 +32,7 @@
                 <p>Uh oh! <%= Buffer.from(session.chosenAlter.name, 'base64').toString() %> has no journal. Make one down below.</p>
                 <form method="post">
                     <p>Pick a colour!</p>
-                    <div class="grid" style="height: calc(15em);margin:auto;">
+                    <div class="grid" style="height: auto;margin:auto;">
                     <% for (let i=0; i < 10; i++){ %>
                         <div>
                             <label for="journ"><img src="/img/<%= i+1 %>.png" class="vtinyimg"><%= ['Red', 'Orange', 'Yellow', 'Green', 'Teal', 'Blue', 'Purple', 'Pink', 'White', 'Black'][i] %></label><br/>

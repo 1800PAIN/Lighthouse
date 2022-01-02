@@ -18,31 +18,27 @@
             <form method="post">
                 <h3>Create Journal Entry</h3>
                 <label for="j_title">Journal title</label><br/>
-                <input type="text" name="j_title" autocomplete="off"><br/>
+                <input type="text" name="j_title" autocomplete="off" required><br/>
                 <label for="j_body">Journal Body</label><br/>
-                <textarea name="j_body" autocomplete="off" cols="60" rows="15"></textarea><br/>
+                <textarea name="j_body" autocomplete="off" cols="60" rows="15" required></textarea><br/>
                 <input type="submit" name="submit" value="Write post">
                 <input type="reset" name="reset" value="Start Over">
             </form>
+            <p>HTML works in this field, so feel free to style your journal as you see fit. Pressing enter will render a new paragraph.</p>
         </section>
+        <hr/>
         <section>
-            <!--
-            journalPosts: [
-              {
-                p_id: uuid,
-                j_id: uuid,
-                created_on: timestamp,
-                title: AES-encrypted string,
-                body: AES-encrypted string
-              }
-            ]
-         -->
             <section>
             <% for (i in session.journalPosts) { %>
                 <article>
                 <h2><%= session.journalPosts[i].title %></h2>
-                <p><sub>Created on/around <%= (session.journalPosts[i].created_on).toLocaleString() %></sub></p>
-                <%= session.journalPosts[i].body %>
+                <p><sub>Posted <%= (session.journalPosts[i].created_on).toLocaleString(lang, { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }) %></sub></p>
+                <% var bodyArr= (session.journalPosts[i].body).replace(/\r/gi, '').split("\n").filter(function() { return true; });
+                    for (j in bodyArr){
+                        if (bodyArr[j] !== ''){ %>
+                            <p><%- bodyArr[j] %></p>
+                        <% }
+                    }%>
             </article>
             <% } %>
         </section>
