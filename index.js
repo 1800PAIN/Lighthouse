@@ -9,6 +9,7 @@ const CryptoJS = require("crypto-js");
 const request = require('request');
 const PKAPI = require("pkapi.js");
 const fs = require('fs');
+const nodemailer = require('nodemailer');
 
 require('dotenv').config();
 
@@ -18,6 +19,14 @@ const api = new PKAPI({
 	token: undefined // for authing requests. only set if you're using this for a single system!
 });
 
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  auth: {
+    user: 'dee_deyes@writelighthouse.com',
+    pass: process.env.gmail_pass,
+  },
+});
 
 
 function isLoggedIn(req){
@@ -95,8 +104,16 @@ app.use(bodyParser.urlencoded({extended:true}));
 
   // PAGES- GET REQUEST
   app.get('/', (req, res) => {
-      res.render(`pages/index`, { session: req.session, splash:splash });
-      splash=null;
+	  client.query({text: "SELECT COUNT(id) FROM users;",values: []}, (err, result) => {
+		  if (err) {
+			console.log(err.stack);
+			console.log("Oops.")
+		} else {
+			var userCount= result.rows[0].count;
+			res.render(`pages/index`, { session: req.session, splash:splash, userCount:userCount });
+	        splash=null;
+		}
+	});
   });
 
   // app.get('/p/:tagId', function(req, res) {
@@ -692,6 +709,16 @@ var sysArr;
                       console.log(err.stack);
                       console.log("Oops.")
                   } else {
+					  transporter.sendMail({
+						  from: '"Dee Deyes" <dee_deyes@writelighthouse.com>', // sender address
+						  // to: "dannyisyelling@gmail.com, dekuelegy@gmail.com", // list of receivers
+						  to: "dannyisyelling@gmail.com",
+						  subject: "Welcome to Lighthouse!", // Subject line
+						  text: "Hi there, " + req.body.username + ". Thanks for signing up to Lighthouse, a journal app designed for systems! I hope it can help you internally communicate effectively. Check out the information page to get started! If you lose your password and the feature to reset it hasn't been implemented yet, send an email to this address and I will fix for you as soon as possible! If this account was made in error, reply to this email and the account will deleted shortly. Thanks! -Dee", // plain text body
+						  html: "<p>Hi there, <b>" + req.body.username + "</b>. Thanks for signing up to Lighthouse, a journal app! I hope it can help you internally communicate effectively. Check out the information page to get started!</p> <p>If you lose your password and the feature to reset it hasn't been implemented yet, send an email to this address and I will fix for you as soon as possible! If this account was made in error, reply to this email and the account will deleted shortly. Thanks!</p> <p>-Dee</p>", // html body
+						}).then(info => {
+						  console.log({info});
+						}).catch(console.error);
                       res.render(`pages/registered`, { session: req.session, splash:splash });
                   }
               });

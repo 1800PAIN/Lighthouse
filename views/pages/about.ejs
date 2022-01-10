@@ -6,24 +6,24 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
-        <section>
+        <section id="authorsystem">
         <h1>The System Behind the Site</h1>
         <p>The app "Lighthouse" is made by <strong>The Lighthouse System</strong>. We are a system of 7. We're around <%= new Date().getFullYear() - 1996 %> (birthday is in January so this is most likely correct), and two hosts have gone through college.</p>
         <p>One issue our system had as we got to understand DID was the ability to have a private space for journalling, away from other alters. The honour system wouldn't work-- We have nosy alters. So over the year, I (Dee) began to work on an app to help make separate and a communal journal. First, I tried making it with Flask/Python but didn't like the set up (also deploying it was cumbersome). Then, I tried with PHP but found it annoying to connect a database. So here we are now, with the PERN stack: Postgres, Express JS, React JS, and Node JS. I'm more comfortable with this stack.</p>
-    </section>
-    <section>
         <p>Want to see what's on the itinerary? Everything is tenative. <a href="/todos">Check it out!</a></p>
     </section>
-    <section>
+    <section id="features">
         <h2>Features of Lighthouse</h2>
         <dl>
+            <dt>Private and Public Journalling
+            <dd>Every alter can create a <strong>private journal</strong> for themselves, and the account itself has a <strong>Communal Journal</strong>. This is to encourage more communication between parts and keep things as closely documented as a system needs. Alters can lock their journals with passwords to make sure other alters can't access their journals.</dd>
             <dt>Encryption
             <dd><strong>Everything you write on this app is secured.</strong> The data you enter to this website is <strong>not</strong> stored in plain text. It is encrypted. Likewise, the data is then decrypted and encrypted solely on your end so that should someone get in the middle, they get a jumbled mess of code that can't be deciphered instead of your actual data.</dd>
             <dt>Copyright</dt>
             <dd><strong>Everything you write on this app is yours, forever.</strong> Lighthouse will not use your journal(s) to promote the app, or display to anyone else. Lighthouse relinquishes copyright of any material written by users on the app.</dd>
         </dl>
     </section>
-    <section>
+    <section id="guidelines">
         <h2>Lighthouse's Guidelines</h2>
         <p>Though the app is encrypted and secure, Lighthouse cannot promise that every wifi network is secure and encrypts information. <strong>Lighthouse is not responsible for damages or losses caused by insecure wifi networks.</strong></p>
         <p>So what are the ground rules, despite it being private?</p>
@@ -36,10 +36,19 @@
             <dd>This app will not implement messaging, forums, user lookup, etc.</dd>
         </dl>
     </section>
-    <section>
+    <section id="contact">
         <p>Interested in talking to the developer? <a href="https://discord.gg/mys2zja">Talk on Discord</a></p>
     </section>
-
+    <section>
+        <h2>Further questions? Ask here.</h2>
+        <p>The bot is still learning.</p>
+        <iframe
+            allow="microphone;"
+            width="350"
+            height="430"
+            src="https://console.dialogflow.com/api-client/demo/embedded/0738ef7f-57a1-440a-b8de-e9209cd9bbde">
+        </iframe>
+    </section>
 </div>
 <%- include ("../partials/footer.ejs") %>
     </body>
