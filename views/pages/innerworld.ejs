@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+            <section>
+                <% if (typeof splash == 'string'){  %>
+                    <p class="splash"><%- splash %></p>
+                <% } %>
+                <h2>Inner World</h2>
+                <p>An <strong>inner world</strong> is a visualisation tool for people to visualise alters, memory storage, feelings, and more. People with DID or OSDD more often than not have an inner world. Inner worlds can be as small as a singular room, or as big as an entire planet. In the end, it's all about what makes you feel safest.</p>
+                <p>People with dissociative disorders tend to have a more fleshed-out inner world because of the natural instinct to retreat within at the first sign of distress. Some might call their inner world their "mind palace". Read more here (<a href="https://en.wikipedia.org/wiki/Method_of_loci" target="_blank">Method of Loci</a>).</p>
+                <p>This is a rather open-ended section. Feel free to use it as it best suits you. Writing about your inner world may help to process subconscious thoughts and feelings.</p>
+                <form method="post">
+                  <label for="key">Name</label><br/>
+                  <input type="text" name="key" required><br/>
+                  <label for="value">Description</label><br/>
+                  <textarea name="value" required></textarea>
+                  <br/>
+                  <input type="submit" name="create" value="Add">
+                  <input type="reset" value="Start Over">
+                </form>
+            </section>
+            <section>
+              <h2>Inner World Information</h2>
+              <% for (i in session.innerWorld){ %>
+                <dt><%= Buffer.from(session.innerWorld[i].key, 'base64').toString() %></dt>
+                <dd><%= Buffer.from(session.innerWorld[i].value, 'base64').toString() %></dd>
+              <% } %>
+            </section>
+        </div>
+        <%- include ("../partials/footer.ejs") %>
+    </body>
+</html>

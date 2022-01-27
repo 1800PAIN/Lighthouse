@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <%- include ("../partials/header.ejs") %>
+</head>
+
+<body>
+  <%
+  function randomise(arr){
+        return arr[Math.floor(Math.random()*arr.length)];
+  }
+   %>
+    <%- include ("../partials/nav.ejs") %>
+    <div id="wrapper">
+        <% if (typeof splash == 'string'){  %>
+            <p class="splash"><%- splash %></p>
+        <% } %>
+        <section>
+            <h2>Rules for Your System</h2>
+            <p>Rules are typically an honour-system thing. Establish boundaries with parts. <small>Example: "<%= randomise(['Do not spend copious amounts of money at once without asking other parts', 'Do not hurt the body on purpose', 'No life-altering procedures without letting the system know', 'No tattoos']) %>."</small> Remember: rules in a system don't work like rules in a house or at work. If a part violates a rule, there should not be external or internal punishment. Instead, communicate the concern and draw a firm line. Parts who continue to violate rules should be discussed with a trusted, qualified professional.</p>
+            <form method="post">
+              <label for="rule">New Rule: </label>
+              <input type="text" name="rule"><br/>
+              <input type="submit" value="Add New Rule">
+            </form>
+            <ol>
+              <% for (i in session.sys_rules){ %>
+                <li><%= Buffer.from(session.sys_rules[i].rule, 'base64').toString() %>&emsp;&emsp;<a class="deletebtn" href="/system/rules/delete/<%= session.sys_rules[i].id %>" style="padding:.5em; font-size: 80%;">Delete</a></li>
+              <% } %>
+            </ol>
+        </section>
+    </div>
+    <%- include ("../partials/footer.ejs") %>
+</body>
+
+</html>

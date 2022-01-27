@@ -96,8 +96,7 @@ var app = express();
 	resave: true,
 	saveUninitialized: true
     }));
-
-app.use(bodyParser.urlencoded({extended:true}));
+	app.use(bodyParser.urlencoded({extended:true}));
 
   app.set('views', path.join(__dirname, 'views'))
   app.set('view engine', 'ejs')
@@ -148,6 +147,51 @@ app.use(bodyParser.urlencoded({extended:true}));
      res.redirect("/");
   });
 
+	app.get('/inner-world', (req, res, next) => {
+		if (isLoggedIn(req)){
+			client.query({text:'SELECT * FROM inner_worlds WHERE u_id=$1', values: [req.session.u_id]}, (err, result)=>{
+				if (err){
+					console.log(err.stack);
+					console.log("Oops.");
+				} else {
+					req.session.innerWorld= result.rows;
+				}
+				res.render(`pages/innerworld`, { session: req.session, splash:splash });
+				splash=null;
+			});
+		} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });}
+	});
+
+	app.get('/system/rules', (req, res, next) => {
+		// console.log(`GET system/rules/ U_ID: ${req.session.u_id}`);
+		if (isLoggedIn(req)){
+			client.query({text: "SELECT * FROM sys_rules WHERE u_id=$1;", values:[req.session.u_id]}, (err, result)=>{
+				if (err){
+					console.log(err.stack);
+					console.log("Oops.");
+				} else {
+					req.session.sys_rules=result.rows;
+				}
+				res.render(`pages/sys_rules`, { session: req.session, splash:splash });
+				splash=null;
+			});
+		} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });}
+	});
+
+	app.get('/system/rules/delete/:id', (req, res)=>{
+		if (isLoggedIn(req)){
+			client.query({text: "DELETE FROM sys_rules WHERE id=$1;",values: [`${req.params.id}`]}, (err, result) => {
+				if (err) {
+				console.log(err.stack);
+				console.log("Oops.")
+			} else {
+				req.session.sys_rules= null;
+			}
+			res.redirect("/system/rules");
+			});
+		} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });}
+	});
+
   app.get('/editsys/:alt', (req, res, next)=>{
 	  if (isLoggedIn(req)){
 		  client.query({text: "SELECT * FROM systems WHERE sys_id=$1",values: [`${req.params.alt}`]}, (err, result) => {
@@ -196,7 +240,6 @@ app.use(bodyParser.urlencoded({extended:true}));
 
   app.get('/clearalter', (req, res, next)=>{
 	  req.session.journalUser= null;
-	  // res.render(`pages/system`, { session: req.session, splash:splash, sysArr: req.session.sys, lang:req.acceptsLanguages()[0] });
 		res.redirect('/system');
   });
 
@@ -450,6 +493,21 @@ var sysArr;
 
 	*/
 
+	app.post('/rules', (req, res)=>{
+		if (isLoggedIn(req)){
+			client.query({text:`INSERT INTO sys_rules (u_id, rule) VALUES ($1, $2)`, values:[req.session.u_id, `'${Buffer.from(req.body.rule).toString('base64')}'`]}, (err, result)=>{
+				if (err){
+					console.log(err.stack);
+					console.log("Oops.");
+				} else {
+					res.redirect("/system/rules");
+				}
+			});
+		} else {
+				res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });
+		}
+	});
+
 	app.post('/alter/:id/delete', (req, res)=>{
 		if (isLoggedIn(req)){
 			client.query({text: "DELETE FROM posts WHERE p_id=$1; ",values: [`${req.params.id}`]}, (err, result) => {
@@ -638,6 +696,20 @@ var sysArr;
 			}
 	});
 
+	app.post('/inner-world', (req, res)=>{
+		if (isLoggedIn(req)){
+			client.query({text:'INSERT INTO inner_worlds (u_id, key, value) VALUES ($1,$2,$3);', values: [`${req.session.u_id}`, `${Buffer.from(req.body.key).toString('base64')}`,`${Buffer.from(req.body.value).toString('base64')}`]}, (err, result)=>{
+				if (err){
+					console.log(err.stack);
+					console.log("Oops.");
+				}
+				res.redirect('/inner-world');
+			});
+		} else {
+			res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });
+		}
+	});
+
   app.post('/system', function (req, res){
 	  // console.log(req.body);
 	  // console.log(Object.keys(req.body)[0]);
@@ -822,11 +894,9 @@ var sysArr;
  });
 
   // ERROR ROUTES. DO NOT PUT NEW PAGES BENEATH THESE.
-  app.get('*', function(req, res){
-     // res.send(404);
-     res.render(`pages/404`, { session: req.session, code:"Not Found", splash:splash });
-     splash=null;
-});
+	app.use(function(req,res){
+			res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash });
+	});
   // End pages.
   app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 

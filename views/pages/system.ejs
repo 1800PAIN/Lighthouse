@@ -10,6 +10,10 @@
               <p class="splash"><%- splash %></p>
           <% } %>
             <h2>Your System</h2>
+            <div class="grid-sm">
+              <a href="/system/rules">System Rules</a>
+              <a href="/inner-world">Inner World (WIP)</a>
+            </div>
             <ul>
             <% for ( i in session.sys ) { %>
                 <li><a href="/system/<%= session.sys[i].id %>"><%= session.sys[i].name %></a> &emsp;&emsp;&emsp;&emsp;<a href="/deletesys/<%= session.sys[i].id %>" name="<%= session.sys[i].id %>" class="deletebtn">Delete</a>&emsp;<a href="/editsys/<%= session.sys[i].id %>" name="<%= session.sys[i].id %>" class="editbtn">Edit</a></li>
