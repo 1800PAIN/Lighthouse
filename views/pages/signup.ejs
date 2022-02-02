@@ -10,16 +10,37 @@
                 <p class="splash"><%- splash %></p>
             <% } %>
             <h2>Sign Up to Lighthouse</h2>
+            <p>We're happy to have you! But first, we need some  information. <strong>Please use a valid email!</strong> If not, losing your password will lose your account to the void.</p>
             <form method="post" autocomplete="off">
                 <label for="email">Email: </label>
-                <input type="email" autocomplete="off" placeholder="Email" name="email"></br>
+                <input type="email" autocomplete="off" placeholder="Email" name="email" required></br>
                 <label for="username">Username: </label>
-                <input type="username" autocomplete="off" placeholder="Pick something You." name="username"><br/>
+                <input type="username" autocomplete="off" placeholder="Pick something You." name="username" required><br/>
                 <label for="password">Password: </label>
-                <input type="password" autocomplete="off" placeholder="Choose something strong!" name="password"><br/>
-                <input type="submit">
+                <input minlength="8" type="password" autocomplete="off" placeholder="Write your password." name="password" id="pass" onchange="checkPass()" required><br/>
+                <label for="v-password">Verify Password: </label>
+                <input minlength="8" type="password" autocomplete="off" placeholder="Write it again." name="v-password" id="v-pass" onchange="checkPass()" required><br/>
+                <p id="passSplash"></p>
+                <input type="submit" id="signup" value="Sign Up" disabled>
             </form>
         </div>
         <%- include ("../partials/footer.ejs") %>
+        <script>
+          const button= document.querySelector("#signup");
+          const pass= document.querySelector("#pass");
+          const vPass= document.querySelector("#v-pass");
+          const passSplash= document.querySelector("#passSplash");
+          function checkPass(){
+            // console.log(pass.value);
+            // console.log(vPass.value);
+            if (pass.value !== vPass.value){
+              passSplash.innerHTML="Passwords do not match.";
+              button.disabled= true;
+            } else {
+              passSplash.innerHTML="";
+              button.disabled= false;
+            }
+          }
+        </script>
     </body>
 </html>

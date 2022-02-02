@@ -28,6 +28,11 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+function getRandomInt(min, max){
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 function isLoggedIn(req){
 	return req.session.loggedin == true;
@@ -106,7 +111,7 @@ var app = express();
 	  client.query({text: "SELECT COUNT(id) FROM users;",values: []}, (err, result) => {
 		  if (err) {
 			console.log(err.stack);
-			console.log("Oops.")
+			res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 		} else {
 			var userCount= result.rows[0].count;
 			res.render(`pages/index`, { session: req.session, splash:splash, userCount:userCount });
@@ -141,10 +146,20 @@ var app = express();
       splash=null;
   });
 
+  app.get('/forgot-password', (req, res, next) => {
+      res.render(`pages/forgot_pass`, { session: req.session, splash:splash });
+      splash=null;
+  });
+
   app.get('/logout', (req, res)=>{
-     splash= `See you soon, ${req.session.username || randomise(['friend', 'buddy'])}.`;
+     splash= `See you soon, ${req.session.username || randomise(['friend.', 'buddy.', "okay?", "now. Don't be a stranger."])}`;
 	 req.session.destroy();
      res.redirect("/");
+  });
+
+  app.get('/reset/:id', (req, res)=>{
+     res.render("pages/new_pass", {session: req.session, splash:splash});
+		 splash=null;
   });
 
 	app.get('/inner-world', (req, res, next) => {
@@ -152,7 +167,7 @@ var app = express();
 			client.query({text:'SELECT * FROM inner_worlds WHERE u_id=$1', values: [req.session.u_id]}, (err, result)=>{
 				if (err){
 					console.log(err.stack);
-					console.log("Oops.");
+					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });;
 				} else {
 					req.session.innerWorld= result.rows;
 				}
@@ -167,7 +182,7 @@ var app = express();
 			client.query({text: "SELECT * FROM sys_rules WHERE u_id=$1;", values:[req.session.u_id]}, (err, result)=>{
 				if (err){
 					console.log(err.stack);
-					console.log("Oops.");
+					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });;
 				} else {
 					req.session.sys_rules=result.rows;
 				}
@@ -182,7 +197,7 @@ var app = express();
 			client.query({text: "DELETE FROM sys_rules WHERE id=$1;",values: [`${req.params.id}`]}, (err, result) => {
 				if (err) {
 				console.log(err.stack);
-				console.log("Oops.")
+				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 			} else {
 				req.session.sys_rules= null;
 			}
@@ -196,13 +211,13 @@ var app = express();
 		  client.query({text: "SELECT * FROM systems WHERE sys_id=$1",values: [`${req.params.alt}`]}, (err, result) => {
 			  if (err) {
 				console.log(err.stack);
-				console.log("Oops.")
+				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 			} else {
 				req.session.chosenSys= result.rows[0];
 				client.query({text: "SELECT alters.name, alters.alt_id, alters.sys_id, systems.sys_alias FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE systems.sys_id=$1;",values: [`${req.params.alt}`]}, (err, result) => {
 					if (err) {
 	  				console.log(err.stack);
-	  				console.log("Oops.")
+	  				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 				} else {
 					// console.table(result.rows);
 					req.session.alters = result.rows;
@@ -227,7 +242,7 @@ var app = express();
 		  client.query({text: "SELECT * FROM systems WHERE sys_id=$1",values: [`${req.params.alt}`]}, (err, result) => {
 			  if (err) {
 				console.log(err.stack);
-				console.log("Oops.")
+				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 			} else {
 				req.session.chosenSys= result.rows[0];
 			}
@@ -248,7 +263,7 @@ var sysArr;
 			client.query({text: "SELECT * FROM systems WHERE user_id=$1",values: [`${req.session.u_id}`]}, (err, result) => {
 	            if (err) {
 	              console.log(err.stack);
-	              console.log("Oops.")
+	              res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 	          } else {
 	              req.session.sys = [];
 
@@ -260,7 +275,7 @@ var sysArr;
 				  client.query({text: "SELECT * FROM comm_posts WHERE u_id=$1 ORDER BY created_on DESC;",values: [`${req.session.u_id}`]}, (err, cresult) => {
 	  	            if (err) {
 	  	              console.log(err.stack);
-	  	              console.log("Oops.")
+	  	              res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 	  	          } else {
 	  	              req.session.cPosts = [];
 	  	              for (i in (cresult.rows)){
@@ -287,7 +302,7 @@ var sysArr;
 		client.query({text: "SELECT systems.sys_id, systems.user_id, systems.sys_alias, alters.alt_id FROM systems LEFT JOIN alters ON systems.sys_id = alters.sys_id WHERE systems.sys_id=$1",values: [`${req.params.id}`]}, (err, result) => {
 			if (err) {
 			  console.log(err.stack);
-			  console.log("Oops.")
+			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 		  } else {
 			  req.session.chosenSys= result.rows[0];
 			  // chosenSys.sys_id, chosenSys.user_id, chosenSys.sys_alias
@@ -296,7 +311,7 @@ var sysArr;
 			client.query({text: "SELECT * FROM alters WHERE sys_id=$1",values: [`${req.params.id}`]}, (err, result) => {
 	            if (err) {
 	              console.log(err.stack);
-	              console.log("Oops.")
+	              res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 	          } else {
 	              req.session.alters = [];
 	              for (i in (result.rows)){
@@ -320,14 +335,14 @@ var sysArr;
 		 client.query({text: "SELECT alters.name, alters.alt_id, alters.sys_id, systems.sys_alias FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alters.alt_id=$1",values: [`${req.params.id}`]}, (err, result) => {
 			 if (err) {
 			   console.log(err.stack);
-			   console.log("Oops.")
+			   res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 		   } else {
 			   req.session.chosenAlter = result.rows[0];
 		   }
 		   client.query({text: "SELECT * FROM journals WHERE alt_id=$1;",values: [`${req.params.id}`]}, (err, nresult) => {
 			   if (err) {
 				  console.log(err.stack);
-				  console.log("Oops.")
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 			  } else {
 				  req.session.altJournal = nresult.rows;
 			  }
@@ -335,7 +350,7 @@ var sysArr;
 				client.query({text: "SELECT * FROM systems WHERE user_id=$1;",values: [`${req.session.u_id}`]}, (err, result) => {
 	 			 if (err) {
 	 			   console.log(err.stack);
-	 			   console.log("Oops.")
+	 			   res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 	 		   } else {
 	 			   req.session.sysList = result.rows;
 	 		   }
@@ -355,7 +370,7 @@ var sysArr;
 			client.query({text: "SELECT * FROM posts WHERE j_id=$1 ORDER BY created_on DESC;",values: [`${req.session.altJournal[0].j_id}`]}, (err, result) => {
  			   if (err) {
  				  console.log(err.stack);
- 				  console.log("Oops.")
+ 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
  			  } else {
  				  req.session.journalPosts = result.rows;
 				  for (i in req.session.journalPosts){
@@ -382,7 +397,7 @@ var sysArr;
 		  client.query({text: "SELECT * FROM posts WHERE p_id=$1;",values: [`${req.params.id}`]}, (err, result) => {
 			 if (err) {
 				console.log(err.stack);
-				console.log("Oops.")
+				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 			} else {
 				// console.log(result.rows[0]);
 				req.session.jPost= result.rows[0];
@@ -403,7 +418,7 @@ var sysArr;
 		  client.query({text: "SELECT * FROM posts WHERE p_id=$1;",values: [`${req.params.id}`]}, (err, result) => {
 			 if (err) {
 				console.log(err.stack);
-				console.log("Oops.")
+				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 			} else {
 				// console.log(result.rows[0]);
 				req.session.jPost= result.rows[0];
@@ -425,7 +440,7 @@ var sysArr;
 		client.query({text: "SELECT * FROM comm_posts WHERE id=$1;",values: [`${req.params.id}`]}, (err, result) => {
 		   if (err) {
 			  console.log(err.stack);
-			  console.log("Oops.")
+			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 		  } else {
 			  // console.log(result.rows[0]);
 			  req.session.jPost= result.rows[0];
@@ -447,7 +462,7 @@ var sysArr;
 		client.query({text: "SELECT * FROM comm_posts WHERE id=$1;",values: [`${req.params.id}`]}, (err, result) => {
 		   if (err) {
 			  console.log(err.stack);
-			  console.log("Oops.")
+			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 		  } else {
 			  // console.log(result.rows[0]);
 			  req.session.jPost= result.rows[0];
@@ -469,7 +484,7 @@ var sysArr;
 			client.query({text: "SELECT * FROM alters WHERE alt_id=$1;",values: [`${req.params.id}`]}, (err, result) => {
 				 if (err) {
 					console.log(err.stack);
-					console.log("Oops.")
+					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 				} else {
 					req.session.chosenAlter= result.rows[0];
 				}
@@ -491,13 +506,72 @@ var sysArr;
 
 
 	*/
+	app.post('/reset/:id', (req, res)=>{
+		// Reset password
+		client.query({text: 'SELECT * FROM users WHERE email_link=$1', values: [`'${req.params.id}'`]}, (err, result)=>{
+		  if (err) {
+		    res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
+		  } else {
+		     // Does the PIN match the one in the DB?
+				 console.log(result.rows[0].email_pin, req.body.pin);
+				 if (result.rows[0].email_pin == req.body.pin){
+					 client.query({text: 'UPDATE users SET pass=$1 WHERE email_link=$2', values: [`'${CryptoJS.SHA3(req.body.newpass)}'`,`'${req.params.id}'`]}, (err, result)=>{
+					   if (err) {
+							 console.log(err.stack);
+					     res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
+					   } else {
+					      // Code here
+								splash="Updated your password. You can now log in!";
+								res.redirect("/login");
+					   }
+					 });
+
+				 } else {
+					 res.render('pages/new_pass',{ session: req.session, code:"Forbidden", splash:"That PIN doesn't match." });
+				 }
+		  }
+		});
+	});
+
+	app.post('/forgot-password', (req, res)=>{
+		client.query({text: 'SELECT username, email, email_link, email_pin FROM users WHERE email=$1 ', values:[`'${Buffer.from(req.body.email).toString('base64')}'`]}, (err, result)=>{
+			if (err) {
+				console.log(err.stack);
+				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });;
+			} else {
+				if ((result.rows).length == 0){
+					// User doesn't exist.
+					splash= "That email isn't in use, actually. Did you mean to sign up?";
+					res.render(`pages/forgot_pass`, { session: req.session, splash:splash});
+				} else {
+					req.session.user= result.rows[0];
+					req.session.user.email_pin= getRandomInt(1111,9999);
+					// console.log(req.session.user.email_pin);
+					client.query({text: 'UPDATE users set email_pin=$1 WHERE email=$2 ', values:[`${req.session.user.email_pin}`,`'${Buffer.from(req.body.email).toString('base64')}'`]}, (err, result)=>{
+						res.render(`pages/forgot_pass2`, { session: req.session, splash:splash});
+						transporter.sendMail({
+							from: '"Dee Deyes" <dee_deyes@writelighthouse.com>', // sender
+							to: Buffer.from(req.session.user.email, 'base64').toString(),
+							subject: "Forgot your password?", // Subject line
+							text: "Hey, " + Buffer.from(req.session.user.username, 'base64').toString() + ". Did you forget your password to Lighthouse? No worries. Follow the link provided and don't forget the PIN in this email! www.writelighthouse.com/reset/" + (req.session.user.email_link).replace(/'/gi, '') + " . PIN: " + req.session.user.email_pin + ". If you didn't request this password change, disregard this email. The PIN will be required to change the password. Thanks! -Dee", // plain text body
+							html: "<p>Hey, <b>" + Buffer.from(req.session.user.username, 'base64').toString() + "</b>. Did you forget your password to Lighthouse? No worries.</p><p>Follow the link provided and don't forget the PIN in this email!</p><p><a href= \"www.writelighthouse.com/reset/" + (req.session.user.email_link).replace(/'/gi, '') + "\">www.writelighthouse.com/reset/" + (req.session.user.email_link).replace(/'/gi, '') + "</a></p><p>PIN: <b>" + req.session.user.email_pin + "</b>.</p><p>If you didn't request this password change, disregard this email. The PIN will be required to change the password. Thanks! -Dee</p>", // html body
+						}).then(info => {
+							// console.log({info});
+						}).catch(console.error);
+						// console.log((req.session.user.email_link).replace(/'/gi, ''));
+					});
+				}
+
+			}
+		});
+	});
 
 	app.post('/rules', (req, res)=>{
 		if (isLoggedIn(req)){
 			client.query({text:`INSERT INTO sys_rules (u_id, rule) VALUES ($1, $2)`, values:[req.session.u_id, `'${Buffer.from(req.body.rule).toString('base64')}'`]}, (err, result)=>{
 				if (err){
 					console.log(err.stack);
-					console.log("Oops.");
+					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });;
 				} else {
 					res.redirect("/rules");
 				}
@@ -512,17 +586,17 @@ var sysArr;
 			client.query({text: "DELETE FROM posts WHERE p_id=$1; ",values: [`${req.params.id}`]}, (err, result) => {
 				 if (err) {
 					console.log(err.stack);
-					console.log("Oops.")
+					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 				} else {
 					client.query({text: "DELETE FROM journals WHERE alt_id=$1; ",values: [`${req.params.id}`]}, (err, result) => {
 						 if (err) {
 							console.log(err.stack);
-							console.log("Oops.")
+							res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 						} else {
 							client.query({text: "DELETE FROM alters WHERE alt_id=$1; ",values: [`${req.params.id}`]}, (err, result) => {
 								 if (err) {
 									console.log(err.stack);
-									console.log("Oops.")
+									res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 								} else {
 									splash=`${Buffer.from(req.session.chosenAlter.name, 'base64').toString()} deleted.`;
 									req.session.chosenAlter= null;
@@ -543,7 +617,7 @@ var sysArr;
 			client.query({text: "DELETE FROM comm_posts WHERE id=$1; ",values: [`${req.params.id}`]}, (err, result) => {
 			   if (err) {
 				  console.log(err.stack);
-				  console.log("Oops.")
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 			  } else {
 				  req.session.jPost= null;
 				  res.redirect(`/system`);
@@ -559,7 +633,7 @@ var sysArr;
 			client.query({text: "UPDATE comm_posts SET title=$1, body=$2 WHERE id=$3; ",values: [`${encryptWithAES(req.body.jTitle)}`, `${encryptWithAES(req.body.jBody)}`, `${req.params.id}`]}, (err, result) => {
 			   if (err) {
 				  console.log(err.stack);
-				  console.log("Oops.")
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 			  } else {
 				  req.session.jPost= null;
 				  res.redirect(`/system`);
@@ -576,7 +650,7 @@ var sysArr;
 			client.query({text: "DELETE FROM posts WHERE p_id=$1; ",values: [`${req.params.id}`]}, (err, result) => {
  			   if (err) {
  				  console.log(err.stack);
- 				  console.log("Oops.")
+ 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
  			  } else {
 				  req.session.jPost= null;
 				  res.redirect(`/journal/${req.session.chosenAlter.alt_id}`);
@@ -592,7 +666,7 @@ var sysArr;
 			client.query({text: "UPDATE posts SET title=$1, body=$2 WHERE p_id=$3; ",values: [`${encryptWithAES(req.body.jTitle)}`, `${encryptWithAES(req.body.jBody)}`, `${req.params.id}`]}, (err, result) => {
  			   if (err) {
  				  console.log(err.stack);
- 				  console.log("Oops.")
+ 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
  			  } else {
 				  req.session.jPost= null;
 				  res.redirect(`/journal/${req.session.chosenAlter.alt_id}`);
@@ -610,7 +684,7 @@ var sysArr;
 			client.query({text: "INSERT INTO posts (j_id, created_on, body, title) VALUES ($1, $2, $3, $4);",values: [`${req.session.altJournal[0].j_id}`, `${new Date().toLocaleString("en-US", { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`, `${encryptWithAES(req.body.j_body)}`, `${encryptWithAES(req.body.j_title)}`]}, (err, result) => {
  			   if (err) {
  				  console.log(err.stack);
- 				  console.log("Oops.")
+ 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
  			  } else {
 				  res.redirect(`/journal/${req.params.id}`);
  			  }
@@ -637,7 +711,7 @@ var sysArr;
 					client.query({text: "INSERT INTO journals (alt_id, password, is_private, skin, sys_id) VALUES ($1, $2, $3, $4, $5)",values: [`${req.params.id}`, `'${CryptoJS.SHA3(req.body.jPass)}'`, `${req.body.priv}`, `'${req.body.journ}'`, `${req.session.chosenAlter.sys_id}`]}, (err, result) => {
 						if (err) {
 						  console.log(err.stack);
-						  console.log("Oops.")
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 					  } else {
 						  splash=`<strong>All set!</strong> Journal made.`;
 						  res.redirect(`/alter/${req.params.id}`);
@@ -648,7 +722,7 @@ var sysArr;
 						client.query({text: "UPDATE alters SET sys_id=$1, name=$2 WHERE alt_id=$3;",values: [req.body.alterSys, `'${Buffer.from(req.body.altname).toString('base64')}'`, req.params.id]}, (err, result) => {
 							if (err) {
 							  console.log(err.stack);
-							  console.log("Oops.")
+							  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 						  } else {
 							  splash=`<strong>All set!</strong> ${req.body.altname} has been moved.`;
 							  res.redirect(`/alter/${req.params.id}`);
@@ -659,7 +733,7 @@ var sysArr;
 				  client.query({text: "SELECT password FROM journals WHERE alt_id=$1",values: [`${req.params.id}`]}, (err, result) => {
 					  if (err) {
 						console.log(err.stack);
-						console.log("Oops.")
+						res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 					} else {
 						// splash=`<strong>All set!</strong> Journal made.`;
 						// res.redirect(`/alter/${req.params.id}`);
@@ -684,7 +758,7 @@ var sysArr;
 				client.query({text: "INSERT INTO alters (sys_id, name) VALUES ($1, $2)",values: [`${req.session.chosenSys.sys_id}`, `'${Buffer.from(req.body.altname).toString('base64')}'`]}, (err, result) => {
 					if (err) {
 					  console.log(err.stack);
-					  console.log("Oops.")
+					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 				  } else {
 					  res.redirect(`/system/${req.session.chosenSys.sys_id}`);
 				  }
@@ -700,7 +774,7 @@ var sysArr;
 			client.query({text:'INSERT INTO inner_worlds (u_id, key, value) VALUES ($1,$2,$3);', values: [`${req.session.u_id}`, `${Buffer.from(req.body.key).toString('base64')}`,`${Buffer.from(req.body.value).toString('base64')}`]}, (err, result)=>{
 				if (err){
 					console.log(err.stack);
-					console.log("Oops.");
+					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });;
 				}
 				res.redirect('/inner-world');
 			});
@@ -716,14 +790,14 @@ var sysArr;
 		  client.query({text: "SELECT * FROM systems WHERE sys_alias=$1 AND user_id=$2",values: [`'${Buffer.from(req.body.sysname).toString('base64')}'`, `${req.session.u_id}`]}, (err, result) => {
 			  if (err) {
 				console.log(err.stack);
-				console.log("Oops.")
+				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 			  } else {
 				  // console.table(result.rows);
 				  if ((result.rows).length == 0){
 					  client.query({text: "INSERT INTO systems (sys_alias, user_id) VALUES ($1, $2)",values: [`'${Buffer.from(req.body.sysname).toString('base64')}'`, `${req.session.u_id}`]}, (err, result) => {
 					      if (err) {
 					        console.log(err.stack);
-					        console.log("Oops.")
+					        res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 					      } else {
 					          splash=`Added ${req.body.sysname}.`;
 							  // res.render(`pages/system`, { session: req.session, splash:splash, sysArr: req.session.sys });
@@ -743,7 +817,7 @@ var sysArr;
 		  client.query({text: "INSERT INTO comm_posts (u_id, created_on, title, body) VALUES ($1, $2, $3, $4)",values: [`${req.session.u_id}`, `${new Date().toLocaleString("en-US", { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}`, `${encryptWithAES(req.body.cTitle)}`, `${encryptWithAES(req.body.cBody)}`]}, (err, result) => {
 			  if (err) {
 				console.log(err.stack);
-				console.log("Oops.")
+				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 			} else {
 				res.redirect("/system");
 			}
@@ -756,7 +830,7 @@ var sysArr;
 		client.query({text: "SELECT * FROM systems WHERE sys_id=$1",values: [`${req.params.alt}`]}, (err, result) => {
 			if (err) {
               console.log(err.stack);
-              console.log("Oops.")
+              res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 		  } else {
 			  console.table(result.rows[0]);
 			  if (req.session.u_id= result.rows[0].user_id){
@@ -765,17 +839,17 @@ var sysArr;
 				  client.query({text: "DELETE FROM journals WHERE sys_id=$1;",values: [`${req.params.alt}`]}, (err, result) => {
 					  if (err){
 						  console.log(err.stack);
-						  console.log("Oops.");
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });;
 					  } else {
 							  client.query({text: "DELETE FROM alters WHERE sys_id=$1;",values: [`${req.params.alt}`]}, (err, result) => {
 								  if (err){
 									  console.log(err.stack);
-									  console.log("Oops.");
+									  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });;
 								  }
 								  client.query({text: "DELETE FROM systems WHERE sys_id=$1;",values: [`${req.params.alt}`]}, (err, result) => {
 									  if (err){
 										  console.log(err.stack);
-										  console.log("Oops.");
+										  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });;
 									  }
 									  splash=`${Buffer.from(req.session.chosenSys.sys_alias, 'base64').toString()} has been permanently deleted.`;
 									  req.session.chosenSys= null;
@@ -799,13 +873,13 @@ var sysArr;
 		client.query({text: "SELECT * FROM systems WHERE user_id=$1;",values: [`${req.session.chosenSys.user_id}`]}, (err, result) => {
 			if (err) {
 			  console.log(err.stack);
-			  console.log("Oops.")
+			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
 		  } else {
 			  if (req.session.u_id= result.rows[0].user_id){
 				  client.query({text: "UPDATE systems SET sys_alias=$1 WHERE sys_id=$2;",values: [`'${Buffer.from(req.body.sysname).toString('base64')}'`, `${req.session.chosenSys.sys_id}`]}, (err, result) => {
 					  if (err){
 						  console.log(err.stack);
-						  console.log("Oops.");
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });;
 					  } else {
 						  splash=`${Buffer.from(req.session.chosenSys.sys_alias, 'base64').toString()} has been permanently deleted.`;
 						  req.session.chosenSys= null;
@@ -831,7 +905,7 @@ var sysArr;
       client.query(query, (err, result) => {
           if (err) {
             console.log(err.stack);
-            console.log("Oops.")
+            res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
           } else {
             // console.log(res.rows)
             if (result.rows.length > 0){
@@ -848,15 +922,15 @@ var sysArr;
                 client.query(query, (err, result) => {
                     if (err) {
                       console.log(err.stack);
-                      console.log("Oops.")
+                      res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
                   } else {
 					  transporter.sendMail({
 						  from: '"Dee Deyes" <dee_deyes@writelighthouse.com>', // sender address
 						  // to: "dannyisyelling@gmail.com, dekuelegy@gmail.com", // list of receivers
 						  to: req.body.email,
 						  subject: "Welcome to Lighthouse!", // Subject line
-						  text: "Hi there, " + req.body.username + ". Thanks for signing up to Lighthouse, a journal app designed for systems! I hope it can help you internally communicate effectively. Check out the information page to get started! If you lose your password and the feature to reset it hasn't been implemented yet, send an email to this address and I will fix for you as soon as possible! If this account was made in error, reply to this email and the account will deleted shortly. Thanks! -Dee", // plain text body
-						  html: "<p>Hi there, <b>" + req.body.username + "</b>. Thanks for signing up to Lighthouse, a journal app! I hope it can help you internally communicate effectively. Check out the information page to get started!</p> <p>If you lose your password and the feature to reset it hasn't been implemented yet, send an email to this address and I will fix for you as soon as possible! If this account was made in error, reply to this email and the account will deleted shortly. Thanks!</p> <p>-Dee</p>", // html body
+						  text: "Hi there, " + req.body.username + ". Thanks for signing up to Lighthouse, a journal app designed for systems! I hope it can help you internally communicate effectively. Check out the information page to get started! If you lose your password and the feature to reset it hasn't been implemented yet, send an email to this address and I will fix for you as soon as possible! If this account was made in error, reply to this email and the account will be deleted shortly. Thanks! -Dee", // plain text body
+						  html: "<p>Hi there, <b>" + req.body.username + "</b>. Thanks for signing up to Lighthouse, a journal app! I hope it can help you internally communicate effectively. Check out the information page to get started!</p> <p>If you lose your password and the feature to reset it hasn't been implemented yet, send an email to this address and I will fix for you as soon as possible! If this account was made in error, reply to this email and the account will be deleted shortly. Thanks!</p> <p>-Dee</p>", // html body
 						}).then(info => {
 						  console.log({info});
 						}).catch(console.error);
@@ -877,7 +951,7 @@ var sysArr;
      client.query(query, (err, result) => {
          if (err) {
            console.log(err.stack);
-           console.log("Oops.");
+           res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });;
        } else {
 		   if (result.rows.length == 0){
 			   splash= "Wrong credentials.";

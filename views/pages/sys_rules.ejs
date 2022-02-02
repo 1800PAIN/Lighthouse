@@ -26,7 +26,8 @@
             </form>
             <ol>
               <% for (i in session.sys_rules){ %>
-                <li><%= Buffer.from(session.sys_rules[i].rule, 'base64').toString() %>&emsp;&emsp;<a class="deletebtn" href="/rules/delete/<%= session.sys_rules[i].id %>" style="padding:.5em; font-size: 80%;">Delete</a></li>
+                <li><%= Buffer.from(session.sys_rules[i].rule, 'base64').toString() %> <br/><a href="/rules/delete/<%= session.sys_rules[i].id %>" ><i class="fas fa-trash-alt"></i></a></li>
+                <!-- <a class="deletebtn" href="/rules/delete/<%= session.sys_rules[i].id %>" style="padding:.5em; font-size: 80%;">Delete</a> -->
               <% } %>
             </ol>
         </section>

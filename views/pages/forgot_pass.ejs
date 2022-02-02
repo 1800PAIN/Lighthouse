@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+          <% if (splash){ %>
+              <p class="splash"><%- splash %></p>
+          <% } %>
+            <h2>Change your password?</h2>
+            <p>No worries. Type in your email, and we'll send you a link to reset it. If you can't remember the email, or the email was invalid, please <a href="mailto:dee_deyes@writelighthouse.com?subject=Lost Password">email us</a>.</p>
+            <form method="post">
+              <label for="email">Your email: </label>
+              <input type="email" name="email">
+              <br/>
+              <input type="submit" value="Send the Email">
+            </form>
+        </div>
+        <%- include ("../partials/footer.ejs") %>
+    </body>
+</html>

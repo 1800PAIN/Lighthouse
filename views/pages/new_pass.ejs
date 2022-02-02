@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+          <% if (splash){ %>
+              <p class="splash"><%- splash %></p>
+          <% } %>
+            <h2>Reset Your Password</h2>
+            <p>Make sure you also add the PIN number sent to your email from our system email. That confirms it's actually you!</p>
+            <form method="post">
+              <label for="pin">4 digit PIN number</label><br/>
+              <input type="text" autocomplete="off" name="pin" maxlength="4"><br/>
+              <label for="newpass">New Password</label><br/>
+              <input type="password" autocomplete="off" name="newpass" minlength="8" id="pass" onchange="checkPass()" required><br/>
+              <label for="v-newpass">Write the password again</label><br/>
+              <input type="password" autocomplete="off" name="v-newpass" minlength="8" id="v-pass" onchange="checkPass()" required><br/>
+              <p id="passSplash"></p><br/>
+              <input type="submit" value="Reset Password" id="reset">
+            </form>
+        </div>
+        <%- include ("../partials/footer.ejs") %>
+        <script>
+        let reset= document.querySelector("#reset");
+        const pass= document.querySelector("#pass");
+        const vPass= document.querySelector("#v-pass");
+        const passSplash= document.querySelector("#passSplash");
+        function checkPass(){
+          // console.log(pass.value);
+          // console.log(vPass.value);
+          if (pass.value !== vPass.value){
+            passSplash.innerHTML="Passwords do not match.";
+            reset.disabled= true;
+          } else {
+            passSplash.innerHTML="";
+            reset.disabled= false;
+          }
+        }
+      </script>
+        </script>
+    </body>
+</html>
