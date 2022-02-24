@@ -978,4 +978,5 @@ var sysArr;
     // console.log(err, res)
     console.log(`App started on ${(res.rows[0].now).toLocaleString()}`);
     // client.end()
+;
 });
