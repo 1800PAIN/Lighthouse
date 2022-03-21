@@ -206,6 +206,20 @@ var app = express();
 		} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });}
 	});
 
+	app.get('/inner-world/delete/:id', (req, res)=>{
+		if (isLoggedIn(req)){
+			client.query({text: "DELETE FROM inner_worlds WHERE id=$1;",values: [`${req.params.id}`]}, (err, result) => {
+				if (err) {
+				console.log(err.stack);
+				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash });
+			} else {
+				req.session.sys_rules= null;
+			}
+			res.redirect("/inner-world");
+			});
+		} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash });}
+	});
+
   app.get('/editsys/:alt', (req, res, next)=>{
 	  if (isLoggedIn(req)){
 		  client.query({text: "SELECT * FROM systems WHERE sys_id=$1",values: [`${req.params.alt}`]}, (err, result) => {

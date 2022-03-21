@@ -36,9 +36,17 @@
                 <form method="post">
                     <label for="cTitle">Post Title</label><br/>
                     <input type="text" name="cTitle" autocomplete="off" required><br/>
-                    <textarea name="cBody" autocomplete="off" cols="60" rows="15" required></textarea><br/>
+                    <textarea name="cBody"id="example" autocomplete="off" cols="60" rows="15" required></textarea><br/>
                     <input type="submit" name="post" value="Write post">
                     <input type="reset" name="reset" value="Start Over">
+                    <!-- <textarea id="example"></textarea> -->
+
+            <script>
+              var editor = new FroalaEditor('#example', {
+                charCounterCount: false,
+                pluginsEnabled: ['align', 'colors', 'emoticons', 'fontAwesome', 'link', 'lists', 'fontFamily']
+              });
+            </script>
                 </form>
                 <hr>
                 <% for (i in session.cPosts) { %>

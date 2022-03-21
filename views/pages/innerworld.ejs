@@ -29,7 +29,7 @@
               <% for (i in session.innerWorld){ %>
                 <dt><%= Buffer.from(session.innerWorld[i].key, 'base64').toString() %></dt>
                 <dd><%= Buffer.from(session.innerWorld[i].value, 'base64').toString() %></dd>
-                <a href="javascript:void(0)" onclick="deleteIWEntry(session.innerWorld[i].id, 'innerworld')">Delete</a>
+                <a href="/inner-world/delete/<%= session.innerWorld[i].id %>" ><i class="fas fa-trash-alt"></i></a>
               <% } %>
             </section>
         </div>

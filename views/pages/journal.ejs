@@ -20,9 +20,15 @@
                 <label for="j_title">Journal title</label><br/>
                 <input type="text" name="j_title" autocomplete="off" required><br/>
                 <label for="j_body">Journal Body</label><br/>
-                <textarea name="j_body" autocomplete="off" cols="60" rows="15" required></textarea><br/>
+                <textarea name="j_body" autocomplete="off" cols="60" rows="15" id="example" required></textarea><br/>
                 <input type="submit" name="submit" value="Write post">
                 <input type="reset" name="reset" value="Start Over">
+                <script>
+                var editor = new FroalaEditor('#example', {
+                  charCounterCount: false,
+                  pluginsEnabled: ['align', 'colors', 'emoticons', 'fontAwesome', 'link', 'lists', 'fontFamily']
+                });
+                </script>
             </form>
             <p>HTML works in this field, so feel free to style your journal as you see fit. Pressing enter will render a new paragraph.</p>
         </section>
