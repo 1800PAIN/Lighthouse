@@ -27,6 +27,7 @@
             </form>
             <% if (session.altJournal.length > 0){ %>
                 <!-- <p><%= session.altJournal[0].is_private %></p> -->
+				<p>Click on the journal to enter.</p>
                 <div id="blogpopup" style="display:none;">
                     <form method="post">
                         <p>Please put in the journal password.</p>
@@ -35,9 +36,9 @@
                     </form>
                 </div>
                 <% if (session.altJournal[0].is_private == true){ %>
-                    <img src="/img/<%- (session.altJournal[0].skin).replace(/'/gi, '') %>.png" width="400px" id="login" onclick="blogPopup()">
+                    <img src="/img/<%- (session.altJournal[0].skin).replace(/'/gi, '') %>.png" width="400px" id="login" onclick="blogPopup()" alt="<%= Buffer.from(session.chosenAlter.name, 'base64').toString() %>'s Journal.">
                 <% } else { %>
-                    <a href="/journal/<%- (session.altJournal[0].alt_id) %>"><img src="/img/<%- (session.altJournal[0].skin).replace(/'/gi, '') %>.png" width="400px" id="login"></a>
+                    <a href="/journal/<%- (session.altJournal[0].alt_id) %>"><img src="/img/<%- (session.altJournal[0].skin).replace(/'/gi, '') %>.png" width="400px" id="login" alt="<%= Buffer.from(session.chosenAlter.name, 'base64').toString() %>'s Journal."></a>
                 <% } %>
             <% } else { %>
                 <p>Uh oh! <%= Buffer.from(session.chosenAlter.name, 'base64').toString() %> has no journal. Make one down below.</p>
