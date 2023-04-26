@@ -8,6 +8,14 @@
     --col5: #911111;
 	--col6: #52565c;
 }
+hr {
+    display:block;
+    border:0px;
+    height:calc(2em);
+    background-image:url('../img/horizontal_rule.svg');
+    background-repeat: no-repeat;
+    background-position: center; 
+}
 html{
     background: ghostwhite;
     overflow-y: scroll;
