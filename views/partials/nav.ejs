@@ -55,7 +55,7 @@
         <% } %>
         <li><a class="navel" href="/about">Information</a></li>
         <% if (cookies.loggedin){ %>
-          <li><a class="navel" href="/system">System</a></li>
+          <li><a class="navel" href="/system">My <%= capitalise(session.system_term) %></a></li>
         <% } %>
         <li><a class="navel" href="/crisis">In crisis?</a></li>
           <% if (cookies.loggedin){ %>
