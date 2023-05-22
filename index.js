@@ -333,24 +333,60 @@ app.locals.pluralize= pluralize;
   });
 
   app.get('/wish', (req, res) => {
+	var filledWishes= [];
+	var wishArr= [];
 	if (isLoggedIn(req)){
-		client.query({text:'SELECT * FROM wishlist WHERE user_id=$1', values: [getCookies(req)['u_id']]}, (err, result)=>{
+		client.query({text:'SELECT * FROM wishlist WHERE user_id=$1 AND is_filled=false;', values: [getCookies(req)['u_id']]}, (err, result)=>{
 			if (err){
 				console.log(err.stack);
 					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 			}
-			var wishArr= new Array();
 			for (i in result.rows){
-				console.log(result.rows[i].wish)
-				wishArr.push({text: decryptWithAES(result.rows[i].wish), checked:result.rows[i].is_filled});
+				wishArr.push({text: decryptWithAES(result.rows[i].wish), checked:result.rows[i].is_filled, uuid: result.rows[i].uuid});
 			}
-			// for (i in result.rows){
-			// 	wishArr[i].text= decryptWithAES(result.rows[i].wish);
-			// 	wishArr[i].isFilled= result.rows[i].is_filled;
-			// }
-			res.render(`pages/wishlist`, { session: req.session, splash:splash,cookies:req.cookies, wishArr:wishArr });
+
+			client.query({text:'SELECT * FROM wishlist WHERE user_id=$1 AND is_filled=true;', values: [getCookies(req)['u_id']]}, (err, result)=>{
+				if (err){
+					console.log(err.stack);
+						res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+				}
+				for (i in result.rows){
+					filledWishes.push({text: decryptWithAES(result.rows[i].wish), checked:result.rows[i].is_filled, uuid: result.rows[i].uuid});
+				}	
+				res.render(`pages/wishlist`, { session: req.session, splash:splash,cookies:req.cookies, wishArr:wishArr, filledWishes:filledWishes });
 				splash=null;
+			});
+			
 		});
+		
+	}else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
+});
+
+app.get('/wish/:id', (req, res) => {
+	if (isLoggedIn(req)){
+		client.query({text:'UPDATE wishlist SET is_filled=true WHERE uuid=$1', values: [`${req.params.id}`]}, (err, result)=>{
+			if (err){
+				console.log(err.stack);
+					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+			}
+			splash="Wish granted!";
+			res.redirect("/wish");
+		});
+		
+	}else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
+});
+
+app.get('/wish-d/:id', (req, res) => {
+	if (isLoggedIn(req)){
+		client.query({text:'DELETE FROM wishlist WHERE uuid=$1', values: [`${req.params.id}`]}, (err, result)=>{
+			if (err){
+				console.log(err.stack);
+					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+			}
+			splash="Wish deleted!";
+			
+		});
+		res.redirect("/wish");
 		
 	}else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 });
@@ -1471,7 +1507,7 @@ var sysArr;
 					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 				  } else {
 					splash="Added your wish to the list!";
-					res.render(`pages/wishlist`, { session: req.session, splash:splash,cookies:req.cookies });
+					res.redirect(req.get('referer'));
 						splash=null;
 				  }
 				});

@@ -9,23 +9,36 @@
             <h2><%= capitalise(session.system_term) %> Wishlist</h2>
             <p>Below is a place for <%= pluralize(session.alter_term) %> to make goals or express wants and needs. This can be for materialistic wishes or general life goals.</p>
             <p>You might notice that there's no time limit posted with these wishes. That's to alleviate pressure and allow for more realistic goals to be set.</p>
+            <p>When a want is fulfilled or a goal is achieved, press the <span class="material-symbols-outlined" style="margin-left:-.5em;">magic_button</span> button to "grant the wish". Press the <span class="material-symbols-outlined" style="margin-left:-.5em;">
+                delete_forever
+                </span> button to delete the wish.</p>
             <h3>Make a Wish</h3>
             <form method="post">
                 <input name="wish">
                 <input type="submit" name="createWish" value="Submit Wish">
             </form>
-            <hr/>
+            <% if (wishArr.length > 0) { %> 
+                <hr/>
             <h3>Posted Wishes</h3>
-            <% console.log(wishArr) %>
-            <% if (wishArr.length== 0) { %>
-                <p>No wishes posted yet!</p>
-            <% } else { %> 
                 <ul>
-                <% for (i in wishArr){ %> 
-                        <li><%- wishArr[i].text %></li>
+                <% for (i in wishArr){ %>
+                        <li><%- wishArr[i].text %> <a title="Grant Wish!" href="/wish/<%- wishArr[i].uuid %>"><span class="material-symbols-outlined" style="cursor: pointer; color: #D9B23D">
+                            magic_button
+                            </span></a><a title="Delete Wish" href="/wish-d/<%- wishArr[i].uuid %>"><span class="material-symbols-outlined" style="cursor:pointer; color:#911111;">
+                                delete_forever
+                                </span></a></li>
                     <% } %>
                 </ul>    
             <% } %>
+            <% if (filledWishes.length > 0) { %> 
+                  <h3>Fulfilled Wishes</h3>
+                <ul>
+                <% for (i in filledWishes){ %>
+                    <li style="color: green;"><%- filledWishes[i].text %></li>
+                <% } %>
+            </ul>  
+            <% } %>
+            
         </section>
     </div>
     <%- include ("../partials/footer.ejs") %>

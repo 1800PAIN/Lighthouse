@@ -15,8 +15,9 @@
           <% } %>
             <h2>Your <%= capitalise(session.system_term) %></h2>
             <div class="grid-sm">
-              <a href="/rules"><%= capitalise(session.system_term) %> Rules</a>
-              <a href="/inner-world">Inner World</a>
+              <a title= "<%= capitalise(session.system_term) %> Rules" href="/rules"><%= capitalise(session.system_term) %> Rules</a>
+              <a title="Your Inner World" href="/inner-world">Inner World</a>
+              <a title="Your <%= capitalise(session.system_term) %>'s wants, needs, and wishes" href="/wish">Wants & Wishes</a>
             </div>
             <ul>
             <% for ( i in session.sys ) { %>
