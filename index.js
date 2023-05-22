@@ -543,7 +543,10 @@ var sysArr;
 			   res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 		   } else {
 			   req.session.chosenAlter = result.rows[0];
-			   req.session.chosenAlter.reason = `${decryptWithAES(result.rows[0].reason)}`;
+			   if (req.session.chosenAlter.reason){
+				req.session.chosenAlter.reason = `${decryptWithAES(result.rows[0].reason)}`;
+			   }
+			   
 		   }
 		   client.query({text: "SELECT * FROM journals WHERE alt_id=$1;",values: [`${req.params.id}`]}, (err, nresult) => {
 			   if (err) {
@@ -594,8 +597,9 @@ var sysArr;
 			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 		  } else {
 			  req.session.chosenAlter = result.rows[0];
-			  req.session.chosenAlter.reason= `${decryptWithAES(result.rows[0].reason)}`;
-			  
+			  if (req.session.chosenAlter.reason){
+				req.session.chosenAlter.reason = `${decryptWithAES(result.rows[0].reason)}`;
+			  }
 			  res.render(`pages/set_mood`, { session: req.session, splash:splash,cookies:req.cookies, alterTypes:alterTypes });
 		  }
 		});
