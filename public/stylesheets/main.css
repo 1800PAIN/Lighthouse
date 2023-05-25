@@ -29,11 +29,21 @@ html{
 body{
     position: relative;
     top: 6em;
-    scroll-margin-top: 200px;
     padding-top:1em;
+}
+a{
+    color: var(--col4);
+    transition: 0.7s;
+}
+a:visited{
+    color: var(--col5);
+}
+a:hover{
+    color: var(--col3);
 }
 *{
     font-family: 'Lexend',Verdana, Arial,sans-serif;
+    scroll-margin-top: 10em;
 }
 small{
     font-weight: 300;
