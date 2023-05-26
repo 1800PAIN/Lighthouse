@@ -3,6 +3,17 @@
 
 <head>
     <%- include ("../partials/header.ejs") %>
+    <style>
+      .textless{
+        height: 1em;
+        display: inline;
+        font-size: 1.15em;
+        padding: 0;
+        vertical-align: text-top;
+        background: transparent;
+        color: var(--col5)
+      }
+    </style>
 </head>
 
 <body>
@@ -26,7 +37,7 @@
             </form>
             <ol>
               <% for (i in session.sys_rules){ %>
-                <li><%= Buffer.from(session.sys_rules[i].rule, 'base64').toString() %> <form method="post"><input type="submit" name="<%= session.sys_rules[i].id %>" value="Remove"></form></li>
+                <li><%= Buffer.from(session.sys_rules[i].rule, 'base64').toString() %> <form method="post" style="display: inline;"><button type="submit" name="<%= session.sys_rules[i].id %>" value="Remove" class="textless"><span class="material-symbols-outlined textless"> delete</span></button></form></li>
                 
               <% } %>
             </ol>
