@@ -30,7 +30,7 @@
             event.preventDefault();
             $("#Wait").html("<em>Hang on...</em>");
             var pkID= $("#pid").val();
-            if (pkID.length==0){
+            if (pkID.length <5 ){
                 // Blank.
                 $("#Wait").html("Please type the <%- session.system_term %> ID.")
             } else {
