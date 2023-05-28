@@ -1566,6 +1566,44 @@ var sysArr;
 		} else { res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies })}
 	});
 
+	app.post('/pluralkit', (req, res)=> {
+		if (isLoggedIn(req)){
+			// req.body.altArr. Split by --,--
+			var splitList= (req.body.altArr).split("--,--");
+
+			client.query({text: "INSERT INTO systems (sys_alias, user_id) VALUES ($1, $2)",values: [`'${Buffer.from("Imported from Pluralkit").toString('base64')}'`, `${getCookies(req)['u_id']}`]}, (err, result) => {
+				if (err) {
+				  console.log(err.stack);
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+				} else {
+					// Grab its ID.
+					client.query({text: "SELECT sys_id FROM systems WHERE sys_alias=$1 AND user_id=$2;",values: [`'${Buffer.from("Imported from Pluralkit").toString('base64')}'`, `${getCookies(req)['u_id']}`]}, (err, result) => {
+						if (err) {
+						  console.log(err.stack);
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+						} else {
+							let newSysID= result.rows[0].sys_id;
+							// Insert each alter into this new system.
+							for (i in splitList){
+								// console.log(splitList[i]);
+								client.query({text: "INSERT INTO alters (name, sys_id) VALUES($1, $2);",values: [`'${Buffer.from(splitList[i]).toString('base64')}'`, result.rows[0].sys_id]}, (err, result) => {
+									if (err) {
+									  console.log(err.stack);
+									  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+									}
+								});
+							}
+							splash="System Added.";
+							res.redirect("/system");
+						}
+					});
+				}
+			});
+		} else {
+			res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies })
+		}
+	});
+
   app.post('/signup', function(req, res) {
       // console.log(`${req.body.email}`);
       var splash;

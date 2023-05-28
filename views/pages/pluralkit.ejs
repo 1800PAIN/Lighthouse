@@ -7,9 +7,44 @@
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
             <h2>Import from Pluralkit</h2>
+            <p>Use Pluralkit? We can fetch your <strong>publicly available <%- pluralize(session.alter_term) %></strong> and add them to your account. Importing will create a new <%- session.system_term %> that can be renamed on the <a href="/system">My <%- capitalise(session.system_term) %></a> page</a>.</p>
+            <form>
+                <label for="pid">Pluralkit system ID</label>
+                <input type="text" minlength="5" maxlength="5" id="pid">
+                <button onclick="getPK()">Fetch from Pluralkit</button>
+            </form>
+            <span id="Wait"></span>
+            <ul id="roster">
 
+            </ul>
+            <form method="post" id="submitAlt" style="display:none;">
+                <input id="altField" type="hidden" name="altArr"><br>
+                <input type="submit" name="fetch" value="Import">
+            </form>
         </section>
     </div>
     <%- include ("../partials/footer.ejs") %>
     </body>
+    <script>
+        async function getPK(){
+            event.preventDefault();
+            $("#Wait").html("<em>Hang on...</em>");
+            var pkID= $("#pid").val();
+            $("#roster").html("");
+            // console.log(pkID);
+            // Go grab pluralkit
+            let response = await fetch(`https://api.pluralkit.me/v2/systems/${pkID}/members`);
+            let body = await response.text();
+            let sysInfo = JSON.parse(body);
+            console.log(sysInfo);
+            $("#Wait").html("From Pluralkit:");
+            let systemArray = new Array();
+            for (i in sysInfo){
+                $("#roster").append(`<li>${sysInfo[i].name}</li>`);
+                systemArray.push(sysInfo[i].name);
+                $("#altField").val(`${systemArray.join("--,--")}`);
+            }
+            $("#submitAlt").show("fast");
+        }
+    </script>
 </html>
