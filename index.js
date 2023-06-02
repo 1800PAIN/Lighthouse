@@ -615,7 +615,7 @@ var sysArr;
 	var alterArr;
   app.get('/system/:id', (req, res, next) => {
     if (isLoggedIn(req)){
-		client.query({text: "SELECT systems.sys_id, systems.user_id, systems.sys_alias, alters.alt_id, systems.icon FROM systems LEFT JOIN alters ON systems.sys_id = alters.sys_id WHERE systems.sys_id=$1 ORDER BY alters.alt_id",values: [`${req.params.id}`]}, (err, result) => {
+		client.query({text: "SELECT systems.sys_id, systems.user_id, systems.sys_alias, alters.alt_id, systems.icon FROM systems LEFT JOIN alters ON systems.sys_id = alters.sys_id WHERE systems.sys_id=$1 ORDER BY alters.name ASC;",values: [`${req.params.id}`]}, (err, result) => {
 			if (err) {
 			  console.log(err.stack);
 			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
