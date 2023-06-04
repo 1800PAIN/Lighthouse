@@ -89,12 +89,31 @@
         });
         let body = await response.text();
         let bodyInfo = JSON.parse(body);
+        
         for (i in bodyInfo.body){
-
-            $("#plans").append(`<section class="planSection"><h2>${bodyInfo.body[i].alias}</h2><div style="padding-left:1em"><h3>BEFORE</h3><pre>${bodyInfo.body[i].before}</pre><h3>DURING</h3><pre>${bodyInfo.body[i].during}</pre><h3>AFTER</h3><pre>${bodyInfo.body[i].after}</pre></div></section>`)
-        }
-        $("#wait").hide(`fast`);
+            var planString= `<section class="planSection"><h2>${bodyInfo.body[i].alias}</h2><div style="padding-left:1em"><h3>BEFORE</h3>`;
+            var bArr= (bodyInfo.body[i].before).replace(/\r/gi, '').split("\n").filter(function() { return true; });
+                for (j in bArr){
+                    planString += `<p>${bArr[j]}</p>`
+                    }
+            planString+= `<h3>DURING</h3>`;
+            var dArr= (bodyInfo.body[i].during).replace(/\r/gi, '').split("\n").filter(function() { return true; });
+                for (k in dArr){
+                    planString += `<p>${dArr[k]}</p>`
+                    }
+            planString+= `<h3>AFTER</h3>`;
+            var aArr= (bodyInfo.body[i].after).replace(/\r/gi, '').split("\n").filter(function() { return true; });
+            for (l in aArr){
+                planString += `<p>${aArr[l]}</p>`
+                }
+            planString+= `</div></section>`;
+            $("#plans").append(planString);
             }
+            // $("#plans").append(`<section class="planSection"><h2>${bodyInfo.body[i].alias}</h2><div style="padding-left:1em"><h3>BEFORE</h3><p>${bodyInfo.body[i].before}</p><h3>DURING</h3><p>${bodyInfo.body[i].during}</p><h3>AFTER</h3><p>${bodyInfo.body[i].after}</p></div></section>`)
+            
+        $("#wait").hide(`fast`);
+        }
+            
         $(document).ready(function(){
             fetchPosts();
         })
