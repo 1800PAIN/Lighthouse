@@ -6,6 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
             <h2>Hold on, thinking...</h2>
             <p>Lighthouse is working in the background.</p>
         </section>

@@ -35,6 +35,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
             <h2>Edit <%= Buffer.from(session.chosenAlter.name, 'base64').toString() %></h2>
             <form method="post">
                 <div class="column">

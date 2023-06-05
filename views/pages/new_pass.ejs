@@ -6,9 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
-          <% if (splash){ %>
-              <p class="splash"><%- splash %></p>
-          <% } %>
+          <% if (locals.messages.flash) { %>
+            <div class="splash"><%- locals.messages.flash %></div>
+        <% } %>
             <h2>Reset Your Password</h2>
             <p>Make sure you also add the PIN number sent to your email from our system email. That confirms it's actually you!</p>
             <form method="post">

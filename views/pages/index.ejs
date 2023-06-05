@@ -24,7 +24,7 @@
                 height: 27vh;
                 margin-left: 3em;
                 margin-bottom:2em; 
-                border-bottom: 1px solid var(--col1);
+                /* border-bottom: 1px solid var(--col1); */
             }
             input{
                 margin-bottom:1em;
@@ -59,8 +59,8 @@
             <% if (((new Date().getMonth()+1)== 3) && (new Date().getDate()) == 5) { %>
                 <img src="/img/svg/ptsd-support.svg" class="vtinyimg"  style="display:inline-block; margin:0 auto; float: left;"><p>Today is DID awareness day.<a href="/glossary#Dissociative Identity Disorder (DID)">Read here.</a></p>
                 <% } %>
-                <% if (splash){ %>
-                    <p class="splash"><%- splash %></p>
+                <% if (locals.messages.flash) { %>
+                    <div class="splash"><%- locals.messages.flash %></div>
                 <% } %>
                 <section id="desktopsection">
                     <%  if (!cookies.loggedin){ %>

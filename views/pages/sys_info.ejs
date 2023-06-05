@@ -79,8 +79,8 @@ var journSkin=[
     %>
     <div id="wrapper">
         <section>
-            <% if (typeof splash == 'string'){  %>
-                <p class="splash"><%- splash %></p>
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
             <h2><% if (session.chosenSys.icon) { %> <img src="/img/svg/<%- session.chosenSys.icon %>.svg" class="vtinyimg"> <% } %>About <%= Buffer.from(session.chosenSys.sys_alias, 'base64').toString() %></h2>
             <p>This <%= session.system_term %> has <%= alterArr.length %> <% if (alterArr.length == 1){ %><%= session.alter_term %><% } else { %><%= pluralize(session.alter_term)%><% } %>.</p>

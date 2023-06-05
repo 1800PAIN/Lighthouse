@@ -33,6 +33,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
             <section>
                 <h2>Before, During, After</h2>
                 <p>A <strong>Before, During, After</strong> plan is specifically for an upcoming event or trauma that you know may be stressful or even traumatic to <%- pluralize(session.alter_term) %> in your <%- session.system_term %>. The goal is to keep splitting/splintering to a minimum during a stressful event</p>

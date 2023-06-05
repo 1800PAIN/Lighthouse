@@ -6,8 +6,8 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
-            <% if (typeof splash == 'string'){  %>
-                <p class="splash"><%- splash %></p>
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
             <section id="plans">
                 <hgroup>

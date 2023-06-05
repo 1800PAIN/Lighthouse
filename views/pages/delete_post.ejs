@@ -8,10 +8,10 @@
 <body>
     <%- include ("../partials/nav.ejs") %>
     <div id="wrapper">
+        <% if (locals.messages.flash) { %>
+            <div class="splash"><%- locals.messages.flash %></div>
+        <% } %>
         <section>
-            <% if (typeof splash == 'string'){  %>
-                <p class="splash"><%- splash %></p>
-            <% } %>
             <h2>Delete <%- session.jPost.title %>?</h2>
             <h3 class="warningtext">Warning: This cannot be undone!</h3>
             <p>This post cannot be recovered. Are you absolutely sure this is what you want to do? Press the "delete" button if so.</p>

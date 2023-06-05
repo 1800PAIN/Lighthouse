@@ -6,6 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
             <h2>Import from Pluralkit</h2>
             <p>Use Pluralkit? We can fetch your <%- pluralize(session.alter_term) %> and add them to your account. Importing will create a new <%- session.system_term %> that can be renamed on the <a href="/system">My <%- capitalise(session.system_term) %></a> page</a>.</p>
             <p><em>Don't know your system ID?</em> Direct message "pk;s" to Pluralkit, or type "pk;s" in a channel that Pluralkit can view.</p>

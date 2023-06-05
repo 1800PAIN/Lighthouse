@@ -8,6 +8,9 @@
          
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
             <h2>Set <%= Buffer.from(session.chosenAlter.name, 'base64').toString() %>'s Mood</h2>
             <form method="post" name="mood">
                 <label for="mood"><%= Buffer.from(session.chosenAlter.name, 'base64').toString() %> is feeling...</label>

@@ -6,6 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
             <img src="/img/svg/boat.svg" style="height:calc(24em); float: left;">
             <h2>Hmm... Something has gone amiss.</h2>
             <p>The page you're looking for doesn't exist or has been moved. Sorry!</p>

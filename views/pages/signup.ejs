@@ -6,9 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
-            <% if (typeof splash == 'string'){  %>
-                <p class="splash"><%- splash %></p>
-            <% } %>
+          <% if (locals.messages.flash) { %>
+            <div class="splash"><%- locals.messages.flash %></div>
+        <% } %>
             <h2>Sign Up to Lighthouse</h2>
             <p>We're happy to have you! But first, we need some  information. <strong>Please use a valid email!</strong> If not, losing your password will lose your account to the void.</p>
             <form method="post" autocomplete="off">

@@ -6,6 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
             <img src="/img/svg/broken_anchor.svg" style="height:calc(24em); float: left;">
             <h2>Seems our database didn't like that...</h2>
             <p>This is a 400 Bad Request error. This means something got put into a blank that the site didn't like. Try again?</p>

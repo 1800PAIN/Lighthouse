@@ -9,8 +9,8 @@
     <%- include ("../partials/nav.ejs") %>
     <div id="wrapper">
         <section>
-            <% if (typeof splash == 'string'){  %>
-                <p class="splash"><%- splash %></p>
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
             <h2>Edit <%- session.jPost.title %></h2>
             <form method="post">

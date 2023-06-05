@@ -18,6 +18,9 @@
     <%- include ("../partials/nav.ejs") %>
     <body>
         <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
             <h2>Glossary</h2>
             <p>The terms used in plural spaces are not usually ones known to the layman. Here are a list of terms you might see being used.</p>
             <p><strong>This page isn't fully complete.</strong> Terms are still being added. Terms that are deemed important are in red text.</p>

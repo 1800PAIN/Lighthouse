@@ -174,24 +174,8 @@ app.use(flash());
 	saveUninitialized: true
     }));
 app.use(bodyParser.json()).use(bodyParser.urlencoded({extended: true}));
-	// app.use(bodyParser.urlencoded({
-	// 	extended: true
-	// }));
-	// app.use(express.json());
+
   app.use(cookieParser());
-//   app.locals({
-//     site: {
-//         title: 'Lighthouse',
-//         description: 'A compartmentalised journalling app designed by a plural person, for plural people.'
-//     },
-//     author: {
-//         name: 'The Lighthouse System',
-//         contact: 'dee_deyes@writelighthouse.com'
-//     },
-// 	capitalise: function(s){
-// 		return s[0].toUpperCase() + s.slice(1);
-// 	}
-// });
 app.locals.editorColours=[
 	{color: 'red',label: 'Red'},
 	{color: '#ff691f',label: 'Orange'},
@@ -282,7 +266,6 @@ app.locals.pluralize= pluralize;
 
   app.all('*', (req, res) => {
 	// Loads before all other routes.
-	res.locals.messages = req.flash();
 	if (isLoggedIn(req)){
 		if (!req.session.system_term){
 			// Is it in their cookies?

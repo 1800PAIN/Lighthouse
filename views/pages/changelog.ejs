@@ -7,6 +7,9 @@
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
             <h2>Changelog</h2>
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
                 <% for (i in changes){ %>
                     <hr>
                     <section>

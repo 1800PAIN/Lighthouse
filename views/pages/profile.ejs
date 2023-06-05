@@ -28,8 +28,8 @@
         <%- include ("../partials/nav.ejs") %>
 		<!-- <div id="pseudofade" style="z-index:-9999998; background: rgba(0,0,0,.75); position: absolute; top: -30vh; left: -30vw; width: 0; height: 0; opacity: 0; transition:0.7s;"></div> -->
         <div id="wrapper">
-			<% if (splash){ %>
-				<p class="splash"><%- splash %></p>
+			<% if (locals.messages.flash) { %>
+				<div class="splash"><%- locals.messages.flash %></div>
 			<% } %>
 			<h1>Edit Your Account</h1>
 				<form method="post" style="margin-top:calc(.5em);">

@@ -8,8 +8,8 @@
 <body>
     <%- include ("../partials/nav.ejs") %>
     <div id="wrapper">
-        <% if (typeof splash == 'string'){  %>
-            <p class="splash"><%- splash %></p>
+        <% if (locals.messages.flash) { %>
+            <div class="splash"><%- locals.messages.flash %></div>
         <% } %>
         <section>
             <h2>Edit <%= capitalise(session.system_term) %>- <%=  Buffer.from(alt.sys_alias, 'base64').toString() %></h2>

@@ -6,6 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
             <section>
                 <img src="/img/svg/broken_anchor.svg" style="height:calc(24em); float: left;">
             <h2>Down for a Bit</h2>

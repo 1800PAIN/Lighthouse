@@ -6,6 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+          <% if (locals.messages.flash) { %>
+            <div class="splash"><%- locals.messages.flash %></div>
+        <% } %>
           <h1>Lighthouse's Cookie and Session Usage</h1>
           <p>Lighthouse now uses cookies to keep your place in the website. It does not collect data on how you use the website, or anything except what is strictly necessary.</p>
           <h2>What's a cookie, and what are you storing?</h2>

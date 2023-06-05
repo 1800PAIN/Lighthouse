@@ -6,6 +6,9 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
             <section>
                 <h2>To our wonderful community,</h2>
                 <p>Thank you for joining Lighthouse and being here since it was just barely functioning. This is obviously not the end-- it's quite the opposite! We're just only getting started.</p>
