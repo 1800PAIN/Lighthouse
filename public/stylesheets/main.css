@@ -486,9 +486,8 @@ button[disabled=disabled]{
     vertical-align: middle;
     text-align: center;
     display: inline-block;
-    padding: calc(.5em);
     word-wrap: break-word;
-    width: 30vw;
+    width: 50vw;
     border-radius: 20%;
     text-decoration: none;
     margin-right: calc(5vw);

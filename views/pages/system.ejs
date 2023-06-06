@@ -33,7 +33,7 @@
             <ul>
             <% for ( i in session.sys ) { %>
                 <div class="systemdiv">
-                <a class="systembutton" title="<%= session.sys[i].name %>" href="/system/<%= session.sys[i].id %>"><% if (session.sys[i].icon) { %> <img src="/img/svg/<%- session.sys[i].icon %>.svg" class="vtinyimg" style="z-index:2; position:absolute;opacity:.1;mix-blend-mode: color-burn;"> <% } %><span style="z-index:3;font-weight:600;"><%= session.sys[i].name %></span></a><a href="/editsys/<%= session.sys[i].id %>" name="<%= session.sys[i].id %>" class="editbtn" style="margin-right:calc(2em)">Rename</a><a href="/deletesys/<%= session.sys[i].id %>" name="<%= session.sys[i].id %>" class="deletebtn">Delete</a>
+                <a class="systembutton" title="<%= session.sys[i].name %>" href="/system/<%= session.sys[i].id %>"><% if (session.sys[i].icon) { %> <img src="/img/svg/<%- session.sys[i].icon %>.svg" style="z-index:2; position:absolute;opacity:.15;mix-blend-mode: color-burn; float:left;width:1.5em;"> <% } %><span style="z-index:3;font-weight:600;"><%= session.sys[i].name %></span></a><a href="/editsys/<%= session.sys[i].id %>" name="<%= session.sys[i].id %>" class="editbtn" style="margin-right:calc(2em)">Rename</a><a href="/deletesys/<%= session.sys[i].id %>" name="<%= session.sys[i].id %>" class="deletebtn">Delete</a>
                 </div>
             <% } %>
         </ui>
