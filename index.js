@@ -75,28 +75,8 @@ function idCheck(req, str){
 	return getCookies(req)['u_id']== str;
 }
 
-async function pkFetch (i){
-    // pkFetch("mikfh").then((value) => console.log(value));
-    // return api.getSystem({id: i, token:t});
-    return await api.getMember({member: i});
-};
 
-function fetchPKAlters(id){
-    request(`https://api.pluralkit.me/v2/systems/${id}/members`, function (
-      error,
-      response,
-      body
-    ) {
-      var data= JSON.parse(body);
-      // console.log(data);
-      for (i in data){
-        console.log(data[i].name);
-      }
-    });
-}
 var splash;
-// fetchPKAlters("exmpl");
-
 // function randomise(arr){
 //       return arr[Math.floor(Math.random()*arr.length)];
 // }
@@ -326,6 +306,26 @@ app.locals.pluralize= pluralize;
 	
   });
 
+  app.get('/bda/edit/:id', (req, res) => {
+	if (isLoggedIn(req)){
+		client.query({text: "SELECT * FROM bda_plans WHERE id=$1",values: [req.params.id]}, (err, result) => {
+			if (err) {
+			  console.log(err.stack);
+			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+		  } else {
+			var plan= {
+				id: result.rows[0].id,
+				name: decryptWithAES(result.rows[0].alias),
+				before: decryptWithAES(result.rows[0].before),
+				during: decryptWithAES(result.rows[0].during),
+				after: decryptWithAES(result.rows[0].after)
+			}
+			res.render(`pages/edit-bda`, { session: req.session, splash:splash, cookies:req.cookies, plan:plan });
+		  }
+		});
+	} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
+});
+
 
   app.get("/pluralkit", (req, res)=> {
 	if (isLoggedIn(req)){
@@ -341,7 +341,6 @@ app.locals.pluralize= pluralize;
 		  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
 	  } else {
 		res.render(`pages/changelog`, { session: req.session, splash:splash, cookies:req.cookies, changes:result.rows, lang:req.acceptsLanguages()[0] });
-		splash=null; 
 	  }
   });
 
@@ -957,7 +956,22 @@ var sysArr;
 			return res.status(403).json({code:403})
 		}
 		
-	})
+	});
+
+	app.post('/bda/edit/:id', (req, res) => {
+		if (isLoggedIn(req)){
+			if (req.body.planname){
+				client.query({text: "UPDATE bda_plans SET alias=$2,before=$3,during=$4,after=$5 WHERE id=$1;",values: [`${req.params.id}`, `${encryptWithAES(req.body.planname)}`,`${encryptWithAES(req.body.planbefore)}`,`${encryptWithAES(req.body.planduring)}`,`${encryptWithAES(req.body.planafter)}`]}, (err, result) => {
+					if (err) {
+						console.log(err.stack);
+					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+					}
+					});
+			req.flash("flash", "Plan Updated!");
+			res.redirect("/bda");		
+			}			
+		} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
+	});
 	app.post('/mood/:alt', function(req, res){
 		// console.table(req.session.chosenSys);
 		var now = new Date();
@@ -2016,8 +2030,29 @@ var sysArr;
  /*
 
  			OTHER ROUTES (Delete, Put)
+			
 
  */
+
+			 app.delete('/bda', (req, res)=>{
+				// Delete this post
+				if (apiEyesOnly(req)){
+					if (req.body.delete){
+						client.query({text: "DELETE FROM bda_plans WHERE id=$2 AND u_id=$1;",values: [getCookies(req)['u_id'], req.body.id]}, (err, result) => {
+							if (err) {
+							  console.log(err.stack);
+							  res.status(400).json({code: 400, message: err.stack});
+						  } else {
+							return res.status(200).json({code:200});
+						  }
+						  });
+					}
+				} else {
+					return res.status(403).json({code:403})
+				}
+				
+			});
+
 
  	// ROBOTS.TXT
 	 app.get("/sitemap.xml", function(req, res) {

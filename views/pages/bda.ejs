@@ -6,11 +6,16 @@
             #bdapanel{
                 display: flex; 
                 justify-content:space-around;
+                vertical-align: bottom;
             }
             .panel{
                 width:30%; 
                 text-align:center;
                 display: block;
+                align-self: flex-end;
+            }
+            #clear{
+                margin-top: 1em;
             }
             @media only screen and (max-width: 600px) {
                 #bdapanel{
@@ -40,25 +45,25 @@
                 <h2>Before, During, After</h2>
                 <p>A <strong>Before, During, After</strong> plan is specifically for an upcoming event or trauma that you know may be stressful or even traumatic to <%- pluralize(session.alter_term) %> in your <%- session.system_term %>. The goal is to keep splitting/splintering to a minimum during a stressful event</p>
                 <form>
-                    <label for ="planname">Name This Plan: </label> <input type="text" id="planname" name="planname">
+                    <label for ="planname">Name This Plan: </label> <input type="text" id="planname" name="planname" minlength="3">
                     <div id="bdapanel">
                       <div class="panel">
                         <h3>Before</h3>
                         <label for="planbefore">What will you and the other <%- pluralize(session.alter_term) %> do to be ready for this event?</label><br>
-                        <textarea name="planbefore" id="planbefore" rows="10" cols="15"></textarea>
+                        <textarea name="planbefore" id="planbefore" rows="10" cols="15" minlength="10"></textarea>
                     </div>
                     <div class="panel">
                         <h3>During</h3>
                         <label for="planduring">How will the <%- session.system_term %> stay grounded during this event?</label><br>
-                        <textarea name="planduring" id="planduring" rows="10" cols="15"></textarea>
+                        <textarea name="planduring" id="planduring" rows="10" cols="15" minlength="10"></textarea>
                     </div>
                     <div class="panel">
                         <h3>After</h3>
                         <label for="planafter">What can everyone do to ensure each others' safety and solace?</label><br>
-                        <textarea name="planafter" id="planafter" rows="10" cols="15"></textarea>
+                        <textarea name="planafter" id="planafter" rows="10" cols="15" minlength="10"></textarea>
                     </div>  
                     </div>
-                    <center><button name="create" id="planSub">Create Plan</button> <input type="reset" value="Start Over"></center>
+                    <div id="clear"><center><button name="create" id="planSub">Create Plan</button> <input type="reset" value="Start Over"></center></div>
                 </form>
                 
             </section>
@@ -101,7 +106,6 @@
     return null;
   };
         async function fetchPosts(){
-            console.log("Fetching!");
             $("#wait").show(`fast`);
             $("#plans").html("");
                 let response = await fetch(`/bda`, {
@@ -113,7 +117,7 @@
         let bodyInfo = JSON.parse(body);
         
         for (i in bodyInfo.body){
-            var planString= `<section class="planSection"><h2>${bodyInfo.body[i].alias}</h2><div style="padding-left:1em"><h3>BEFORE</h3>`;
+            var planString= `<section class="planSection"><h2>${bodyInfo.body[i].alias}</h2><a href="/bda/edit/${bodyInfo.body[i].id}" title="Edit ${bodyInfo.body[i].alias}" id=" ${bodyInfo.body[i].id}"><i class="fa fa-pencil" aria-hidden="true"></i></a><button id="${bodyInfo.body[i].id}" name="${bodyInfo.body[i].alias}" onclick="deletePlan(this)">Remove</button> <div style="padding-left:1em"><h3>BEFORE</h3>`;
             var bArr= (bodyInfo.body[i].before).replace(/\r/gi, '').split("\n").filter(function() { return true; });
                 for (j in bArr){
                     planString += `<p>${bArr[j]}</p>`
@@ -141,6 +145,9 @@
         
         $("#planSub").click(async function(){
             event.preventDefault();
+            if ($("#planname").val().length < 3 || $("#planbefore").val().length < 10 || $("#planduring").val().length < 10 || $("#planafter").val().length < 10){
+                return;
+            }
             $("#wait").toggle(`fast`);
                 const response = await fetch("/bda", {
                         method: "POST",
@@ -158,7 +165,6 @@
                         })
                     });
                     const result = await response.json();
-                    console.log(result);
                     $("#planname").val("");
                     $("#planbefore").val("");
                     $("#planduring").val("");
@@ -168,6 +174,34 @@
                         fetchPosts();
                     }
                     
-        })
+        });
+
+        async function deletePlan(id){
+            event.preventDefault();
+            if (confirm(`Do you really want to delete ${id.name}?`)){
+                $("#wait").toggle(`fast`);
+                const response = await fetch("/bda", {
+                        method: "DELETE",
+                        headers:{
+                            "api-lh-call": "api-lh-call",
+                            'Accept': 'application/json',
+                             'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            "delete": "delete",
+                            "id": id.id
+                        })
+                    });
+                    const result = await response.json();
+                    console.log(result);
+                    if (result.code == 200){
+                        // Load it below!
+                        fetchPosts();
+                    }
+            }
+            
+        }
+
+
     </script>
 </html>
