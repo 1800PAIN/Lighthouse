@@ -189,6 +189,22 @@ app.locals.truncate= function(str, n){
   return (str.length > n) ? str.slice(0, n-1) + '...' : str;
 };
 
+app.locals.distill= function(str){
+	if (str.charAt(0) == "\""){
+		str= str.substring(1);
+	}
+	if (str.charAt(0) == "'"){
+		str= str.substring(1);
+	}
+	if (str.charAt(str.length-1) == "\""){
+		str= str.substring(0, str.length - 1);
+	}
+	if (str.charAt(str.length-1) == "'"){
+		str= str.substring(0, str.length - 1);
+	}
+	return str
+}
+
 function encryptWithAES(text){
 	const passphrase = process.env.cryptkey;
 	return CryptoJS.AES.encrypt(text, passphrase).toString();
@@ -1444,9 +1460,41 @@ var sysArr;
 		// Make sure to base64 all information!
 		// `'${Buffer.from(req.body.altname).toString('base64')}'`
 
+		if (isLoggedIn(req)){
+			client.query({text: "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17 WHERE alt_id=$1",values: [
+				`${req.params.id}`,
+				`'${Buffer.from(req.body.name).toString('base64')}'`,
+				`'${Buffer.from(req.body.postr).toString('base64')}'`,
+				`'${Buffer.from(req.body.negtr).toString('base64')}'`,
+				`'${Buffer.from(req.body.age).toString('base64')}'`,
+				`'${Buffer.from(req.body.likes).toString('base64')}'`,
+				`'${Buffer.from(req.body.dislikes).toString('base64')}'`,
+				`'${Buffer.from(req.body.internalJob).toString('base64')}'`,
+				`'${Buffer.from(req.body.safety).toString('base64')}'`,
+				`'${Buffer.from(req.body.wish).toString('base64')}'`,
+				`'${Buffer.from(req.body.acc).toString('base64')}'`,
+				`'${Buffer.from(req.body.notes).toString('base64')}'`,
+				`'${Buffer.from(req.body.imgurl).toString('base64')}'`,
+				req.body.type,
+				// `'${Buffer.from(req.body.type).toString('base64')}'`,
+				`'${Buffer.from(req.body.pronouns).toString('base64')}'`,
+				`'${Buffer.from(req.body.birthday).toString('base64')}'`,
+				`'${Buffer.from(req.body.firstnoted).toString('base64')}'`
+			]}, (err, result) => {
+				if (err) {
+				  console.log(err.stack);
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+			  } else {
+				splash= req.flash("flash","Page updated!");
+		res.redirect(`/alter/${req.params.id}`);
+			  }
+			});
+		} else {
+			res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });
+		}
 		// Awful execution but oh well.
 		// res.render('pages/loading');
-		if (req.body.pronouns){
+		/* if (req.body.pronouns){
 			client.query({text: "UPDATE alters SET pronouns=$1 WHERE alt_id=$2",values: [`'${Buffer.from(req.body.pronouns).toString('base64')}'`,`${req.params.id}`]}, (err, result) => {
 				if (err) {
 				  console.log(err.stack);
@@ -1565,9 +1613,9 @@ var sysArr;
 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 			  }
 			});
-		}
-		splash= req.flash("flash","Page updated!");
-		res.redirect(`/alter/${req.params.id}`);
+		} */
+
+		
 	});
 
 	app.post("/system/:alt", function(req, res){

@@ -41,12 +41,14 @@
             <h2>Edit <%= Buffer.from(session.chosenAlter.name, 'base64').toString() %></h2>
             <form method="post">
                 <div class="column">
+                <label for="name" >Name</label>
+                <input type="text" name="name" <% if (session.chosenAlter.name){ %> value="<%= Buffer.from(session.chosenAlter.name, "base64").toString() %>" <% } %>>
                 <label for="pronouns" >Pronouns</label>
-                <input type="text" name="pronouns" <% if (session.chosenAlter.pronouns){ %> placeholder="<%= Buffer.from(session.chosenAlter.pronouns, "base64").toString() %>" <% } %>>
+                <input type="text" name="pronouns" <% if (session.chosenAlter.pronouns){ %> value="<%= Buffer.from(session.chosenAlter.pronouns, "base64").toString() %>" <% } %>>
                 <label for="age" >Perceived Age</label>
-                <input type="text" name="age" <% if (session.chosenAlter.agetext){ %> placeholder="<%= Buffer.from(session.chosenAlter.agetext, "base64").toString() %>" <% } %>>
+                <input type="text" name="age" <% if (session.chosenAlter.agetext){ %> value="<%= Buffer.from(session.chosenAlter.agetext, "base64").toString() %>" <% } %>>
                 <label for="type" id="typeinfo"><%= capitalise(session.alter_term) %> Type</label>
-                <input type="text" name="type" placeholder="<%= session.chosenAlter.type %>">
+                <input type="text" name="type" value="<%= session.chosenAlter.type %>">
                 <span style="display:block; margin-bottom:.5em">Check out the <a href="/glossary" target="_blank">glossary</a> for definitions of different alter types.</span>
                 <label for="postr">Positive Triggers</label>       
                 <textarea name="postr"><% if (session.chosenAlter.triggers_pos !== null) { %><%- Buffer.from(session.chosenAlter.triggers_pos, 'base64').toString() %><% } %></textarea>    

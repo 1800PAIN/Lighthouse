@@ -87,7 +87,7 @@ var journSkin=[
             <% if (alterArr.length > 0){ %>
             <div class="grid">
                 <% for ( i in alterArr) {  %>
-                    <a href="/alter/<%= alterArr[i].a_id %>"><%= alterArr[i].name %> <% if (alterArr[i].mood) { %><%- moods[alterArr[i].mood].emoji %><% } %><% if (alterArr[i].pronouns){ %><br><small>(<%- Buffer.from(alterArr[i].pronouns, "base64").toString() %>)</small><% } %></a>
+                    <a href="/alter/<%= alterArr[i].a_id %>"><%= alterArr[i].name %> <% if (alterArr[i].mood) { %><%- moods[alterArr[i].mood].emoji %><% } %><% if (alterArr[i].pronouns){ %><% if (distill(alterArr[i].pronouns)){ %><br><small>(<%- Buffer.from(alterArr[i].pronouns, "base64").toString() %>)</small><% } %><% } %></a>
                 <% } %>
             </div>
             <% } %>
