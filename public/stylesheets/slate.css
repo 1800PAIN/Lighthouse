@@ -1,11 +1,17 @@
 /* Slate Theme Colours */
 :root{
     --col1: #272727;
-    --col2: #d3d3d3;
+    --col2: #a7a7a7;
     --col3: #f8f8f8;
     --col4: #747474;
-    --col5: #525252;
+    --col5: #7c7c7c;
 	--col6: #292929;
     --col7: #dbdbdb;
     --col8: #131313;
+}
+html{
+    background-image: url("../img/slate.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }

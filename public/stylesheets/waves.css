@@ -9,3 +9,9 @@
     --col7: #b1daf1;
     --col8: #1f2b5f;
 }
+html{
+    background-image: url("../img/water.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}

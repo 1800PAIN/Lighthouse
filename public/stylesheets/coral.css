@@ -2,10 +2,16 @@
 :root{
     --col1: #791122;
     --col2: #ff7a34;
-    --col3: #60e8bd;
+    --col3: #ff5dbc;
     --col4: #ff7dd9;
-    --col5: #ff6d62;
+    --col5: #df5248;
 	--col6: #4b172f;
-    --col7: #b2ffbe;
+    --col7: #ffceb2;
     --col8: #501638;
+}
+html{
+    background-image: url("../img/coral.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }

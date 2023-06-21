@@ -4,8 +4,14 @@
     --col2: #d782da;
     --col3: #53d0f7;
     --col4: #3c975a;
-    --col5: #469123;
+    --col5: #a376f7;
 	--col6: #135e51;
-    --col7: #b1f1d1;
+    --col7: #b1f1ee;
     --col8: #161f50;
+}
+html{
+    background-image: url("../img/fish.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }

@@ -9,3 +9,9 @@
     --col7: #f1b1cf;
     --col8: #501638;
 }
+html{
+    background-image: url("../img/shells.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}

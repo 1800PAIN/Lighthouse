@@ -1,11 +1,17 @@
 /* Sand Theme Colours */
 :root{
-    --col1: #796742;
-    --col2: #e4cbac;
+    --col1: #4d3d1e;
+    --col2: #e0b177;
     --col3: #c09f84;
     --col4: #8a775e;
-    --col5: #ad9b60;
+    --col5: #8a5e44;
 	--col6: #614d43;
     --col7: #cfc1ae;
     --col8: #504116;
+}
+html{
+    background-image: url("../img/sand.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
