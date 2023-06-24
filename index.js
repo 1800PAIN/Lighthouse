@@ -353,6 +353,10 @@ app.locals.pluralize= pluralize;
 	});
   });
 
+  app.get('/DES', (req, res) => {
+	res.render(`pages/des`, { session: req.session, splash:splash, cookies:req.cookies});
+});
+
   app.get('/worksheets', (req, res) => {
 	if (isLoggedIn(req)){
 		res.render(`pages/worksheets`, { session: req.session, splash:splash, cookies:req.cookies });

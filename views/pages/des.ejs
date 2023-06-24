@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
+            <section>
+                <h2>DES-II</h2>
+                <p><strong>This is not a diagnostic tool, nor is this written by a professional.</strong> Please consult a professional regarding any mental health concerns you may have. The purpose of this test is to help <%- pluralize(session.system_term) %></p>
+            </section>
+    </div>
+    <%- include ("../partials/footer.ejs") %>
+    </body>
+</html>
