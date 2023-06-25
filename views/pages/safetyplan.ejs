@@ -21,34 +21,46 @@
             <% if (locals.messages.flash) { %>
                 <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
-            <section>
-                <h2>Your Safety Plan</h2>
-                <p>Each user has one safety plan. This is for when you or your <%- session.system_term %> are experiencing a mental health crisis.</p>
-                <p>Some areas have information already added in for you.</p>
-                <a href="/safety-plan/edit" class="linkbutton">Edit Your Plan</a><a class="linkbutton" name="download"  id="download" onclick="makePDF()">Generate PDF</a>
-                <a class="linkbutton" style="display:none;" id="pdf" download>Download PDF</a><br>
-                <span id="pdfdisclaimer"></span>
-                <hr>
-                <h3>Warning Signs</h3>
-                <p>Signs you may be having a mental health crisis includes:</p>
-                <p><%- safetyplan.symptoms.replace(/\n/g, "<br>") %></p>
-                <h3>Loved Ones</h3>
-                <p>A few people you can reach out to include:</p>
-                <p><%- safetyplan.safepeople.replace(/\n/g, "<br>") %></p>
-                <h3>Distractions</h3>
-                <p>You can distract yourself from a crisis by:</p>
-                <p><%- safetyplan.distractions.replace(/\n/g, "<br>") %></p>
-                <h3>Keeping Safe</h3>
-                <p>Keep yourself safe by:</p>
-                <p>Removing sharps and weapons from the immediate vicinity.</p>
-                <p><%- safetyplan.safepeople.replace(/\n/g, "<br>") %></p>
-                <h3>Grounding</h3>
-                <p>You can ground yourself by:</p>
-                <p><%- safetyplan.grounding.replace(/\n/g, "<br>") %></p>
-                <h3>Getting Help</h3>
-                <p>If all else fails, you can contact the following:</p>
-                <p><%- safetyplan.safepeople.replace(/\n/g, "<br>") %></p>
-            </section>
+<h2>Your Safety Plan</h2>
+                    <p>Each user has one safety plan. This is for when you or your <%- session.system_term %> are experiencing a mental health crisis.</p>
+                    <p>Some areas have information already added in for you.</p>
+                    <a href="/safety-plan/edit" class="linkbutton"><% if (safetyplan){ %>Edit<% } else { %>Create<% } %> Your Plan</a>
+                    <% if (safetyplan){ %>
+                    <a class="linkbutton" name="download"  id="download" onclick="makePDF()">Generate Plan PDF</a>
+                    <a class="linkbutton" style="display:none;" id="pdf" download>Download Plan PDF</a><br>
+                    <span id="pdfdisclaimer"></span>
+                        <% } %>
+                    
+                    <hr>
+            <% if (safetyplan){ %>
+                <section>
+                    
+                    <h3>Warning Signs</h3>
+                    <p>Signs you may be having a mental health crisis includes:</p>
+                    <p><%- safetyplan.symptoms.replace(/\n/g, "<br>") %></p>
+                    <h3>Loved Ones</h3>
+                    <p>A few people you can reach out to include:</p>
+                    <p><%- safetyplan.safepeople.replace(/\n/g, "<br>") %></p>
+                    <h3>Distractions</h3>
+                    <p>You can distract yourself from a crisis by:</p>
+                    <p><%- safetyplan.distractions.replace(/\n/g, "<br>") %></p>
+                    <h3>Keeping Safe</h3>
+                    <p>Keep yourself safe by:</p>
+                    <p>Removing sharps and weapons from the immediate vicinity.</p>
+                    <p><%- safetyplan.safepeople.replace(/\n/g, "<br>") %></p>
+                    <h3>Grounding</h3>
+                    <p>You can ground yourself by:</p>
+                    <p><%- safetyplan.grounding.replace(/\n/g, "<br>") %></p>
+                    <h3>Getting Help</h3>
+                    <p>If all else fails, you can contact the following:</p>
+                    <p><%- safetyplan.safepeople.replace(/\n/g, "<br>") %></p>
+                </section>
+            <% } else { %>
+                <section>
+                    <p>You do not have a safety plan yet, or one hasn't been loaded.</p>
+                </section>
+            <% } %>
+            
     </div>
     <%- include ("../partials/footer.ejs") %>
     <script>

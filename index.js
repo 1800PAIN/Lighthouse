@@ -424,62 +424,44 @@ app.locals.pluralize= pluralize;
 			
 			
 		} else {
+
+			var plans;
+
 			client.query({text:'SELECT * FROM safetyplans WHERE u_id=$1;', values: [getCookies(req)['u_id']]}, (err, result) => {
 				if (err) {
 				  console.log(err.stack);
 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
 			  } else {
-				
-				if (result.rows.length== 0){
-					// Uh oh! Create a plan.
-					client.query({text:'INSERT INTO safetyplans (u_id) VALUES($1);', values: [getCookies(req)['u_id']]}, (err, result) => {
+				if (result.rows.length > 0){
+					// Plan found
+					try{
+							plans= {
+							symptoms: decryptWithAES(result.rows[0].symptoms),
+							safepeople: decryptWithAES(result.rows[0].safepeople),
+							distractions: decryptWithAES(result.rows[0].distractions),
+							keepsafe: decryptWithAES(result.rows[0].keepsafe),
+							gethelp: decryptWithAES(result.rows[0].gethelp),
+							grounding: decryptWithAES(result.rows[0].grounding)
+						}
+					} catch (e){
+						plans= null;
+					}
+					
+					
+				} else {
+					// No plan. Make plan.
+					client.query({text:'INSERT INTO safetyplans (u_id) VALUES ($1);', values: [getCookies(req)['u_id']]}, (err, result) => {
 						if (err) {
 						  console.log(err.stack);
 						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
 					  } else {
-						 //Select again.
-						 client.query({text:'SELECT * FROM safetyplans WHERE u_id=$1;', values: [getCookies(req)['u_id']]}, (err, result) => {
-							if (err) {
-							  console.log(err.stack);
-							  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-						  } else {
-							var plans= {
-								symptoms: decryptWithAES(result.rows[0].symptoms),
-								safepeople: decryptWithAES(result.rows[0].safepeople),
-								distractions: decryptWithAES(result.rows[0].distractions),
-								keepsafe: decryptWithAES(result.rows[0].keepsafe),
-								gethelp: decryptWithAES(result.rows[0].gethelp),
-								grounding: decryptWithAES(result.rows[0].grounding)
-							}
-						  }
-						});
+						plans = null;
 					  }
 					});
-				} else {
-					try{
-								var plans= {
-								symptoms: decryptWithAES(result.rows[0].symptoms),
-								safepeople: decryptWithAES(result.rows[0].safepeople),
-								distractions: decryptWithAES(result.rows[0].distractions),
-								keepsafe: decryptWithAES(result.rows[0].keepsafe),
-								gethelp: decryptWithAES(result.rows[0].gethelp),
-								grounding: decryptWithAES(result.rows[0].grounding)
-							}
-					} catch (e){
-						var plans= {
-							symptoms: "",
-							safepeople: "",
-							distractions: "",
-							keepsafe: "",
-							gethelp: "",
-							grounding: ""
-						}
-					}
-					
 				}
 				
-				res.render(`pages/safetyplan`, { session: req.session, splash:splash, cookies:req.cookies, safetyplan: plans});
 			  }
+			  res.render(`pages/safetyplan`, { session: req.session, splash:splash, cookies:req.cookies, safetyplan: plans});
 			});
 		}
 		
