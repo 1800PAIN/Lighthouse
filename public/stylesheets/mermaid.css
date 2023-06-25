@@ -32,3 +32,21 @@ a:visited{
     color: var(--col1);
 }
 
+#menubg{
+    background: url("/img/glitter.jpg");
+    background-size: cover;
+    background-position: bottom 35% center;
+}
+#menubg:after{
+    content:' ';
+    background: linear-gradient(90deg, rgb(17, 148, 115) 0%, rgba(2, 7, 77, 0) 100%);
+    width: 50%;
+    height: 150px;
+    z-index: -3;
+    position: absolute;
+    top:0;
+    lefT:0;
+}
+#logoname, #logoname > *{
+    color: var(--col7)
+}

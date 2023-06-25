@@ -15,3 +15,21 @@ html{
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
+#menubg{
+    background: url("/img/big-wave.jpg");
+    background-size: cover;
+    background-position: top 25% center;
+}
+#menubg:after{
+    content:' ';
+    background: linear-gradient(90deg, rgb(186, 230, 255) 0%, rgba(153, 161, 255, 0) 100%);
+    width: 50%;
+    height: 150px;
+    z-index: -3;
+    position: absolute;
+    top:0;
+    lefT:0;
+}
+#logoname > *{
+    color: var(--col5)
+}

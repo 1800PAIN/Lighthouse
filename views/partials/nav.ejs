@@ -1,69 +1,166 @@
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
 
-<nav>
+.topnav {
+  background-color: var(--col6);
+  position: absolute;
+  left: 0;
+  top: 100px;
+  width: 100%;
+}
 
-  <div id="logo" style="display: inline-block;"><a href="/"><img style="vertical-align:middle; margin-right: 10px;" src="/img/logo.png" width="48px" alt="Lighthouse logo"><br/><span id="logoname">Lighthouse<br/>
+.topnav a {
+  float: left;
+  display: block;
+  color: var(--col2);
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.active {
+  color: var(--col2);
+}
+
+.topnav .icon {
+  display: none;
+}
+
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 17px;    
+  border: none;
+  outline: none;
+  color: var(--col2);
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: var(--col6);
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+.dropdown-content a {
+  float: none;
+  color: var(--col2);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.topnav a:hover, .dropdown:hover .dropbtn {
+  background-color: var(--col3);
+  color: var(--col1);
+}
+
+.dropdown-content a:hover {
+  background-color: var(--col3);
+  color: var(--col1);
+}
+
+/* .dropdown:hover .dropdown-content {
+  display: block;
+} */
+
+@media screen and (max-width: 800px) {
+  .topnav a:not(:first-child), .dropdown .dropbtn {
+    display: none;
+  }
+  .topnav a.icon {
+    float: right;
+    display: block;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .topnav .responsive {
+    z-index: 8000;
+    margin-bottom: 3em;
+  }
+  .topnav.responsive .icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .topnav.responsive a {
+    float: none;
+    display: block;
+    text-align: left;
+  }
+  .topnav.responsive .dropdown {float: none;}
+  .topnav.responsive .dropdown-content {position: relative;}
+  .topnav.responsive .dropdown .dropbtn {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+}
+  </style>
+  </head>
+  <div id="menubg"></div>
+  <div id="logo" style="display: inline-block; margin-left: 30px;"><a href="/"><img style="vertical-align:middle; margin-right: 10px;" src="/img/logo.png" width="24px" alt="Lighthouse logo"><br/><span id="logoname">Lighthouse<br/>
     <% if (cookies.loggedin) { %>
       <sup>Hi, <%= truncate(cookies.username,20) %>!</sup>
     <% } else { %>
     <sup>Journal Together</sup>
       <% } %>
   </span></a></div>
-  <% if (cookies.loggedin){ %>
-<a class="navel" href="/logout">Logout</a>
-  <% } else { %>
-    <a class="navel" href="/signup">Sign Up</a>
-    <a class="navel" href="/login">Log in</a>
-  <% } %>
-  
-  <% if (cookies.loggedin){ %>
-    <% if (session.system_term) { %> 
-      <a class="navel" href="/system">My <%= capitalise(session.system_term) %></a>
-    <% } else { %>
-      <a class="navel" href="/system">My <%= session.system_term %></a>
-      <% } %>
-      
-  <% } %>
-  <a class="navel" href="/crisis">In crisis?</a>
-	  <% if (cookies.loggedin){ %>
-	  <a class="navel" href="/profile">Settings</a>
-	  <% } %>
-    <a class="navel" href="/about">Information</a>
-    <!-- <a class="navel" href="/changelog">Changelog</a> -->
-  <button class="navel" onclick="history.back()">Go Back</button>
-  <button class="navel" onclick="toggleMode()"><span name="mode" class="material-symbols-outlined" style="vertical-align:middle;color: var(--col1);">light_mode
-    </span></button>
-</nav>
-<div class="navmobile">
-  <div id="logo" style="display: inline-block; float: left;"><a href="/"><img style="vertical-align:middle; margin-right: 10px;" src="/img/logo.png" width="48px" alt="Lighthouse logo"><br/></a></div>
-  <div id="hamburger"><span class="material-symbols-outlined">
-    menu
-    </span></div>
-  <ul class="menu" id="mobilenav" style="display:none;">
-    <% if (cookies.loggedin) { %>
-      <sup>Hello, <%= capitalise(cookies.username) %>!</sup>
-      <% } else { %>
-      <sup>Journal Together</sup>
+  <div class="topnav" id="myTopnav">
+    <% if (cookies.loggedin){ %>
+      <a href="/logout">Logout</a>
+        <% } else { %>
+          <a href="/signup">Sign Up</a>
+          <a href="/login">Log in</a>
         <% } %>
     <% if (cookies.loggedin){ %>
-      <li><a class="navel" href="/logout">Logout</a></li>
-        <% } else { %>
-          <li><a class="navel" href="/signup">Sign Up</a></li>
-          <li><a class="navel" href="/login">Log in</a></li>         
+      <% if (session.system_term) { %> 
+        <a href="/system">My <%= capitalise(session.system_term) %></a>
+      <% } else { %>
+        <a href="/system">My <%= session.system_term %></a>
         <% } %>
         
-        <% if (cookies.loggedin){ %>
-          <li><a class="navel" href="/system">My <%= capitalise(session.system_term) %></a></li>
-        <% } %>
-        <li><a class="navel" href="/crisis">In crisis?</a></li>
-          <% if (cookies.loggedin){ %>
-          <li><a class="navel" href="/profile">Settings</a></li>
-          <% } %>
-          <li><a class="navel" href="/about">Information</a></li>
-          <li><button class="navel" onclick="toggleMode()"><span name="mode" class="material-symbols-outlined" style="vertical-align:middle;color: var(--col1);">light_mode
-          </span></button></li>
-          <!-- <li><a class="navel" href="/changelog">Changelog</a></li> -->
-  </ul>
-</div>
+    <% } %><% if (cookies.loggedin){ %>
+      <a href="/profile">Settings</a>
+      <% } %>
+    
+        
+      <div class="dropdown">
+      <button  class="dropbtn" onclick='$("#drop").toggle()'>Information <span style="vertical-align: middle;" class="material-symbols-outlined">
+        expand_more
+        </span>
+      </button>
+      <div class="dropdown-content" id="drop">
+        <a href="/about">About</a>
+        <a href="/glossary">Glossary</a>
+        <a href="/changelog">Changelog</a>
+        <a href="/glossary">In Crisis?</a>
+      </div>
+      
+    </div> 
+      <a href="javascript:history.back()">Go Back</a>
+  <button style="background:transparent; "onclick="toggleMode()"><span name="mode" class="material-symbols-outlined" style="vertical-align:middle;color: var(--col2);">light_mode</span></button>
+  <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="toggleMobile()">&#9776;</a>
+    <!-- <a href="/system">News</a> -->
+  
+
+    
+  </div>
+
 <script>
   if (localStorage.lighthouse_mode){
       if (localStorage.lighthouse_mode == "dark") {
@@ -82,8 +179,16 @@ $( ".infowindow" ).on( "click", function() {
    $(".infodd").toggle("fast");
 } );
 
-function toggleMode(){
+function toggleMobile() {
+  var x = document.getElementById("myTopnav");
+  if (x.className === "topnav") {
+    x.className += " responsive";
+  } else {
+    x.className = "topnav";
+  }
+}
 
+function toggleMode(){
   event.preventDefault();
   var $darkCss = $("link[href='/stylesheets/dark.css']");
   if (localStorage.lighthouse_mode){
@@ -103,7 +208,5 @@ function toggleMode(){
       $('[name="mode"]').text(`dark_mode`);
       $('head').append('<link type="text/css" rel="stylesheet" media="all" href="/stylesheets/dark.css">');
   }
-
-
 }
 </script>

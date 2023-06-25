@@ -15,3 +15,21 @@ html{
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
+#menubg{
+    background: url("/img/biolum.jpg");
+    background-size: cover;
+    background-position: bottom 35% center;
+}
+#menubg:after{
+    content:' ';
+    background: linear-gradient(90deg, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
+    width: 50%;
+    height: 150px;
+    z-index: -3;
+    position: absolute;
+    top:0;
+    lefT:0;
+}
+#logoname, #logoname > *{
+    color: var(--col7)
+}

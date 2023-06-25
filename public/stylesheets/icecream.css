@@ -1,0 +1,43 @@
+/* Coral Theme Colours */
+/* 
+#a6bbce 
+#9e7daa 
+#e7a6c8 
+#f0cccc 
+#f3f2ed 
+#d0bd95 
+*/
+:root{
+    --col1: #791122;
+    --col2: #f0cccc;
+    --col3: #a6bbce;
+    --col4: #e7a6c8;
+    --col5: #9e7daa;
+	--col6: #a1537e;
+    --col7: #f3f2ed;
+    --col8: #500921;
+}
+html{
+    background-image: url("../img/sorbet.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+#menubg{
+    background: url("/img/icecream.jpg");
+    background-size: cover;
+    background-position: center;
+}
+#menubg:after{
+    content:' ';
+    background: linear-gradient(90deg, rgb(37, 108, 136) 0%, rgba(0, 52, 82, 0) 100%);
+    width: 70%;
+    height: 150px;
+    z-index: -3;
+    position: absolute;
+    top:0;
+    lefT:0;
+}
+.topnav a{
+    color: white;
+}

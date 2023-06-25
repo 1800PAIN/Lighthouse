@@ -9,3 +9,18 @@
     --col7: #def1f0;
     --col8: #065966;
 }
+
+#menubg{
+    background: url("/img/day-beach.jpg");
+    background-size: cover;
+}
+#menubg:after{
+    content:' ';
+    background: linear-gradient(90deg, rgb(46, 128, 175) 0%, rgba(25, 31, 100, 0) 100%);
+    width: 50%;
+    height: 150px;
+    z-index: -3;
+    position: absolute;
+    top:0;
+    lefT:0;
+}

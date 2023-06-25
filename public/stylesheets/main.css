@@ -28,8 +28,6 @@ html{
 }
 
 body{
-    position: relative;
-    top: 6em;
     padding-top:1em;
 }
 td {
@@ -94,11 +92,11 @@ nav {
     max-height: 6em;
 }
 
-nav a, nav button{
+/* nav a, nav button{
   font-size: calc(1em);
   font-weight: 400;
   vertical-align: middle;
-}
+} */
 
 article{
     border-bottom: 1px solid black;
@@ -195,14 +193,12 @@ footer{
 
 
 #wrapper{
-    width: 50vw;
+    width: 80vw;
     /* border: 1px solid black; */
     height: 100%;
     min-height: 10vh;
     padding: calc(2em);
-    margin: 0 auto;
-    position: relative;
-    /* top: 20vh; */
+    margin: 9vh auto auto auto;
     background: rgba(255,255,255,.4);
 }
 
@@ -480,7 +476,7 @@ button[disabled=disabled]{
 	  display:none;
   }
   #wrapper{
-      top: 7vh;
+      top: 300px;
       overflow-wrap: break-word;
 	  width: 85vw;
   }
@@ -559,4 +555,14 @@ img.emoji {
 
  .glow{
     box-shadow:transparent;
+ }
+
+ #menubg{
+    background: grey;
+    width: 100%;
+    height: 150px;
+    z-index:-333;
+    position: absolute;
+    top:0;
+    left:0;
  }

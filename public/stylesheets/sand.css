@@ -15,3 +15,22 @@ html{
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
+
+#menubg{
+    background: url("/img/sand2.jpg");
+    background-size: cover;
+    background-position: center center;
+}
+#menubg:after{
+    content:' ';
+    background: linear-gradient(90deg, rgb(107, 73, 41) 0%, rgba(41, 23, 0, 0) 100%);
+    width: 50%;
+    height: 150px;
+    z-index: -3;
+    position: absolute;
+    top:0;
+    lefT:0;
+}
+#logoname, #logoname > *{
+    color: var(--col7)
+}
