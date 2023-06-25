@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+        <style>
+            label{
+                display: block;
+            }
+            textarea{
+                width: 90%;
+            }
+        </style>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
+
+            <section>
+                <h2>Edit Your Safety Plan</h2>
+                <p>Each user has one safety plan. This is for when you or your <%- session.system_term %> are experiencing a mental health crisis.</p>
+                <hr>
+                <form method="post">
+                   <label for="warning">What are some things you can tell are signs that you may be experiencing a mental health crisis?</label>
+                <textarea name="warning"><%= safetyplan.symptoms %></textarea>
+                <label for="friends">Who are a few loved ones you can reach out to? (e.g. "Jane Doe - Friend - on Discord")</label>
+                <textarea name="friends"><%= safetyplan.safepeople %></textarea>
+                <label for="distract">What are a few distractions you can think of that will pull you away from a crisis?</label>
+                <textarea name="distract"><%= safetyplan.distractions %></textarea>
+                <label for="keepsafe">What are some things you can do to keep yourself safe? (e.g.: Remove sharps or weapons from immediate area, go to a quiet room, etc.)</label>
+                <textarea name="keepsafe"<%= safetyplan.keepsafe %>></textarea>
+                <label for="ground">How can you stay grounded during a crisis? We already have "5-4-3-2-1", "Re-Orientation", "Sensory", "Movement", and "Then and Now" grounding methods listed on your plan.</label>
+                <textarea name="ground"><%= safetyplan.grounding %></textarea>
+                <label for="help">What are some lifelines, doctors, therapists etc you could put here to call or text if none of the above works?<br><small>We do not reccomend calling 911 unless if social services are dispatched instead of the police.</small></label>
+                <textarea name="help"><%= safetyplan.gethelp %></textarea><br>
+                <input type="submit" name="Update" value="Update Plan"> <input type="reset" value="Start Over"> 
+                </form>
+                
+            </section>
+    </div>
+    <%- include ("../partials/footer.ejs") %>
+    </body>
+</html>

@@ -10,6 +10,7 @@ const CryptoJS = require("crypto-js");
 const request = require('request');
 const PKAPI = require("pkapi.js");
 const fs = require('fs');
+var pdf = require("html-pdf");
 const nodemailer = require('nodemailer');
 const ejs = require('ejs');
 var pluralize = require('pluralize');
@@ -246,6 +247,29 @@ app.locals.distill= function(str){
 	return str
 }
 
+app.locals.getOrdinal= function (n) {
+	let ord = 'th';
+  
+	if (n % 10 == 1 && n % 100 != 11)
+	{
+	  ord = 'st';
+	}
+	else if (n % 10 == 2 && n % 100 != 12)
+	{
+	  ord = 'nd';
+	}
+	else if (n % 10 == 3 && n % 100 != 13)
+	{
+	  ord = 'rd';
+	}
+  
+	return ord;
+  }
+app.locals.monthNames= ["January","February","March","April","May","June","July",
+"August","September","October","November","December"];
+app.locals.dayNames= ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+
 function encryptWithAES(text){
 	const passphrase = process.env.cryptkey;
 	return CryptoJS.AES.encrypt(text, passphrase).toString();
@@ -352,7 +376,180 @@ app.locals.pluralize= pluralize;
 		}
 	});
   });
-
+  app.get('/safety-plan', (req, res) => {
+	if (isLoggedIn(req)){
+		if(apiEyesOnly(req)){
+			client.query({text:'SELECT * FROM safetyplans WHERE u_id=$1;', values: [getCookies(req)['u_id']]}, (err, result) => {
+				if (err) {
+				  console.log(err.stack);
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+			  } else {
+				var user={
+					id: req.headers.user,
+					name: getCookies(req)['username'],
+					symptoms: decryptWithAES(result.rows[0].symptoms),
+					safepeople: decryptWithAES(result.rows[0].safepeople),
+					distractions: decryptWithAES(result.rows[0].distractions),
+					keepsafe: decryptWithAES(result.rows[0].keepsafe),
+					gethelp: decryptWithAES(result.rows[0].gethelp),
+					grounding: decryptWithAES(result.rows[0].grounding)
+				}
+				// Read HTML Template
+				ejs.renderFile(path.join(__dirname, './views/pages/', "safetyplan-pdf.ejs"), {user: user}, (err, data) => {
+					if (err) {
+						  return res.json({code: 404, msg: `Render File: ${err}`});
+					} else {
+						let options = {
+							"height": "11in",
+							"width": "8.5in",
+							"header": {
+								"height": "0in"
+							},
+							"footer": {
+								"height": "0in",
+							},
+						};
+						pdf.create(data, options).toFile(path.join(__dirname, './public/pdfs', `${req.headers.user}.pdf`), function (err, data) {
+							if (err) {
+								return res.json({code: 404, msg: `Generating: ${err}`});
+							} else {
+								return res.json({code: 200, download: `${req.headers.user}.pdf`});
+							}
+						});
+					}
+				});
+			  }
+			  
+			});
+			
+			
+		} else {
+			client.query({text:'SELECT * FROM safetyplans WHERE u_id=$1;', values: [getCookies(req)['u_id']]}, (err, result) => {
+				if (err) {
+				  console.log(err.stack);
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+			  } else {
+				
+				if (result.rows.length== 0){
+					// Uh oh! Create a plan.
+					client.query({text:'INSERT INTO safetyplans (u_id) VALUES($1);', values: [getCookies(req)['u_id']]}, (err, result) => {
+						if (err) {
+						  console.log(err.stack);
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+					  } else {
+						 //Select again.
+						 client.query({text:'SELECT * FROM safetyplans WHERE u_id=$1;', values: [getCookies(req)['u_id']]}, (err, result) => {
+							if (err) {
+							  console.log(err.stack);
+							  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+						  } else {
+							var plans= {
+								symptoms: decryptWithAES(result.rows[0].symptoms),
+								safepeople: decryptWithAES(result.rows[0].safepeople),
+								distractions: decryptWithAES(result.rows[0].distractions),
+								keepsafe: decryptWithAES(result.rows[0].keepsafe),
+								gethelp: decryptWithAES(result.rows[0].gethelp),
+								grounding: decryptWithAES(result.rows[0].grounding)
+							}
+						  }
+						});
+					  }
+					});
+				} else {
+					try{
+								var plans= {
+								symptoms: decryptWithAES(result.rows[0].symptoms),
+								safepeople: decryptWithAES(result.rows[0].safepeople),
+								distractions: decryptWithAES(result.rows[0].distractions),
+								keepsafe: decryptWithAES(result.rows[0].keepsafe),
+								gethelp: decryptWithAES(result.rows[0].gethelp),
+								grounding: decryptWithAES(result.rows[0].grounding)
+							}
+					} catch (e){
+						var plans= {
+							symptoms: "",
+							safepeople: "",
+							distractions: "",
+							keepsafe: "",
+							gethelp: "",
+							grounding: ""
+						}
+					}
+					
+				}
+				
+				res.render(`pages/safetyplan`, { session: req.session, splash:splash, cookies:req.cookies, safetyplan: plans});
+			  }
+			});
+		}
+		
+		
+	}
+	
+});
+app.get('/safety-plan/edit', (req, res) => {
+	if (isLoggedIn(req)){
+		client.query({text:'SELECT * FROM safetyplans WHERE u_id=$1;', values: [getCookies(req)['u_id']]}, (err, result) => {
+			if (err) {
+			  console.log(err.stack);
+			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+		  } else {
+			
+			if (result.rows.length== 0){
+				// Uh oh! Create a plan.
+				client.query({text:'INSERT INTO safetyplans (u_id) VALUES($1);', values: [getCookies(req)['u_id']]}, (err, result) => {
+					if (err) {
+					  console.log(err.stack);
+					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+				  } else {
+					 //Select again.
+					 client.query({text:'SELECT * FROM safetyplans WHERE u_id=$1;', values: [getCookies(req)['u_id']]}, (err, result) => {
+						if (err) {
+						  console.log(err.stack);
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+					  } else {
+						var plans= {
+							symptoms: decryptWithAES(result.rows[0].symptoms),
+							safepeople: decryptWithAES(result.rows[0].safepeople),
+							distractions: decryptWithAES(result.rows[0].distractions),
+							keepsafe: decryptWithAES(result.rows[0].keepsafe),
+							gethelp: decryptWithAES(result.rows[0].gethelp),
+							grounding: decryptWithAES(result.rows[0].grounding)
+						}
+					  }
+					});
+				  }
+				});
+			} else {
+				try{
+							var plans= {
+							symptoms: decryptWithAES(result.rows[0].symptoms),
+							safepeople: decryptWithAES(result.rows[0].safepeople),
+							distractions: decryptWithAES(result.rows[0].distractions),
+							keepsafe: decryptWithAES(result.rows[0].keepsafe),
+							gethelp: decryptWithAES(result.rows[0].gethelp),
+							grounding: decryptWithAES(result.rows[0].grounding)
+						}
+				} catch (e){
+					var plans= {
+						symptoms: "",
+						safepeople: "",
+						distractions: "",
+						keepsafe: "",
+						gethelp: "",
+						grounding: ""
+					}
+				}
+				
+			}
+			
+			res.render(`pages/edit-safetyplan`, { session: req.session, splash:splash, cookies:req.cookies, safetyplan: plans});
+		  }
+		});
+		
+	}
+	
+});
   app.get('/DES', (req, res) => {
 	res.render(`pages/des`, { session: req.session, splash:splash, cookies:req.cookies});
 });
@@ -1032,6 +1229,28 @@ var sysArr;
 
 
 	*/
+	app.post('/safety-plan/edit', (req, res) => {
+		if (isLoggedIn(req)){
+			var plans= {
+				symptoms: encryptWithAES(req.body.warning),
+				safepeople: encryptWithAES(req.body.friends),
+				distractions: encryptWithAES(req.body.distract),
+				keepsafe: encryptWithAES(req.body.keepsafe),
+				gethelp: encryptWithAES(req.body.help),
+				grounding: encryptWithAES(req.body.ground)
+			};
+			client.query({text:'UPDATE safetyplans SET symptoms=$2, safepeople=$3, distractions=$4, keepsafe= $5, gethelp=$6, grounding=$7 WHERE u_id=$1;', values: [getCookies(req)['u_id'], plans.symptoms, plans.safepeople, plans.distractions, plans.keepsafe, plans.gethelp, plans.grounding]}, (err, result) => {
+				if (err) {
+				  console.log(err.stack);
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+			  } else {
+				res.redirect("/safety-plan");
+			  }
+			});
+			
+		}
+		
+	});
 
 	app.post('/bda', (req, res)=>{
 		if (apiEyesOnly(req)){
@@ -2110,24 +2329,31 @@ var sysArr;
 
  */
 
-			 app.delete('/bda', (req, res)=>{
-				// Delete this post
-				if (apiEyesOnly(req)){
-					if (req.body.delete){
-						client.query({text: "DELETE FROM bda_plans WHERE id=$2 AND u_id=$1;",values: [getCookies(req)['u_id'], req.body.id]}, (err, result) => {
-							if (err) {
-							  console.log(err.stack);
-							  res.status(400).json({code: 400, message: err.stack});
-						  } else {
-							return res.status(200).json({code:200});
-						  }
-						  });
-					}
+	app.delete('/bda', (req, res)=>{
+	// Delete this post
+	if (apiEyesOnly(req)){
+		if (req.body.delete){
+			client.query({text: "DELETE FROM bda_plans WHERE id=$2 AND u_id=$1;",values: [getCookies(req)['u_id'], req.body.id]}, (err, result) => {
+				if (err) {
+					console.log(err.stack);
+					res.status(400).json({code: 400, message: err.stack});
 				} else {
-					return res.status(403).json({code:403})
+				return res.status(200).json({code:200});
 				}
-				
-			});
+				});
+		}
+	} else {
+		return res.status(403).json({code:403})
+	}
+
+	});
+	app.delete('/safety-plan', (req, res)=>{
+		if (apiEyesOnly(req)){
+			var filePath = `./public/pdfs/${req.headers.user}.pdf`; 
+			fs.unlinkSync(filePath);
+			return res.json({code:200});
+		}
+	})
 
 
  	// ROBOTS.TXT

@@ -2,6 +2,18 @@
 <html lang="en" dir="ltr">
     <head>
         <%- include ("../partials/header.ejs") %>
+        <style>
+            label{
+                display: block;
+            }
+            textarea{
+                width: 90%;
+            }
+            p{
+                text-indent: 0;
+                padding-left: 1em;
+            }
+        </style>
     </head>
     <body>
         <%- include ("../partials/nav.ejs") %>
@@ -11,8 +23,74 @@
             <% } %>
             <section>
                 <h2>Your Safety Plan</h2>
+                <p>Each user has one safety plan. This is for when you or your <%- session.system_term %> are experiencing a mental health crisis.</p>
+                <p>Some areas have information already added in for you.</p>
+                <a href="/safety-plan/edit" class="linkbutton">Edit Your Plan</a><a class="linkbutton" name="download"  id="download" onclick="makePDF()">Generate PDF</a>
+                <a class="linkbutton" style="display:none;" id="pdf" download>Download PDF</a><br>
+                <span id="pdfdisclaimer"></span>
+                <hr>
+                <h3>Warning Signs</h3>
+                <p>Signs you may be having a mental health crisis includes:</p>
+                <p><%- safetyplan.symptoms.replace(/\n/g, "<br>") %></p>
+                <h3>Loved Ones</h3>
+                <p>A few people you can reach out to include:</p>
+                <p><%- safetyplan.safepeople.replace(/\n/g, "<br>") %></p>
+                <h3>Distractions</h3>
+                <p>You can distract yourself from a crisis by:</p>
+                <p><%- safetyplan.distractions.replace(/\n/g, "<br>") %></p>
+                <h3>Keeping Safe</h3>
+                <p>Keep yourself safe by:</p>
+                <p>Removing sharps and weapons from the immediate vicinity.</p>
+                <p><%- safetyplan.safepeople.replace(/\n/g, "<br>") %></p>
+                <h3>Grounding</h3>
+                <p>You can ground yourself by:</p>
+                <p><%- safetyplan.grounding.replace(/\n/g, "<br>") %></p>
+                <h3>Getting Help</h3>
+                <p>If all else fails, you can contact the following:</p>
+                <p><%- safetyplan.safepeople.replace(/\n/g, "<br>") %></p>
             </section>
     </div>
     <%- include ("../partials/footer.ejs") %>
+    <script>
+        // send GET Request to API 
+        async function makePDF(){
+            event.preventDefault();
+            $("#download").text("Please wait...");
+            let response = await fetch(`/safety-plan`, { 
+            method: "GET",
+                        headers:{
+                            "api-lh-call": "api-lh-call",
+                            'Accept': 'application/json',
+                             'Content-Type': 'application/json',
+                             "user" :  "<%- cookies.u_id %>"
+                        }
+            });
+            let body = await response.text();
+            let sysInfo = JSON.parse(body);
+            console.log(sysInfo)
+            $("#download").hide();
+            $("#pdf").show();
+            $("#pdf").attr({
+                    href  : "pdfs/" + sysInfo.download});
+            $("#pdfdisclaimer").text("PDFs are deleted from the server 5 minutes after generation.");
+            removePDF();
+        }
+        async function removePDF(){
+            setTimeout(async function(){
+                let response = await fetch(`/safety-plan`, { 
+            method: "DELETE",
+                        headers:{
+                            "api-lh-call": "api-lh-call",
+                            'Accept': 'application/json',
+                             'Content-Type': 'application/json',
+                             "user" :  "<%- cookies.u_id %>"
+                        }
+            });
+            let body = await response.text();
+            let sysInfo = JSON.parse(body);
+            console.log(sysInfo);
+            }, 300000);
+        }
+    </script>
     </body>
 </html>
