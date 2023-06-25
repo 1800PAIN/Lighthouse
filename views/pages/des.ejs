@@ -2,6 +2,37 @@
 <html lang="en" dir="ltr">
     <head>
         <%- include ("../partials/header.ejs") %>
+        <style>
+            th, td {
+                padding: .3em .3em .5em .3em;
+            }
+            .slider {
+                -webkit-appearance: none;
+                width: 80%;
+                height: 15px;
+                border-radius: 5px;  
+                background: linear-gradient(90deg, rgba(60,136,0,1) 0%, rgba(104,186,40,1) 10%, rgba(255,219,25,1) 50%, rgba(250,8,8,1) 85%, rgba(170,3,3,1) 100%);
+                outline: none;
+                opacity: 0.7;
+                -webkit-transition: .2s;
+                transition: opacity .2s;
+                border: 2px solid var(--col1);
+                }
+            .slider::-moz-range-thumb {
+            width: 23px;
+            height: 25px;
+            border: 1px solid var(--col1);
+            background: url('https://www.writelighthouse.com/img/svg/life-ring.svg') var(--col2);
+            cursor: pointer;
+
+            }
+            .section{
+                display:flex;
+                align-items: stretch;
+            }
+            .section> p{
+            }
+        </style>
     </head>
     <body>
         <%- include ("../partials/nav.ejs") %>
@@ -11,9 +42,199 @@
             <% } %>
             <section>
                 <h2>DES-II</h2>
-                <p><strong>This is not a diagnostic tool, nor is this written by a professional.</strong> Please consult a professional regarding any mental health concerns you may have. The purpose of this test is to help <%- pluralize(session.system_term) %></p>
+                <p><strong>This is not a diagnostic tool, nor is this written by a professional.</strong> Please consult a professional regarding any mental health concerns you may have. The purpose of this test is to help people gauge or track the severity of their dissociative symptoms, if present.</p>
+                <p>For each question, answer each question with a percentage of how much that question applies, in a general sense.</p>
+                <hr>
+                <!-- DES Questions-->
+
+                <!-- Question 1 -->
+                <p>Driving or riding in a vehicle, and realising you don't remember the trip.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 2 -->
+                <p>Listening to someone talk, but missing part or all of what they said.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 3 -->
+                <p>Finding yourself in a place and not remembering how you got there.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 4 -->
+                <p>Finding yourself wearing an outfit you don't remember putting on.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 5 -->
+                    <p>Finding new things you don't remember buying.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 6 -->
+                <p>Multiple people approaching you and calling you a name you've never gone by.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 7 -->
+                <p>Feeling like you're standing behind yourself, or watching yourself from "behind a screen".</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 8 -->
+                <p>Finding that you can't recognise your loved ones (friends, family, etc).</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 9 -->
+                <p>Finding that you can't remember major milestones or events in your life.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 10 -->
+                <p>Being told you're lying when you're just recalling what you remember.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 11 -->
+                <p>Looking in a mirror and not recognising yourself.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 12 -->
+                <p>Feeling like the world around you and the people in it aren't actually real.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 13 -->
+                <p>Feeling like your body isn't actually yours, or that you don't actually exist.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 14 -->
+                <p>Recalling a past event <em>so</em> vividly, you might as well be right back at the event again.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 15 -->
+                <p>Doubting if your memories are correct and real, or if you just dreamed them or imagined them.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 16 -->
+                <p>Being in a familiar place, yet finding it completely unfamiliar.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 17 -->
+                <p>Getting so engrossed in media that you're consuming, you lose track of what's happening around you.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 18 -->
+                <p>Daydreaming that is so vivid and intense, it feels real.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 19 -->
+                <p>Being able to ignore physical pain.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 20 -->
+                <p>Staring off into space, unaware of how much time is passing by.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 21 -->
+                <p>Talking aloud to yourself when you're alone.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 22 -->
+                <p>Finding that you act <em>so</em> differently around certain people, situations or environments, you might as well be two different people.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 23 -->
+                <p>Performing skills or routines that are usually very difficult for you with ease, and no idea how you learned to do so.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 24 -->
+                <p>Being unable to remember if you actually did a task, or just about doing it.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 25 -->
+                <p>Finding evidence of participating in activities or socialising you don't remember doing.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 26 -->
+                <p>Finding notes or drawings amongst your belongings that you don't remember making.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 27 -->
+                <p>Hearing multiple voices in your head (that sound like thoughts, not like voices across the room or a distance away) that tell you what to do, or comment on whatever you're currently doing.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                    <!-- Question 28 -->
+                <p>Feeling like you're watching the world from behind a fog or screen, making everything around you seem far away.</p>
+                <div class="section">
+                    <input type="range" step="10" min="0" max="100" value="0" name="desQuestion" class="slider"> <span ></span></div>
+                   
+                
+                <!-- End DES -->
+                <hr>
+                <h3>Your Score</h3>
+                <p>You scored: <strong><span id="desScore"></span></strong></p>
+                <p>A score of 30-45 indicates a high level of dissociation, and is usually indicative of PTSD or a dissociative disorder. <strong>This is not a formal diagnostic test.</strong> Higher scores may indicate a need to address these symptoms to a professional.</p>
+                <h3>General Scores</h3>
+                <p><sup>Source: traumadissociation.com</sup></p>
+                <table style="width:80%; margin:auto;">
+                    <tr>
+                       <th>Population</th>
+                        <th>Score</th> 
+                    </tr>
+                    <tr>
+                        <td>General Adult Population</td>
+                        <td>5.4</td>
+                    </tr>
+                    <tr>
+                        <td style="background: rgba(242, 40, 0,0.1);">Anxiety Disorders</td>
+                        <td style="background: rgba(242, 40, 0,0.1);">7</td>
+                    </tr>
+                    <tr></tr>
+                        <td style="background: rgba(242, 40, 0,0.2);">Schizophrenia</td>
+                        <td style="background: rgba(242, 40, 0,0.2);">15.4</td>
+                    </tr>
+                    <tr></tr>
+                        <td style="background: rgba(242, 40, 0, 0.3)">Post-Traumatic Stress Disorder</td>
+                        <td style="background: rgba(242, 40, 0, 0.3)">31</td>
+                    </tr>
+                    <tr></tr>
+                        <td style="background: rgba(242, 40, 0,0.4)">OSDD, DDNOS</td>
+                        <td style="background: rgba(242, 40, 0,0.4)">36</td>
+                    </tr>
+                    <tr></tr>
+                        <td style="background: rgba(242, 40, 0,0.5)">Dissociative Identity Disorder</td>
+                        <td style="background: rgba(242, 40, 0,0.5)">48</td>
+                    </tr>
+                    
+                </table>
             </section>
     </div>
     <%- include ("../partials/footer.ejs") %>
+    <script>
+
+        function between(x, min, max) {
+        return x >= min && x <= max;
+        }
+        $(document).on('input', 'input[name=desQuestion]', function() {
+                // $('#slider_value').html( $(this).val() );
+                $(this).next().text(`${$(this).val()}%`);
+
+
+                // Go add up and calculate DES score
+                // console.log($('input[name=desQuestion]').val())
+                var finalScore=0;
+                $('input[type=range]').each(function(){
+                    // arrText.push($(this).val());
+                    finalScore += parseInt($(this).val());
+                })
+                var desScore= (finalScore/28).toPrecision(2);
+                $("#desScore").text(`${desScore}`);
+                var indication;
+                if (desScore < 10){
+                    indication= "Very Little";
+                } else if (between(desScore, 0, 10)){
+                    indication= "Very Little";
+                } else if(between(desScore, 20, 30)){
+                    indication= "Moderate";
+                } else if(between(desScore, 30, 45)){
+                    indication= "Heavy";
+                } else {
+                    indiction= "Very Heavy";
+                }
+                $("#desScore").append(`- ${indication || "Very Heavy"} Levels of Dissociation`);
+            });
+    </script>
     </body>
 </html>
