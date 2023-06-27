@@ -371,17 +371,26 @@ footer{
 
 .editbtn, .deletebtn {
     font-weight: normal;
-    color: white;
+    color: white !important;
 }
 
 .editbtn {
-    background: rgb(110, 190, 110);
+    background: rgb(78, 161, 78);
+    transition: .5s;
 }
 
 .deletebtn {
-    background: rgb(190, 110, 110);
+    background: rgb(151, 51, 51);
+    transition: .5s;
 }
 
+.editbtn:hover{
+    background: rgb(123, 177, 24);
+}
+.deletebtn:hover {
+    background: rgb(207, 5, 5);
+    transition: .5s;
+}
 .fa-trash-alt, .fa-pencil{
   color: grey;
   transition: .5s;

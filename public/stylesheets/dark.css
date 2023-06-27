@@ -108,17 +108,7 @@ button, button > *{
 .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused){
 background: var(--col7);
 }
-.editbtn{
-    color: rgb(92, 172, 112) !important; 
-    background: rgb(41, 82, 48);
-}
-.editbtn:hover{
-    color: rgb(123, 216, 47) !important;
-}
-.deletebtn{
-    color: rgb(199, 124, 124);
-    background: rgb(94, 32, 32)
-}
+
 #myTopnav> *:hover, .dropbtn:hover, .dropdown-content a:hover, .ck .ck-button .ck-off:hover{
     color: var(--col6) !important;
 }

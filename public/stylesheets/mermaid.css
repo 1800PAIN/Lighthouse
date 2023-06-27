@@ -1,11 +1,11 @@
 /* Mermaid Theme Colours */
 :root{
-    --col1: #0e659e;
-    --col2: #f185f5;
+    --col1: #04385a;
+    --col2: #d68dd8;
     --col3: #53d0f7;
-    --col4: #3c975a;
-    --col5: #a376f7;
-	--col6: #26645a;
+    --col4: #5f19af;
+    --col5: #5827b3;
+	--col6: #265d64;
     --col7: #b1f1ee;
     --col8: #161f50;
 }
@@ -28,9 +28,6 @@ a:visited{
     color: var(--col5);
 }
 
-.navel, button, input[type=submit], input[type=reset], .linkbutton {
-    color: var(--col1);
-}
 
 #menubg{
     background: url("/img/glitter.jpg");
@@ -49,4 +46,8 @@ a:visited{
 }
 #logoname, #logoname > *{
     color: var(--col7)
+}
+
+.systembutton > *{
+    color: var(--col5);
 }
