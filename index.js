@@ -948,7 +948,6 @@ app.get('/wish-d/:id', (req, res) => {
 				  } else {
 					var resArr= new Array();
 					for (i in result.rows){
-						//        alt_id: "b439e292-e7a4-4faf-a337-359f1cf619d4", sys_id: "ae81f836-a17c-484b-a664-65a6557c9ad9", name: "'QWx0ZXIgMg=='", acc: null,age: "0",agetext: null,alt_id: "b439e292-e7a4-4faf-a337-359f1cf619d4",birthday: null,dislikes: null,first_noted: null,fronttells: null,gender: null,icon: null,img_url: "aHR0cHM6Ly93d3cud3JpdGVsaWdodGhvdXNlLmNvbS9pbWcvYXZhdGFyLWRlZmF1bHQuanBn",job: null,likes: null,name: "'QWx0ZXIgMg=='",notes: null,pronouns: null,relationships: null,safe_place: null,sexuality: null,source: null,sys_alias: "'TmV3IFN5cw=='",sys_id: "ae81f836-a17c-484b-a664-65a6557c9ad9",triggers_neg: null,triggers_pos: null,type: null,"type-OLD": null,user_id: "233f526a-bec6-44e9-9da5-3c6f60601a47",wants: null
 
 						resArr.push({
 							alt_id: result.rows[i].alt_id, 
@@ -994,6 +993,29 @@ app.get('/wish-d/:id', (req, res) => {
 					res.status(200).json({code: 200, search: journalArr});
 				  }
 				});
+			} else if (req.headers.grab=="journalPosts"){
+				client.query({text: "SELECT * FROM posts WHERE j_id=$1 ORDER BY created_on DESC;",values: [`${req.headers.uuid}`]}, (err, result) => {
+					if (err) {
+					   console.log(err.stack);
+					   res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+				   } else {
+					let journalPosts = {
+						pinned:[],
+						nonpin:[]
+					};
+					for (i in result.rows){
+						if (result.rows[i].is_pinned == true){
+							// Pinned Post
+							journalPosts.pinned.push({title: decryptWithAES(result.rows[i].title), body: decryptWithAES(result.rows[i].body), createdon: result.rows[i].created_on, id: result.rows[i].p_id});
+						} else {
+							// Not pinned.
+							journalPosts.nonpin.push({title: decryptWithAES(result.rows[i].title), body: decryptWithAES(result.rows[i].body), createdon: result.rows[i].created_on, id: result.rows[i].p_id});
+						}
+					}
+					  res.status(200).json({code: 200, search: journalPosts});
+	
+				   }
+			  });
 			}
 			
 		} else return res.status(403);
@@ -2506,9 +2528,9 @@ app.get('/wish-d/:id', (req, res) => {
 		if (isLoggedIn(req)){
 			if (apiEyesOnly(req)){
 				let editMode= req.body.edit;
-				if (editMode="pin"){
+				if (editMode=="pin"){
 					let postID= req.body.postID;
-					client.query({text: "UPDATE comm_posts SET is_pinned = NOT is_pinned WHERE id=$1;",values: [req.body.postID]}, (err, result) => {
+					client.query({text: "UPDATE comm_posts SET is_pinned = NOT is_pinned WHERE id=$1;",values: [postID]}, (err, result) => {
 						if (err) {
 							console.log(err.stack);
 							res.status(400).json({code: 400, message: err.stack});
@@ -2516,6 +2538,16 @@ app.get('/wish-d/:id', (req, res) => {
 						 res.status(200).json({code:200});
 						}
 						});
+				} else if (editMode== "journalPin"){
+					let postID= req.body.postID;
+					client.query({text: "UPDATE posts SET is_pinned = NOT is_pinned WHERE p_id=$1;",values: [postID]}, (err, result) => {
+						if (err) {
+							console.log(err.stack);
+							res.status(400).json({code: 400, message: err.stack});
+						} else {
+						 res.status(200).json({code:200});
+						}
+						});					
 				}
 
 			} else {
