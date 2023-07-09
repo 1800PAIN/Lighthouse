@@ -165,12 +165,15 @@
   if (localStorage.lighthouse_mode){
       if (localStorage.lighthouse_mode == "dark") {
         $('[name="mode"]').text(`dark_mode`);
+        $('head').append('<link type="text/css" rel="stylesheet" media="all" href="/stylesheets/dark.css">');
       } else {
         $('[name="mode"]').text(`light_mode`);
+        $('head').append('<link type="text/css" rel="stylesheet" media="all" href="/stylesheets/lighthouse.css">');
       }
 
     } else {
       localStorage.lighthouse_mode= "light";
+
     }
   $( "#hamburger" ).on( "click", function() {
    $("#mobilenav").toggle("fast");
@@ -199,7 +202,7 @@ function toggleMode(){
       localStorage.lighthouse_mode="light";
       $("html").addClass("light-mode");
       $("html").removeClass("dark-mode");
-      $("head").append(`<link rel="stylesheet" href="/stylesheets/<%- cookies.skin %>.css">`);  
+      $("head").append(`<link rel="stylesheet" href="/stylesheets/<%- cookies.skin || "lighthouse" %>.css">`);  
     } else {
       localStorage.lighthouse_mode="dark";
       $('[name="mode"]').text(`dark_mode`);
