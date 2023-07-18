@@ -1304,12 +1304,11 @@ app.get('/wish-d/:id', (req, res) => {
 				console.log(err.stack);
 				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 			} else {
-				// console.log(result.rows[0]);
-				req.session.jPost= result.rows[0];
-				req.session.jPost.body= decryptWithAES(req.session.jPost.body);
-				req.session.jPost.title= decryptWithAES(req.session.jPost.title);
-				req.session.jPost.is_comm= false;
-				res.render(`pages/edit_post`, { session: req.session, splash:splash,cookies:req.cookies});
+				// req.session.jPost= result.rows[0];
+				// req.session.jPost.body= decryptWithAES(req.session.jPost.body);
+				// req.session.jPost.title= decryptWithAES(req.session.jPost.title);
+				// req.session.jPost.is_comm= false;
+				res.render(`pages/edit_post`, { session: req.session, splash:splash,cookies:req.cookies, cJourn: {id: result.rows[0].p_id, body: decryptWithAES(result.rows[0].body), title: decryptWithAES(result.rows[0].title), is_comm: false}});
 			}
 		});
 	  } else {
@@ -1327,12 +1326,8 @@ app.get('/wish-d/:id', (req, res) => {
 			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 		  } else {
 			  // console.log(result.rows[0]);
-			  req.session.jPost= result.rows[0];
-			  req.session.jPost.body= decryptWithAES(req.session.jPost.body);
-			  req.session.jPost.title= decryptWithAES(req.session.jPost.title);
-			  req.session.jPost.is_comm= true;
 			  // console.log(req.session.jPost);
-			  res.render(`pages/edit_post`, { session: req.session, splash:splash,cookies:req.cookies });
+			  res.render(`pages/edit_post`, { session: req.session, splash:splash,cookies:req.cookies, cJourn: {id: result.rows[0].id, body: decryptWithAES(result.rows[0].body), title: decryptWithAES(result.rows[0].title), is_comm: true} });
 		  }
 	  });
 	} else {
