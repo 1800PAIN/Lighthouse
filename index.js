@@ -2730,7 +2730,11 @@ app.get('/wish-d/:id', (req, res) => {
   <lastmod>2023-05-06T00:29:06+00:00</lastmod>
   <priority>0.90</priority>
 </url>
-
+<url>
+  <loc>https://www.writelighthouse.com/tutorial</loc>
+  <lastmod>2023-05-06T00:29:06+00:00</lastmod>
+  <priority>0.75</priority>
+</url>
 
 </urlset>
 		`);
@@ -2762,6 +2766,7 @@ Allow: /signup
 Allow: /login
 Allow: /about
 Allow: /glossary
+Allow: /tutorial
 Crawl-delay: 10
 Sitemap: www.writelighthouse.com/sitemap.xml
 		`);
