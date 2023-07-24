@@ -416,7 +416,7 @@ text-align: center;
 
 .systemdiv{
     display: block;
-    vertical-align: middle;
+    /* vertical-align: middle; */
     margin-top: calc(1em);
     border-top: 1px solid #911111;
     padding: 2vh 0;
@@ -481,7 +481,7 @@ button[disabled=disabled]{
     left: 0;
     filter: drop-shadow(3px 10px 4px rgba(0,0,0, .2));
     z-index: 200;
-    vertical-align: middle;
+    /* vertical-align: middle; */
   }
   .menu li{
     list-style: none;
@@ -522,7 +522,7 @@ button[disabled=disabled]{
 
   .systemdiv{
     display: block;
-    vertical-align: middle;
+    /* vertical-align: middle; */
     margin-top: calc(1em);
     border-top: 1px solid #911111;
     padding: 2vh 0;
@@ -659,4 +659,9 @@ img.emoji {
   .hoverhint{
     color: var(--col6);
     cursor: help;
+  }
+
+  .indented{
+    margin-left: 2em;
+    border-left: 2px solid var(--col1);
   }

@@ -2017,6 +2017,26 @@ app.get('/wish-d/:id', (req, res) => {
 						  res.redirect(`/alter/${req.params.id}`);
 					  }
 				  });
+				} else if (req.body.unlock){
+					client.query({text: "UPDATE journals SET is_private=false WHERE alt_id=$1;",values: [req.params.id]}, (err, result) => {
+						if (err) {
+						  console.log(err.stack);
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+					  } else {
+						  splash= req.flash("flash",`<strong>All set!</strong> Journal unlocked.`);
+						  res.redirect(`/alter/${req.params.id}`);
+					  }
+				  });
+				} else if(req.body.lockJournal){
+					client.query({text: "UPDATE journals SET password=$2, is_private=true WHERE alt_id=$1;",values: [req.params.id, `'${CryptoJS.SHA3(req.body.journalPassword)}'`]}, (err, result) => {
+						if (err) {
+						  console.log(err.stack);
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+					  } else {
+						  splash= req.flash("flash",`<strong>All set!</strong> Journal locked. Just so you remember, the password is: ${req.body.journalPassword}.`);
+						  res.redirect(`/alter/${req.params.id}`);
+					  }
+				  });
 				} else {
 				  // Login
 				  client.query({text: "SELECT password FROM journals WHERE alt_id=$1",values: [`${req.params.id}`]}, (err, result) => {
@@ -2115,6 +2135,7 @@ app.get('/wish-d/:id', (req, res) => {
 						  console.log(err.stack);
 						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 					  }
+					  
 				  });
 				  req.flash("flash",strings.alter.created);
 				}

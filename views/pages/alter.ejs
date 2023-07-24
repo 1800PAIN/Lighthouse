@@ -45,6 +45,30 @@ td{
 </head>
 <body>
     <%- include ("../partials/nav.ejs") %>
+                  <!-- The Modal -->
+                  <div id="myModal" class="modal">
+
+                    <!-- Modal content -->
+                    <div class="modal-content" id="modalContent">
+                      <span class="material-symbols-outlined close">
+                        cancel
+                        </span>
+                        <h2>Lock Journal</h2>
+                        <p>This journal will only open if you put in the password. If you forget, you can reset it.</p>
+                      <form method="post">
+                        <label for="password">Journal password: </label>
+                        <input type="password" id="password" name="journalPassword" required>
+                        <span id="passText"></span>
+                        <input type="submit" name="lockJournal" value="Create Password">
+                      </form>
+                    </div>
+                  </div>
+    <script>
+        $("#password").on('keyup', function () {
+            document.getElementById("passText").style.color="gray";
+            $("#passText").html(`<small>You typed: ${$("#password").val()}</small>`);
+            });
+    </script>
     <div id="wrapper">
         <% if (locals.messages.flash) { %>
             <div class="splash"><%- locals.messages.flash %></div>
@@ -73,6 +97,15 @@ td{
               <input type="submit" name="modify" value="Update">
             </form>
             <% if (session.altJournal.length > 0){ %>
+                <div class="indented">
+                <p>This journal is <strong><%= session.altJournal[0].is_private == true ? 'password protected' : 'unlocked' %>.</strong>
+                <% if (session.altJournal[0].is_private == true){ %> 
+                    <form method="post"><input type="submit" name="unlock" value="Unlock"></form>
+                <% } else { %>
+                    <button id="tbutton">Lock</button>
+                <% } %></p>
+                </div>
+
                 <!-- <p><%= session.altJournal[0].is_private %></p> -->
 				<p>Click on the journal to enter.</p>
                 <div id="blogpopup" style="display:none;">
@@ -337,6 +370,26 @@ td{
 
     <%- include ("../partials/footer.ejs") %>
     <script>
+        var modal = document.getElementById("myModal");
+        var btn = document.getElementById("tbutton");
+        var span = document.getElementsByClassName("close")[0];
+        btn.onclick = function() {
+          // modal.style.display = "block";
+          $("#myModal").fadeIn("fast");
+        }
+        span.onclick = function() {
+          // modal.style.display = "none";
+          $("#myModal").fadeOut("fast");
+        }
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            // modal.style.display = "none";
+            $("#myModal").fadeOut("fast");
+          }
+        }
+        </script>
+    <script>
 
 
         $("#pass").on('keyup', function () {
@@ -354,7 +407,8 @@ td{
             document.getElementById("passtextNew").style.color="gray";
             $("#passtextNew").html(`<small>You typed: ${$("#passnew").val()}</small>`);
             });
-
+        
+        try {
         document.getElementById("true").addEventListener("click", function(){
             $( "#more" ).show("fast");
             $( "#passhint" ).show("fast");
@@ -362,7 +416,11 @@ td{
         document.getElementById("false").addEventListener("click", function(){
             $( "#more" ).hide("fast");
             $( "#passhint" ).hide("fast");
-        });
+        });            
+        } catch (e){
+            // console.log(e);
+        }
+
         function showPass(){
             document.getElementById("passtext").style.color="gray";
             return document.getElementById("passtext").innerHTML=`Your password is: ${document.getElementById('pass').value}`;

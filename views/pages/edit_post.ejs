@@ -8,6 +8,7 @@
 <body>
     <%- include ("../partials/nav.ejs") %>
     <div id="wrapper">
+        <% console.log(session.u_id) %>
         <section>
             <% if (locals.messages.flash) { %>
                 <div class="splash"><%- locals.messages.flash %></div>
