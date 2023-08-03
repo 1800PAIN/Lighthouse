@@ -15,7 +15,7 @@
                 <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
             <h2>Import from Pluralkit</h2>
-            <p>Use Pluralkit? We can fetch your <%- pluralize(cookies.alter_term) %> and add them to your account. Importing will create a new <%- session.system_term %> that can be renamed on the <a href="/system">My <%- capitalise(session.system_term) %></a> page</a>.</p>
+            <p>Use Pluralkit? We can fetch your <%- pluralize(cookies.alter_term) %> and add them to your account. Importing will create a new <%- cookies.system_term %> that can be renamed on the <a href="/system">My <%- capitalise(cookies.system_term) %></a> page</a>.</p>
             <p><em>Don't know your system ID?</em> Direct message "pk;s" to Pluralkit, or type "pk;s" in a channel that Pluralkit can view.</p>
             <p>Adding your Pluralkit token is completely optional. Adding your token allows Lighthouse to fetch your private <%- pluralize(cookies.alter_term) %> as well. We do not store this token. <strong>Do not share your token with anyone you do not trust.</strong></p>
             <p>For technical reasons, you can import a maximum of <strong>100 <%- pluralize(cookies.alter_term) %></strong> at a time. After that, Lighthouse seems to run into errors. We're investigating a fix to this currently.</p>
@@ -35,15 +35,12 @@
                 <span class="linkbutton" id="checkall">Select All</span><br>
                 <p><small>If there are more than 100 <%- pluralize(cookies.alter_term) %> in this list, the first 100 will be selected. <%- capitalise(pluralize(cookies.alter_term))%> selected: <strong><span id="checkCount">0</span></strong></small></p>
                 <label for="sysLoc">These <%- pluralize(cookies.alter_term) %> will be imported into: </label>
-                <select name="sysLoc">
-                    <option value="new" selected>Create New <%- capitalise(session.system_term) %></option>
-                    <% for (i in session.sys){ %> 
-                        <option value="<%- session.sys[i].id %>"><%- session.sys[i].name %></option>
-                    <%}%>
+                <select name="sysLoc" id="sysLoc">
+                    <option value="new" selected>Create New <%- capitalise(cookies.system_term) %></option>
                 </select>
                 
                 <input type="submit" name="fetch" value="Import System" id="import">
-                <p class="splash">"Create New <%- capitalise(session.system_term) %>" will create a new <%- session.system_term %> called "Imported from Pluralkit". If you already have a <%- session.system_term %> named that, 3 random numbers will be appended to the end to prevent confusion. Press "rename" next to these <%- pluralize(session.system_term) %>' names on the "My <%- capitalise(session.system_term) %>" page to rename them to whatever you like.</p>
+                <p class="splash">"Create New <%- capitalise(cookies.system_term) %>" will create a new <%- cookies.system_term %> called "Imported from Pluralkit". If you already have a <%- cookies.system_term %> named that, 3 random numbers will be appended to the end to prevent confusion. Press "rename" next to these <%- pluralize(cookies.system_term) %>' names on the "My <%- capitalise(cookies.system_term) %>" page to rename them to whatever you like.</p>
             </form>
         </section>
     </div>
@@ -75,9 +72,8 @@
             var pkID= $("#pid").val();
             if (pkID.length <5 ){
                 // Blank.
-                $("#Wait").html("Please type the <%- session.system_term %> ID.")
+                $("#Wait").html("Please type the <%- cookies.system_term %> ID.")
             } else {
-                console.log(pkID);
             $("#roster").html("");
             // Go grab pluralkit
 
@@ -90,7 +86,6 @@
             });
             let body = await response.text();
             let sysInfo = JSON.parse(body);
-            console.log(sysInfo.message);
             $("#Wait").html("<h3>Lighthouse will import:</h3>");
             $("#pid").val("")
             $("#pktoken").val("")
@@ -98,12 +93,6 @@
             if (!sysInfo.message){
                 // System found.
                 for (i in sysInfo){
-
-                // $('#roster')
-                //     .append($(`<li>${sysInfo[i].display_name || sysInfo[i].name} <img src="${sysInfo[i].avatar_url}" class="vtinyimg"></li>`)
-                //         .hide()
-                //         .fadeIn(500)
-                //     );
                 
                 var alterName= sysInfo[i].display_name == null ? sysInfo[i].name : sysInfo[i].display_name;
                 var alterInfo=  JSON.stringify({
@@ -127,11 +116,25 @@
                 $("#Wait").html(`<strong>Sorry!</strong> Either Pluralkit's API is down, or we had trouble sending a request. Try again later!`);
             } else {
                // Not found.
-               $("#Wait").html(`<strong>Hmmm... are you sure?</strong> Pluralkit couldn't find a <%- session.system_term %> with that ID. Try again.`);
+               $("#Wait").html(`<strong>Hmmm... are you sure?</strong> Pluralkit couldn't find a <%- cookies.system_term %> with that ID. Try again.`);
             }
+
+            response = await fetch(`/system-data`, { 
+    method: "GET",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json',
+                  "grab": "systems"
+                } 
+            });
+            body = await response.text();
+            sysInfo = JSON.parse(body);
+            for (i in sysInfo.systems){
+                $("#sysLoc").append(`<option value="${sysInfo.systems[i].sys_id}">${sysInfo.systems[i].alias}</option>`);
             }
            
         }
+    }
 
 
 

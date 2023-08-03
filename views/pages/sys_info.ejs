@@ -57,7 +57,7 @@ var journSkin=[
             <% } %>
             <h2><% if (session.chosenSys.icon) { %> <img src="/img/svg/<%- session.chosenSys.icon %>.svg" class="vtinyimg"> <% } %><%= Buffer.from(session.chosenSys.sys_alias, 'base64').toString() %></h2>
             <div id="parent"></div>
-            <p>This <%= session.system_term %> has <%= alterArr.length %> <% if (alterArr.length == 1){ %><%= cookies.alter_term %><% } else { %><%= pluralize(cookies.alter_term)%><% } %>.</p>
+            <p>This <%= cookies.system_term %> has <%= alterArr.length %> <% if (alterArr.length == 1){ %><%= cookies.alter_term %><% } else { %><%= pluralize(cookies.alter_term)%><% } %>.</p>
             <% if (alterArr.length > 0){ %>
             <div class="grid">
                 <% for ( i in alterArr) {  %>
@@ -71,21 +71,21 @@ var journSkin=[
                 <input type="text" name="altname" placeholder="New <%= capitalise(cookies.alter_term) %> Name Here" autofocus="autofocus">
                 <input type="submit" name="submit" value="Add">
             </form>
-            <button onclick="$('#subsysForm').toggle('fast')"><%- capitalise(session.subsystem_term) %> settings</button>
+            <button onclick="$('#subsysForm').toggle('fast')"><%- capitalise(cookies.subsystem_term) %> settings</button>
             <form id="subsysForm" style="display:none;" method="post">
                 <label for="sysid">Nest this system under:</label>
                 <select name="sysid" id="sysid">
-                    <option value="none">None (This <%- session.system_term %> is not a <%- session.subsystem_term %>)</option>
+                    <option value="none">None (This <%- cookies.system_term %> is not a <%- cookies.subsystem_term %>)</option>
                 </select>
-                <input type="submit" value="Save <%- session.subsystem_term %> settings">
+                <input type="submit" value="Save <%- cookies.subsystem_term %> settings">
             </form>
         </section>
         <section id="subsystems" style="display:none;">
-            <h2><%- capitalise(pluralize(session.subsystem_term)) %></h2>
+            <h2><%- capitalise(pluralize(cookies.subsystem_term)) %></h2>
             <ul id="subList"></ul>
         </section>
         <section>
-            <h3>Set an icon for this <%= capitalise(session.system_term) %></h3>
+            <h3>Set an icon for this <%= capitalise(cookies.system_term) %></h3>
             <form method="post">
             <div class="parent" style="height: auto;margin:auto;">
                 <% for (let i=0; i < journSkin.length; i++){ %>
@@ -150,7 +150,7 @@ var journSkin=[
             for (i in sysInfo.systems){
                 if (sysInfo.systems[i].sys_id== '<%- session.chosenSys.subsys_id %>'){
                     $("#sysid").append(`<option value="${sysInfo.systems[i].sys_id}" selected>${sysInfo.systems[i].alias}</option>`);
-                    $("#parent").html(`<a class="linkbutton" href="/system/${sysInfo.systems[i].sys_id}">Parent <%- session.system_term %>: ${sysInfo.systems[i].alias}</a>`);
+                    $("#parent").html(`<a class="linkbutton" href="/system/${sysInfo.systems[i].sys_id}">Parent <%- cookies.system_term %>: ${sysInfo.systems[i].alias}</a>`);
                 } else if(sysInfo.systems[i].sys_id== '<%- session.chosenSys.sys_id %>'){
                     continue;
                 } else {

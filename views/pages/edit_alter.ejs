@@ -78,7 +78,7 @@
                 <textarea name="fronttells"><% if (session.chosenAlter.fronttells !== null) { %><%- Buffer.from(session.chosenAlter.fronttells, 'base64').toString() %><% } %></textarea>
                 <label for="safety"><%= Buffer.from(session.chosenAlter.name, 'base64').toString() %> feels safest when...</label>       
                 <textarea name="safety"><% if (session.chosenAlter.safe_place !== null) { %><%- Buffer.from(session.chosenAlter.safe_place, 'base64').toString() %><% } %></textarea>
-                <label for="acc"><%= Buffer.from(session.chosenAlter.name, 'base64').toString() %> would like accommodation from the <%= session.system_term %> for... (e.g.: Emotional regulation, memory loss)</label>       
+                <label for="acc"><%= Buffer.from(session.chosenAlter.name, 'base64').toString() %> would like accommodation from the <%= cookies.system_term %> for... (e.g.: Emotional regulation, memory loss)</label>       
                 <textarea name="acc"><% if (session.chosenAlter.acc !== null) { %><%- Buffer.from(session.chosenAlter.acc, 'base64').toString() %><% } %></textarea>
                 <label for="wish">A few things <%= Buffer.from(session.chosenAlter.name, 'base64').toString() %> wishes for (e.g. "to feel safer internally", "to communicate with other parts")</label>       
                 <textarea name="wish"><% if (session.chosenAlter.wants !== null) { %><%- Buffer.from(session.chosenAlter.wants, 'base64').toString() %><% } %></textarea>

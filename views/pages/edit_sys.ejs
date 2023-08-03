@@ -12,8 +12,8 @@
             <div class="splash"><%- locals.messages.flash %></div>
         <% } %>
         <section>
-            <h2>Edit <%= capitalise(session.system_term) %>- <%=  Buffer.from(alt.sys_alias, 'base64').toString() %></h2>
-            <p>You can rename the <%= session.system_term %>.</p>
+            <h2>Edit <%= capitalise(cookies.system_term) %>- <%=  Buffer.from(alt.sys_alias, 'base64').toString() %></h2>
+            <p>You can rename the <%= cookies.system_term %>.</p>
             <form method="post">
                 <label for="sysname"><%=  Buffer.from(alt.sys_alias, 'base64').toString() %> will now be known as....</label>
                 <input type="text" autocomplete="off" name="sysname" placeholder="Put a cool name here">

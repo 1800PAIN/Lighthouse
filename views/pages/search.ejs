@@ -15,7 +15,7 @@
                     <label for="options">Search for <%= pluralize(cookies.alter_term) %> by...</label>
                     <select name="options" id="options">
                         <option value="name">Name</option>
-                        <option value="sys_alias"><%= capitalise(session.system_term) %></option> <!-- Only show up if the user has multiple systems?-->
+                        <option value="sys_alias"><%= capitalise(cookies.system_term) %></option> <!-- Only show up if the user has multiple systems?-->
                         <option value="pronouns">Pronouns</option>
                         <option value="type">Type</option>
                         <option value="source">Source (if introject)</option>
