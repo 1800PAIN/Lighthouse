@@ -712,10 +712,10 @@ app.get('/tutorial', (req, res) => {
 						alterArr.push({
 								id: bresult.rows[i].alt_id,
 								name: Buffer.from(bresult.rows[i].name, "base64").toString(),
-								pronouns: Buffer.from(bresult.rows[i].pronouns, "base64").toString(),
+								pronouns: Buffer.from(bresult.rows[i].pronouns, "base64").toString() || "",
 								type: bresult.rows[i].type,
-								avatar: Buffer.from(bresult.rows[i].img_url, "base64").toString(),
-								sys_alias: Buffer.from(bresult.rows[i].sys_alias, "base64").toString()
+								avatar: Buffer.from(bresult.rows[i].img_url, "base64").toString() || "",
+								sys_alias: Buffer.from(bresult.rows[i].sys_alias, "base64").toString() || ""
 							})
 					}
 					client.query({text: "SELECT * FROM forums WHERE u_id=$1;",values: [`${getCookies(req)['u_id']}`]}, (err, cresult) => {
