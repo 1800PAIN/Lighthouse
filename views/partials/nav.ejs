@@ -114,20 +114,20 @@
   </head>
   <div id="menubg"></div>
   <div id="logo" style="display: inline-block; margin-left: 30px;"><a href="/"><img style="vertical-align:middle; margin-right: 10px;" src="/img/logo.png" width="24px" alt="Lighthouse logo"><br/><span id="logoname">Lighthouse<br/>
-    <% if (cookies.loggedin) { %>
+    <% if (cookies) { %>
       <sup>Hi, <%= cookies.username ? cookies.username : "friend" %>!</sup>
     <% } else { %>
     <sup>Journal Together</sup>
       <% } %>
   </span></a></div>
   <div class="topnav" id="myTopnav">
-    <% if (cookies.loggedin){ %>
+    <% if (cookies){ %>
       <a href="/logout">Logout</a>
         <% } else { %>
           <a href="/signup">Sign Up</a>
           <a href="/login">Log in</a>
         <% } %>
-    <% if (cookies.loggedin){ %>
+    <% if (cookies){ %>
       <% if (session.system_term) { %> 
         <a href="/system">My <%= capitalise(session.system_term) %></a>
       <% } else { %>
