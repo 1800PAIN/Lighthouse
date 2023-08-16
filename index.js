@@ -3044,7 +3044,9 @@ app.get('/wish-d/:id', (req, res) => {
 	 app.get("/robots.txt", function(req, res) {
 		res.setHeader('content-type', 'text/plain');
 		res.send(`
-User-agent: CCBot
+User-Agent: GPTBot
+Disallow: /
+User-Agent: CCBot
 Disallow: /
 User-Agent: *
 Disallow: /system
