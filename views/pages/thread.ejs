@@ -239,7 +239,6 @@
             } else{
                 $("#author").append(`<option value="${sysInfo.search[i].alt_id}">${sysInfo.search[i].name} (<%- capitalise(cookies.system_term) %>: ${sysInfo.search[i].sys_alias})</option>`);
             }
-            $("#replyauthor").append(`<option value="${sysInfo.search[i].alt_id}">${sysInfo.search[i].name} (<%- capitalise(cookies.system_term) %>: ${sysInfo.search[i].sys_alias})</option>`);
             }
         }
         getAlters();
