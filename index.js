@@ -2574,13 +2574,13 @@ app.get('/wish-d/:id', (req, res) => {
 			if (typeof req.body.alterChoice == "string"){
 				splitList= [JSON.parse(req.body.alterChoice)];
 				if (splitList[0].img== null) splitList[0].img = 'https://www.writelighthouse.com/img/avatar-default.jpg';
-				/* Issue */  if (splitList[0].pronouns== null) splitList[0].pronouns = '';
+				 if (splitList[0].pronouns== null) splitList[0].pronouns = '';
 				if (splitList[0].birthday== null) splitList[0].birthday = '';
 			} else if(typeof req.body.alterChoice == "undefined"){
 				req.flash("flash", strings.import.PK.failure.noCheck);
-				/* Issue */  return res.redirect("/pluralkit");
+				  return res.redirect("/pluralkit");
 			} else {
-				for (i in req.body.alterChoice){
+				/* Issue */ for (i in req.body.alterChoice){
 					splitList.push(JSON.parse(req.body.alterChoice[i]));
 					if (splitList[i].img== null) splitList[i].img = 'https://www.writelighthouse.com/img/avatar-default.jpg';
 					if (splitList[i].pronouns== null) splitList[i].pronouns = null;

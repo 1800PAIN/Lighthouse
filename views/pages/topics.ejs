@@ -159,7 +159,7 @@
                   <tbody>
                     <% for (i in topics){ %> 
                       <tr style="padding: 5em; border-bottom:1px solid black;">
-                        <td style="text-align: left;"><a href="/topic/<%- topics[i].id %>"><%- topics[i].name %></a><br><small>by: <a href="/alter/<%- topics[i].alt_id %>"><%- topics[i].alter %></a> on <%- (topics[i].created_on).toLocaleString().split(",")[0] %><br><span style="padding-left: 2em;"><%- truncate((topics[i].preview).replace(/\<.+?\>/g, ""), 80) %></span></small></td>
+                        <td style="text-align: left;"><a href="/topic/<%- topics[i].id %>"><%= topics[i].name %></a><br><small>by: <a href="/alter/<%- topics[i].alt_id %>"><%- topics[i].alter %></a> on <%- (topics[i].created_on).toLocaleString().split(",")[0] %><br><span style="padding-left: 2em;"><%- truncate((topics[i].preview).replace(/\<.+?\>/g, ""), 80) %></span></small></td>
                         <!-- <td style="text-align: right;">No info.</td> -->
                       </tr>
                     <% } %>
