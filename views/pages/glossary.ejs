@@ -16,10 +16,10 @@
             }
             #copyNotification{
                 z-index: 5;
-                position: absolute;
+                position: fixed;
                 bottom: 0;
                 right: 0;
-                width: 50%;
+                width: 30%;
                 padding: 1em;
                 background: var(--col2);
                 display: none;
@@ -42,8 +42,8 @@
             <p>It's best to understand these terms first before reading further.</p>
             <dl id="important">
                 <% for (i in important) { %> 
-                    <div id="<%- important[i].term %>" style="scroll-margin-top: 10em;">
-                    <dt onclick="copyLink('<%- terms[i].term %>')" class="importantterm"><%- important[i].term %> <small><em>(<%- important[i].type %>)</em></small></dt>
+                    <div id="<%- important[i].linkalias %>" style="scroll-margin-top: 10em;">
+                    <dt onclick="copyLink('<%- terms[i].linkalias %>')" class="importantterm"><%- important[i].term %> <small><em>(<%- important[i].type %>)</em></small></dt>
                     <dd><%- important[i].definition %></dd>  
                     </div>
                 <% } %>
@@ -77,11 +77,11 @@
                     <% for (i in terms) { 
                         
                         if (terms[i].start_letter == abc[n]){ %>
-                            <div id="<%- terms[i].term %>" style="scroll-margin-top: 10em;">
+                            <div id="<%- terms[i].linkalias %>" style="scroll-margin-top: 10em;">
                     <% if (terms[i].essential== true) { %> 
-                        <dt class="importantterm" onclick="copyLink('<%- terms[i].term %>')"><%- terms[i].term %> <small><em>(<%- terms[i].type %>)</em></small></dt>
+                        <dt id="<%- terms[i].linkalias %>" class="importantterm" onclick="copyLink('<%- terms[i].linkalias %>')"><%- terms[i].term %> <small><em>(<%- terms[i].type %>)</em></small></dt>
                     <% } else { %>
-                        <dt onclick="copyLink('<%- terms[i].term %>')"><%- terms[i].term %> <small><em>(<%- terms[i].type %>)</em></small></dt>
+                        <dt id="<%- terms[i].linkalias %>" onclick="copyLink('<%- terms[i].linkalias %>')"><%- terms[i].term %> <small><em>(<%- terms[i].type %>)</em></small></dt>
                     <% } %>
                     <dd><%- terms[i].definition %></dd>  
                     </div>
@@ -102,7 +102,7 @@
         }
         function copyLink(url) {
             navigator.clipboard.writeText(`www.writelighthouse.com/glossary/#${url}`);
-            $("#copyNotification").show().delay(3000).fadeOut();
+            $("#copyNotification").show().delay(3000).fadeOut("slow");
             } 
         </script>
     </body>
