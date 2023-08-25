@@ -30,7 +30,7 @@
             <div class="grid-sm padLinks" style="margin: auto;text-align:center;line-height: 1;">
               <a title= "<%= capitalise(cookies.alter_term) %>Search" href="/search"><%= capitalise(cookies.alter_term) %> Search</a>
               <a title= "<%= capitalise(cookies.system_term) %> Rules" href="/rules"><%= capitalise(cookies.system_term) %> Rules</a>
-              <% if (innerWorldEnabled == true) { %> <a title="Your Inner World" href="/inner-world">Inner World</a> <%}%>
+              <% if (session.innerworld == true) { %> <a title="Your Inner World" href="/inner-world">Inner World</a> <%}%>
               <a title="Your <%= capitalise(cookies.system_term) %>'s wants, needs, and wishes" href="/wish">Wishlist</a>
               <a title="Worksheets for trauma (WIP)" href="/worksheets">Worksheets</a>
               <a title="Crash course on using Lighthouse" href="/tutorial">Tutorial</a>

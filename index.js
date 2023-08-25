@@ -318,7 +318,7 @@ app.locals.pluralize= pluralize;
 					req.session.system_term= truncate(result.rows[0].system_term || getCookies(req)['system_term'] || "system",16);
 					req.session.alter_term= truncate(result.rows[0].alter_term || getCookies(req)['alter_term'] || "alter",16);
 					req.session.subsystem_term= truncate(result.rows[0].subsystem_term || getCookies(req)['subsystem_term'] || "subsystem",16);
-					req.session.inner_worlds = result.rows[0].inner_worlds;
+					req.session.inner_worlds = result.rows[0].inner_worlds || false;
 					req.session.innerworld_term= result.rows[0].innerworld_term;
 					req.session.plural_term= result.rows[0].plural_term;
 					req.session.language= result.rows[0].language;
@@ -1001,14 +1001,14 @@ app.get('/wish-d/:id', (req, res) => {
 					console.log(err.stack);
 					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 				} else {
-					let innerWorld= result.rows;
+					req.session.innerworld_rows = result.rows;
 					client.query({text:'SELECT * FROM users WHERE id=$1', values: [getCookies(req)['u_id']]}, (err, bresult)=>{
 						if (err){
 							console.log(err.stack);
 							res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 						} else {
-							let innerWorldEnabled= bresult.rows[0].inner_worlds;
-							res.render(`pages/innerworld`, { session: req.session, splash:splash,cookies:req.cookies, innerWorld:innerWorld, innerWorldEnabled:innerWorldEnabled });
+							req.session.innerworld = bresult.rows[0].inner_worlds || false;
+							res.render(`pages/innerworld`, { session: req.session, splash:splash,cookies:req.cookies});
 						}
 						
 					});
@@ -1264,8 +1264,8 @@ app.get('/wish-d/:id', (req, res) => {
 			  console.log(err.stack);
 			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 		  } else {
-			  let innerWorldEnabled= result.rows[0].inner_worlds;
-			  res.status(200).render('pages/system',{ session: req.session, splash:splash,cookies:req.cookies, innerWorldEnabled:innerWorldEnabled });
+			  req.session.innerworld = result.rows[0].inner_worlds || false;
+			  res.status(200).render('pages/system',{ session: req.session, splash:splash,cookies:req.cookies});
 		  }
 		});
 		

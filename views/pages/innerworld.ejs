@@ -22,7 +22,7 @@
                 <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
                 <h2>Inner World</h2>
-                <% if (innerWorldEnabled == false) { %> 
+                <% if (session.innerworld == false) { %> 
                 <p><strong>Inner Worlds are not enabled on this account.</strong> Not everyone has one. You can change this in <a href="/profile" title="Settings">Settings</a>.</p>
                 <% } else { %>
                   <p>An <strong>inner world</strong> is a visualisation tool for people to visualise <%= pluralize(cookies.alter_term) %>, memory storage, feelings, and more. People with DID or OSDD more often than not have an inner world. Inner worlds can be as small as a singular room, or as big as an entire planet. In the end, it's all about what makes you feel safest. Think of it as your happy place. Here, you can describe sections of your inner world for other <%= pluralize(cookies.alter_term) %> who may struggle to visualise it.</p>
@@ -42,9 +42,9 @@
               </section>
               <section>
                 <h2>Inner World Information</h2>
-                <% for (i in innerWorld){ %>
-                  <dt><%= Buffer.from(innerWorld[i].key, 'base64').toString() %> <form method="post" style="display: inline;"><button type="submit" name="<%= innerWorld[i].id %>" value="Remove" class="textless" onclick="deleteWarn('<%= Buffer.from(innerWorld[i].key, 'base64').toString() %>')"><span class="material-symbols-outlined textless"> delete</span></button></form></dt>
-                  <dd><%= Buffer.from(innerWorld[i].value, 'base64').toString() %></dd>
+                <% for (i in session.innerworld_rows){ %>
+                  <dt><%= Buffer.from(session.innerworld_rows[i].key, 'base64').toString() %> <form method="post" style="display: inline;"><button type="submit" name="<%= session.innerworld_rows[i].id %>" value="Remove" class="textless" onclick="deleteWarn('<%= Buffer.from(session.innerworld_rows[i].key, 'base64').toString() %>')"><span class="material-symbols-outlined textless"> delete</span></button></form></dt>
+                  <dd><%= Buffer.from(session.innerworld_rows[i].value, 'base64').toString() %></dd>
                 <% } %>
   
                 <%}%>
