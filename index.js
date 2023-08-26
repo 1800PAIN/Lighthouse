@@ -2646,7 +2646,6 @@ app.get('/wish-d/:id', (req, res) => {
 			if (typeof req.body.alterChoice == "string"){
 				splitList= [JSON.parse(req.body.alterChoice)];
 				if (splitList[0].img== null) splitList[0].img = 'https://www.writelighthouse.com/img/avatar-default.jpg';
-				 if (splitList[0].pronouns== null) splitList[0].pronouns = '';
 				if (splitList[0].birthday== null) splitList[0].birthday = '';
 			} else if(typeof req.body.alterChoice == "undefined"){
 				req.flash("flash", strings.import.PK.failure.noCheck);
@@ -2655,7 +2654,6 @@ app.get('/wish-d/:id', (req, res) => {
 				/* Issue */ for (i in req.body.alterChoice){
 					splitList.push(JSON.parse(req.body.alterChoice[i]));
 					if (splitList[i].img== null) splitList[i].img = 'https://www.writelighthouse.com/img/avatar-default.jpg';
-					if (splitList[i].pronouns== null) splitList[i].pronouns = null;
 					if (splitList[i].birthday== null) splitList[i].birthday = '';
 				}	
 			}
@@ -2690,7 +2688,7 @@ app.get('/wish-d/:id', (req, res) => {
 									// Insert each alter into this new system.
 									for (i in splitList){
 										// console.log(splitList[i].img);
-										client.query({text: "INSERT INTO alters (name, sys_id, pronouns, birthday, img_url) VALUES($1, $2, $3, $4, $5);",values: [`'${Buffer.from((splitList[i].name).replace(/⠀/g, " ")).toString('base64')}'`, newSysID,`'${Buffer.from(splitList[i].pronouns).toString('base64')}'`,`'${Buffer.from(splitList[i].birthday).toString('base64')}'`,`'${Buffer.from(splitList[i].img).toString('base64')}'`]}, (err, result) => {
+										client.query({text: "INSERT INTO alters (name, sys_id, birthday, img_url) VALUES($1, $2, $3, $4);",values: [`'${Buffer.from((splitList[i].name).replace(/⠀/g, " ")).toString('base64')}'`, newSysID,`'${Buffer.from(splitList[i].birthday).toString('base64')}'`,`'${Buffer.from(splitList[i].img).toString('base64')}'`]}, (err, result) => {
 											if (err) {
 											console.log(err.stack);
 											res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });

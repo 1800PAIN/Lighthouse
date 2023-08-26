@@ -47,6 +47,15 @@
     <%- include ("../partials/footer.ejs") %>
     </body>
     <script>
+        function cleanString(input) {
+            var output = "";
+            for (var i=0; i<input.length; i++) {
+                if (input.charCodeAt(i) <= 127) {
+                    output += input.charAt(i);
+                }
+            }
+            return output;
+        }
         // var checkedCount= $('input:checkbox:checked').length;
         $(document).ready(function(){
             $("#checkall").click(function() {
@@ -85,11 +94,14 @@
                 } 
             });
             let body = await response.text();
+            // body= body.replace(/[^\0-~]/g, '');
             let sysInfo = JSON.parse(body);
+            // return console.log(body)
             $("#Wait").html("<h3>Lighthouse will import:</h3>");
             $("#pid").val("")
             $("#pktoken").val("")
             let systemArray = new Array();
+            
             if (!sysInfo.message){
                 // System found.
                 for (i in sysInfo){
@@ -99,7 +111,6 @@
                     name: alterName.replace(/ /g, "⠀"), 
                     id: sysInfo[i].id, 
                     img:sysInfo[i].avatar_url,
-                    pronouns: sysInfo[i].pronouns,
                     birthday: sysInfo[i].birthday
                 });
                     $('#roster')
@@ -107,8 +118,6 @@
                         .hide()
                         .fadeIn(500)
                     );
-                // systemArray.push({name: sysInfo[i].display_name || sysInfo[i].name, img: sysInfo[i].avatar_url});
-                // $("#altField").val(`${JSON.stringify(systemArray)}`);
             }
             $("#submitAlt").show("fast");
                 
