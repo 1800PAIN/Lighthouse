@@ -2646,6 +2646,7 @@ app.get('/wish-d/:id', (req, res) => {
 			if (typeof req.body.alterChoice == "string"){
 				splitList= [JSON.parse(req.body.alterChoice)];
 				if (splitList[0].img== null) splitList[0].img = 'https://www.writelighthouse.com/img/avatar-default.jpg';
+				 if (splitList[0].pronouns== null) splitList[0].pronouns = '';
 				if (splitList[0].birthday== null) splitList[0].birthday = '';
 			} else if(typeof req.body.alterChoice == "undefined"){
 				req.flash("flash", strings.import.PK.failure.noCheck);
@@ -2654,11 +2655,11 @@ app.get('/wish-d/:id', (req, res) => {
 				/* Issue */ for (i in req.body.alterChoice){
 					splitList.push(JSON.parse(req.body.alterChoice[i]));
 					if (splitList[i].img== null) splitList[i].img = 'https://www.writelighthouse.com/img/avatar-default.jpg';
+					if (splitList[i].pronouns== null) splitList[i].pronouns = null;
 					if (splitList[i].birthday== null) splitList[i].birthday = '';
 				}	
 			}
 			var newSys= "Imported from Pluralkit";
-			/* Issue */ 
 			if (req.body.sysLoc== "new"){ 
 				// Check for an existing "Imported from Pluralkit" system
 				client.query({text: "SELECT sys_id FROM systems WHERE sys_alias=$1 AND user_id=$2;",values: [`'${Buffer.from(newSys).toString('base64')}'`, `${getCookies(req)['u_id']}`]}, (err, result) => {
@@ -2688,7 +2689,7 @@ app.get('/wish-d/:id', (req, res) => {
 									// Insert each alter into this new system.
 									for (i in splitList){
 										// console.log(splitList[i].img);
-										client.query({text: "INSERT INTO alters (name, sys_id, birthday, img_url) VALUES($1, $2, $3, $4);",values: [`'${Buffer.from((splitList[i].name).replace(/⠀/g, " ")).toString('base64')}'`, newSysID,`'${Buffer.from(splitList[i].birthday).toString('base64')}'`,`'${Buffer.from(splitList[i].img).toString('base64')}'`]}, (err, result) => {
+										client.query({text: "INSERT INTO alters (name, sys_id, pronouns, birthday, img_url) VALUES($1, $2, $3, $4, $5);",values: [`'${Buffer.from((splitList[i].name).replace(/⠀/g, " ")).toString('base64')}'`, newSysID,`'${Buffer.from(splitList[i].pronouns).toString('base64')}'`,`'${Buffer.from(splitList[i].birthday).toString('base64')}'`,`'${Buffer.from(splitList[i].img).toString('base64')}'`]}, (err, result) => {
 											if (err) {
 											console.log(err.stack);
 											res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
@@ -3054,6 +3055,58 @@ app.get('/wish-d/:id', (req, res) => {
 						 res.status(200).json({code:200});
 						}
 						});					
+				} else if (editMode=="pluralkit-system"){
+					// Create a new system if user requests in Pluralkit import
+					var newSys= "Imported from Pluralkit";
+					client.query({text: "SELECT sys_id FROM systems WHERE sys_alias=$1 AND user_id=$2;",values: [`'${Buffer.from(newSys).toString('base64')}'`, `${getCookies(req)['u_id']}`]}, (err, result) => {
+						if (err) {
+						  console.log(err.stack);
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+						} else {
+							if (result.rows.length > 0){
+								newSys+= ` ${getRandomInt(111,999)}`;
+							}
+							// Create a new system
+						client.query({text: "INSERT INTO systems (sys_alias, user_id) VALUES ($1, $2)",values: [`'${Buffer.from(newSys).toString('base64')}'`, `${getCookies(req)['u_id']}`]}, (err, result) => {
+							if (err) {
+							console.log(err.stack);
+							res.status(400);
+							} else {
+								// Grab its ID.
+								client.query({text: "SELECT * FROM systems WHERE sys_alias=$1 AND user_id=$2;",values: [`'${Buffer.from(newSys).toString('base64')}'`, `${getCookies(req)['u_id']}`]}, (err, fresult) => {
+									if (err) {
+									console.log(err.stack);
+									res.status(400);
+									} else {
+										res.status(200).json({code:200, sys_id: fresult.rows[0].sys_id});
+									}
+								})
+							}
+						})
+					}
+				})
+
+				} else if(editMode=="pluralkit-alter"){
+					// Place selected alters in database.
+					let altName= req.body.name == null ? `'${Buffer.from('New alter').toString('base64')}'`: `'${Buffer.from(req.body.name).toString('base64')}'`;
+					let altPro= req.body.pronouns == null ? null: `'${Buffer.from(req.body.pronouns).toString('base64')}'`;
+					let altBirth= req.body.birthday == null ? null: `'${Buffer.from(req.body.birthday).toString('base64')}'`;
+					let altAva= req.body.avatar == null ? `'${Buffer.from('https://www.writelighthouse.com/img/avatar-default.jpg').toString('base64')}'`: `'${Buffer.from(req.body.avatar).toString('base64')}'`;
+					client.query({text: "INSERT INTO alters (name, sys_id, pronouns, birthday, img_url) VALUES($1, $2, $3, $4, $5);",values: [
+						altName, 
+						req.body.sysId,
+						altPro,
+						altBirth,
+						altAva 
+					]}, (err, result) => {
+						if (err) {
+						console.log(err.stack);
+						res.status(400);
+						} else {
+							res.status(200).json({code: 200})
+						}
+					
+					});
 				}
 
 			} else {

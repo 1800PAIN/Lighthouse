@@ -8,8 +8,14 @@
             }
         </style>
     </head>
+    <script>
+        function randomise (arr){
+	return arr[Math.floor(Math.random()*arr.length)];
+}
+    </script>
     <body>
         <%- include ("../partials/nav.ejs") %>
+        
         <div id="wrapper">
             <% if (locals.messages.flash) { %>
                 <div class="splash"><%- locals.messages.flash %></div>
@@ -18,7 +24,7 @@
             <p>Use Pluralkit? We can fetch your <%- pluralize(cookies.alter_term) %> and add them to your account. Importing will create a new <%- cookies.system_term %> that can be renamed on the <a href="/system">My <%- capitalise(cookies.system_term) %></a> page</a>.</p>
             <p><em>Don't know your system ID?</em> Direct message "pk;s" to Pluralkit, or type "pk;s" in a channel that Pluralkit can view.</p>
             <p>Adding your Pluralkit token is completely optional. Adding your token allows Lighthouse to fetch your private <%- pluralize(cookies.alter_term) %> as well. We do not store this token. <strong>Do not share your token with anyone you do not trust.</strong></p>
-            <p>For technical reasons, you can import a maximum of <strong>100 <%- pluralize(cookies.alter_term) %></strong> at a time. After that, Lighthouse seems to run into errors. We're investigating a fix to this currently.</p>
+            <p><strong>Moving things over from Pluralkit can take some time.</strong> The more alters you select, the longer this process will take. We apologise in advance!</p>
             <form>
                 <label for="pid">Pluralkit system ID</label>
                 
@@ -28,40 +34,53 @@
             </form>
             <span id="Wait"></span>
 
-            <form method="post" id="submitAlt" style="display:none;">
+            <div id="submitAlt" style="display:none;">
                 <ul id="roster">
 
                 </ul>
                 <span class="linkbutton" id="checkall">Select All</span><br>
-                <p><small>If there are more than 100 <%- pluralize(cookies.alter_term) %> in this list, the first 100 will be selected. <%- capitalise(pluralize(cookies.alter_term))%> selected: <strong><span id="checkCount">0</span></strong></small></p>
                 <label for="sysLoc">These <%- pluralize(cookies.alter_term) %> will be imported into: </label>
                 <select name="sysLoc" id="sysLoc">
                     <option value="new" selected>Create New <%- capitalise(cookies.system_term) %></option>
                 </select>
                 
-                <input type="submit" name="fetch" value="Import System" id="import">
+                <button onclick="allAboard()" id="import">Import System</button>
                 <p class="splash">"Create New <%- capitalise(cookies.system_term) %>" will create a new <%- cookies.system_term %> called "Imported from Pluralkit". If you already have a <%- cookies.system_term %> named that, 3 random numbers will be appended to the end to prevent confusion. Press "rename" next to these <%- pluralize(cookies.system_term) %>' names on the "My <%- capitalise(cookies.system_term) %>" page to rename them to whatever you like.</p>
-            </form>
+            </div>
         </section>
+    </div>
+    <div id="screen" class="modal" style="display:none;">
+        <div class="modal-content" style="overflow:hidden;">
+            <h2>Talking to Pluralkit. Please wait.</h2>
+            <img src="/img/svg/bubbles.svg" class="medimg">
+            <p><strong>Moving things over from Pluralkit can take some time.</strong> If you have a large <%= cookies.system_term %>, this may take a bit.</p>
+            <p id="systemcreate" style="display: none;" class="loading">Creating the system</p>
+            <p id="importalter" style="display: none;"><span class="loading">Importing <span id="callno">0</span> of <span id="importno">0</span> <%= pluralize(cookies.alter_term) %> to <span id="systemDrop">SYS</span></span></p>
+        </div>
+        
     </div>
     <%- include ("../partials/footer.ejs") %>
     </body>
     <script>
         function cleanString(input) {
-            var output = "";
-            for (var i=0; i<input.length; i++) {
-                if (input.charCodeAt(i) <= 127) {
-                    output += input.charAt(i);
-                }
-            }
-            return output;
+            return input.replace(/[^\x00-\x7F]/gi, " ")
         }
         // var checkedCount= $('input:checkbox:checked').length;
         $(document).ready(function(){
             $("#checkall").click(function() {
-                    var cblist = $("input[name=alterChoice]");
-                    // cblist.attr("checked", !cblist.attr("checked"));\
-                    cblist.click()
+                    // var cblist = $("input[name=alterChoice]");
+                    if ($("#checkall").text()== "Select All"){
+                       $('input:checkbox').each(function(){
+                            $(this).prop('checked',true);
+                    }) 
+                    $("#checkall").text("Unselect All");
+                    } else {
+                        $('input:checkbox').each(function(){
+                            $(this).prop('checked',false);
+                    }) 
+                    $("#checkall").text("Select All");
+                    }
+                       
                 }); 
                 
             });
@@ -69,9 +88,7 @@
         function boxCount(){
             $("#checkCount").html($('input[name=alterChoice]:checked').length);
             $('input[name=alterChoice]').on('change', function (e) {
-            if ($('input[name=alterChoice]:checked').length > 100) {
-                $(this).prop('checked', false);
-            }
+
         });
         }
 
@@ -94,12 +111,9 @@
                 } 
             });
             let body = await response.text();
-            // body= body.replace(/[^\0-~]/g, '');
             let sysInfo = JSON.parse(body);
-            // return console.log(body)
             $("#Wait").html("<h3>Lighthouse will import:</h3>");
-            $("#pid").val("")
-            $("#pktoken").val("")
+            
             let systemArray = new Array();
             
             if (!sysInfo.message){
@@ -107,14 +121,9 @@
                 for (i in sysInfo){
                 
                 var alterName= sysInfo[i].display_name == null ? sysInfo[i].name : sysInfo[i].display_name;
-                var alterInfo=  JSON.stringify({
-                    name: alterName.replace(/ /g, "⠀"), 
-                    id: sysInfo[i].id, 
-                    img:sysInfo[i].avatar_url,
-                    birthday: sysInfo[i].birthday
-                });
+                console.log(sysInfo[i])
                     $('#roster')
-                    .append($(`<li> <input type="checkbox" name="alterChoice" value=${alterInfo.replace(/,(?!["{}[\]])/g, "")} onchange="boxCount()"><label for="alterChoice"><img src="${sysInfo[i].avatar_url}" class="vtinyimg"> ${sysInfo[i].display_name || sysInfo[i].name}</label></li>`)
+                    .append($(`<li> <input type="checkbox" class="alterChoice" value=${sysInfo[i].id} onchange="boxCount()" id=${sysInfo[i].id}><label for=${sysInfo[i].id}><img src="${sysInfo[i].avatar_url}" class="vtinyimg"> ${sysInfo[i].display_name || sysInfo[i].name}</label></li>`)
                         .hide()
                         .fadeIn(500)
                     );
@@ -145,7 +154,98 @@
         }
     }
 
+    async function allAboard(){
+        // 
+        event.preventDefault();
+        if ($('.alterChoice:checkbox:checked').length == 0) return;
+        $("#screen").fadeIn("slow");
+        // For each checked item, make a call to Pluralkit to grab information. Then make a call to Lighthouse to import that information.
+        /* 
 
+            <p id="systemcreate" style="display: none;">Creating the system...</p>
+            <p id="importalter" style="display: none;"><span class="loading">Importing <span id="callno">0</span> of <span id="importno">0</span> alters to <span id="systemDrop">SYS</span></span></p>
+
+        */
+       let chosenSystem; // This will be the ID for where the alters go.
+       let systemName;
+        if ($("#sysLoc").val() == "new"){
+            $("#systemcreate").show();
+            systemName= `a ${randomise(['brand', 'shiny', 'whole'])} new <%= cookies.system_term %>`;
+            let response = await fetch(`/system-data`, { 
+                method: "PUT",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json',
+                }, 
+                body: JSON.stringify({
+                  "edit": "pluralkit-system"
+                })
+            });
+            let body = await response.text();
+            let sysInfo = JSON.parse(body);
+            if (sysInfo.code==200){
+                // We're good!
+                chosenSystem= sysInfo.sys_id;
+            }
+        } else {
+            chosenSystem=$("#sysLoc").val();
+            systemName= $("#sysLoc").children("option").filter(":selected").text();
+        }
+        $("#systemcreate").hide()
+        $("#systemDrop").text(systemName);
+        $("#importalter").show();
+        var callno= 0;
+        var importno= $('.alterChoice:checkbox:checked').length;
+        $("#importno").text(importno);
+            var i = 0;
+
+            async function callLoop() {
+            setTimeout(async function() {
+                let response = await fetch(`https://api.pluralkit.me/v2/members/${$('.alterChoice:checkbox:checked')[i].id}`, { 
+                headers: { 
+                    "Authorization": $("#pktoken").val(),
+                    "User-Agent": "Lighthouse/Web App (www.writelighthouse.com, dee_deyes@writelighthouse.com, put here for contact if PK devs need to)" 
+                } 
+            });
+            let body = await response.text();
+            let sysInfo = JSON.parse(body);
+            callno++;
+            $("#callno").text(callno);
+            // Got info from Pluralkit. Now send it to Lighthouse.
+             response = await fetch(`/system-data`, { 
+                method: "PUT",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json',
+                }, 
+                body: JSON.stringify({
+                  "edit": "pluralkit-alter",
+                  "sysId": `${chosenSystem}`,
+                  "name": sysInfo.display_name == null ? sysInfo.name : sysInfo.display_name,
+                  "pronouns": sysInfo.pronouns,
+                  "avatar": sysInfo.avatar_url,
+                  "birthday": sysInfo.birthday
+                })
+            });
+             body = await response.text();
+             sysInfo = JSON.parse(body);
+
+                i++;                    //  increment the counter
+                if (i < $('.alterChoice:checkbox:checked').length) {           //  if the counter < length, call the loop function
+                callLoop();             //  ..  again which will trigger another 
+                } else {
+                    // We're done.
+                    $("#screen").fadeOut("slow");
+                    $("#pid").val("")
+                $("#pktoken").val("")
+                    window.location.replace(`/system/${chosenSystem}`);
+                }   
+            }, 750); // Call every .75 seconds, even though the rate limit is .5s. Accounting for lag.
+            }
+
+            callLoop();
+            // $("#screen").fadeOut("slow")
+    }
 
     </script>
 </html>
