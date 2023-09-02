@@ -164,6 +164,7 @@ textarea{
     resize: none;
     white-space: pre-wrap;
     padding: calc(1em);
+    margin-bottom: calc(.25em);
 }
 
 p{
