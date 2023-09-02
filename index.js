@@ -559,6 +559,28 @@ app.get('/worksheets', (req, res) => {
 	
   });
 
+  app.get('/forum/:id/new', (req, res) => {
+	if (isLoggedIn(req)){
+		client.query({text: "SELECT * FROM forums WHERE u_id=$1;",values: [getCookies(req)['u_id']]}, (err, result) => {
+			if (err) {
+			  console.log(err.stack);
+			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+		  } else {
+			let forumList= new Array();
+			for (i in result.rows){
+				forumList.push({
+					id: result.rows[i].id, 
+					name: decryptWithAES(result.rows[i].topic)
+				})
+			}
+			res.render(`pages/create_topic`, { session: req.session, splash:splash, cookies:req.cookies, forumLisT: forumList });
+		  }
+		});
+		
+	} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
+	
+  });
+
   app.get('/inner-world/:id', (req, res) => {
 	if (isLoggedIn(req)){
 		client.query({text: "SELECT * FROM inner_worlds WHERE u_id=$1 AND id=$2;",values: [getCookies(req)['u_id'], req.params.id]}, (err, result) => {
@@ -1657,6 +1679,29 @@ app.get('/wish-d/:id', (req, res) => {
 
 
 	*/
+	app.post('/forum/:id/new', (req, res) => {
+		if (isLoggedIn(req)){
+			client.query({text: "INSERT INTO threads (u_id, topic_id, title, body, alt_id) VALUES ($1, $2, $3, $4, $5);",values: [getCookies(req)['u_id'], req.params.id, `${encryptWithAES(req.body.fTitle)}`, `${encryptWithAES(req.body.topicBody)}`, req.body.author]}, (err, result) => {
+				if (err) {
+				  console.log(err.stack);
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+			  } else {
+				client.query({text: "SELECT * FROM threads WHERE u_id=$1 ORDER BY created_on DESC;",values: [getCookies(req)['u_id']]}, (err, bresult) => {
+					if (err) {
+					  console.log(err.stack);
+					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+				  } else {
+					req.flash("flash", "Topic posted!");
+					res.redirect(301, `/topic/${bresult.rows[0].id}`); // Redirects to the topic
+					
+				  }
+				});
+			  }
+			});
+		}else {
+			res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });
+		}
+	});
 	app.post('/inner-world/:id', (req, res) => {
 		if (isLoggedIn(req)){
 			client.query({text: "UPDATE inner_worlds SET key=$3, value=$4 WHERE u_id=$1 AND id=$2;",
