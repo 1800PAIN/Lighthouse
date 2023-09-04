@@ -319,18 +319,9 @@ app.locals.pluralize= pluralize;
 					req.session.alter_term= truncate(result.rows[0].alter_term || getCookies(req)['alter_term'] || "alter",16);
 					req.session.subsystem_term= truncate(result.rows[0].subsystem_term || getCookies(req)['subsystem_term'] || "subsystem",16);
 					req.session.inner_worlds = result.rows[0].inner_worlds || false;
-					req.session.innerworld_term= result.rows[0].innerworld_term;
-					req.session.plural_term= result.rows[0].plural_term;
-					req.session.language= result.rows[0].language;
-					// res
-					// .cookie('username',  Buffer.from(result.rows[0].username, 'base64').toString(),{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true, secure: true })
-					// .cookie('u_id', result.rows[0].id,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-					// .cookie('alter_term', truncate(result.rows[0].alter_term || "alter", 16),{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true, secure: true })
-					// .cookie('system_term', truncate(result.rows[0].system_term|| "system", 16),{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-					// .cookie('is_legacy', result.rows[0].is_legacy,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-					// .cookie('skin', result.rows[0].skin,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-					// .cookie('subsystem_term', truncate(result.rows[0].subsystem_term || "subsystem", 16),{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true });
-					// Is this a developer account?
+					req.session.innerworld_term= truncate(result.rows[0].innerworld_term || getCookies(req)['innerworld_term'] || "inner world",16);
+					req.session.plural_term= truncate(result.rows[0].plural_term || getCookies(req)['plural_term'] || "plural",16);
+					req.session.language= result.rows[0].language || "en";
 					req.session.is_dev=([process.env.dev1, process.env.dev2,process.env.dev3].includes(result.rows[0].id));
 				} catch (e){
 					// They logged out!
@@ -345,8 +336,10 @@ app.locals.pluralize= pluralize;
 		req.session.alter_term= "alter";
 		req.session.system_term= "system";
 		req.session.subsystem_term="subsystem";
+		req.session.innerworld_term= "inner world";
+		req.session.plural_term= "plural";
 	}
-	/* Issue */  req.next();
+	req.next();
   });
 
  if (process.env.maintenance== "true"){
@@ -951,6 +944,16 @@ app.get('/lighthouse-system', (req, res, next) => {
 		} catch(e){
 		console.log("Didn't have that cookie.")
 		}
+		try{
+			res.clearCookie('innerworld_term');
+			} catch(e){
+			console.log("Didn't have that cookie.")
+			}
+			try{
+				res.clearCookie('plural_term');
+				} catch(e){
+				console.log("Didn't have that cookie.")
+				}
 		try{
 		res.clearCookie('alter_term');
 		} catch(e){
@@ -1659,6 +1662,8 @@ app.get('/wish-d/:id', (req, res) => {
 				} else {
 					req.session.alter_term=result.rows[0].alter_term;
 					req.session.system_term=result.rows[0].system_term;
+					req.session.plural_term= result.rows[0].plural_term;
+					req.session.innerworld_term= result.rows[0].innerworld_term;
 					var theirEmail = Buffer.from(result.rows[0].email, "base64").toString();
 					var theirName = Buffer.from(result.rows[0].username, "base64").toString();
 				}
@@ -2021,8 +2026,6 @@ app.get('/wish-d/:id', (req, res) => {
 							   res.clearCookie('loggedin');
 							   res.clearCookie('username');
 							   res.clearCookie('u_id');
-							   res.clearCookie('cookie1');
-							   res.clearCookie('cookie2');
 							   res.redirect("/");
 							   
 						});
@@ -2048,34 +2051,56 @@ app.get('/wish-d/:id', (req, res) => {
 				}
 				if (req.body.altTerm){
 					// Updating alter term
-					client.query({text: 'UPDATE users SET alter_term=$1 WHERE id=$2', values: [req.body.altTerm, getCookies(req)['u_id']]}, async (err, result)=>{
+					client.query({text: 'UPDATE users SET alter_term=$1 WHERE id=$2', values: [req.body.altTerm.toLowerCase(), getCookies(req)['u_id']]}, async (err, result)=>{
 						if (err) {
 						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 						} else {
 							req.flash("flash", strings.account.updated);
-							req.session.alter_term= req.body.altTerm;
+							req.session.alter_term= req.body.altTerm.toLowerCase();
 						}
 					});
 				}
 				if (req.body.sysTerm){
 					// Updating alter term
-					client.query({text: 'UPDATE users SET system_term=$1 WHERE id=$2', values: [req.body.sysTerm, getCookies(req)['u_id']]}, async (err, result)=>{
+					client.query({text: 'UPDATE users SET system_term=$1 WHERE id=$2', values: [req.body.sysTerm.toLowerCase(), getCookies(req)['u_id']]}, async (err, result)=>{
 						if (err) {
 						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 						} else {
 							req.flash("flash", strings.account.updated);
-							req.session.system_term= req.body.sysTerm;
+							req.session.system_term= req.body.sysTerm.toLowerCase();
 						}
 					});
 				}
 				if (req.body.subTerm){
 					// Updating alter term
-					 client.query({text: 'UPDATE users SET subsystem_term=$1 WHERE id=$2', values: [req.body.subTerm, getCookies(req)['u_id']]}, (err, result)=>{
+					 client.query({text: 'UPDATE users SET subsystem_term=$1 WHERE id=$2', values: [req.body.subTerm.toLowerCase(), getCookies(req)['u_id']]}, (err, result)=>{
 						if (err) {
 						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 						} else {
 							req.flash("flash", strings.account.updated);
-							req.session.subsystem_term= req.body.subTerm;
+							req.session.subsystem_term= req.body.subTerm.toLowerCase();
+						}
+					});
+				}
+				if (req.body.iwTerm){
+					// Updating inner world term
+					 client.query({text: 'UPDATE users SET innerworld_term=$1 WHERE id=$2', values: [req.body.iwTerm.toLowerCase(), getCookies(req)['u_id']]}, (err, result)=>{
+						if (err) {
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+						} else {
+							req.flash("flash", strings.account.updated);
+							req.session.innerworld_term= req.body.iwTerm.toLowerCase();
+						}
+					});
+				}
+				if (req.body.plurTerm){
+					// Updating inner world term
+					 client.query({text: 'UPDATE users SET plural_term=$1 WHERE id=$2', values: [req.body.plurTerm.toLowerCase(), getCookies(req)['u_id']]}, (err, result)=>{
+						if (err) {
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+						} else {
+							req.flash("flash", strings.account.updated);
+							req.session.plural_term= req.body.plurTerm.toLowerCase();
 						}
 					});
 				}
@@ -2136,11 +2161,11 @@ app.get('/wish-d/:id', (req, res) => {
 				res
 				.cookie('username', req.body.newName || Buffer.from(req.session.username, "base64").toString() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
 				.cookie('email', req.body.newEmail || req.session.email ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('alter_term', req.body.altTerm || req.session.alter_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('system_term', req.body.sysTerm || req.session.system_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('subsystem_term', req.body.subTerm || req.session.subsystem_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('innerworld_term', req.body.iwTerm || req.session.innerworld_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('plural_term', req.body.iwTerm || req.session.innerworld_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('alter_term', req.body.altTerm.toLowerCase() || req.session.alter_term.toLowerCase() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('system_term', req.body.sysTerm.toLowerCase() || req.session.system_term.toLowerCase() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('subsystem_term', req.body.subTerm.toLowerCase() || req.session.subsystem_term.toLowerCase() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('innerworld_term', req.body.iwTerm.toLowerCase() || req.session.innerworld_term.toLowerCase() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('plural_term', req.body.plurTerm.toLowerCase() || req.session.plural_term.toLowerCase() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
 				.cookie('skin', req.body.skinSel || req.session.skin,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true }).redirect(302, "/profile");
 			}
 		});

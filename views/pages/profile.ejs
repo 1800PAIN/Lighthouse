@@ -3,6 +3,9 @@
     <head>
         <%- include ("../partials/header.ejs") %>
 		<style>
+			form input[type="text"] {
+				text-transform: lowercase;
+			}
 			#popup{
 				z-index:999;
 			}
@@ -43,9 +46,9 @@
 					<label for="subTerm">Term preferred for "subsystem": </label>
 					<input type="text" name="subTerm" placeholder="<%- cookies.subsystem_term %>"minlength="1" maxlength="<%= maxLimit %>"><br>
 					<label for="iwTerm">Term preferred for "inner world": </label>
-					<input type="text" id="iwTerm" name="iwTerm" placeholder="<%- cookies.innerworld_term || session.innerworld_term %>"minlength="3"><br>
+					<input type="text" id="iwTerm" name="iwTerm" placeholder="<%- cookies.innerworld_term || session.innerworld_term %>"minlength="1" maxlength="<%= maxLimit %>"><br>
 					<label for="plurTerm">Term preferred for "plural": </label>
-					<input type="text" id="plurTerm" name="plurTerm" placeholder="<%- cookies.plural_term || session.plural_term %>"minlength="3"><br>
+					<input type="text" id="plurTerm" name="plurTerm" placeholder="<%- cookies.plural_term || session.plural_term %>" minlength="1" maxlength="<%= maxLimit %>"><br>
 
 					<p><small><em>Note: the custom term for "plural" will eventually show itself on the site. Right now, it's not used.</em></small></p>
 					<label for="innerworld">Enable/Disable <%- capitalise(session.innerworld_term) %></label>
