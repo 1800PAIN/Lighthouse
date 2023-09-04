@@ -2161,12 +2161,13 @@ app.get('/wish-d/:id', (req, res) => {
 				res
 				.cookie('username', req.body.newName || Buffer.from(req.session.username, "base64").toString() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
 				.cookie('email', req.body.newEmail || req.session.email ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('alter_term', req.body.altTerm.toLowerCase() || req.session.alter_term.toLowerCase() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('system_term', req.body.sysTerm.toLowerCase() || req.session.system_term.toLowerCase() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('subsystem_term', req.body.subTerm.toLowerCase() || req.session.subsystem_term.toLowerCase() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('innerworld_term', req.body.iwTerm.toLowerCase() || req.session.innerworld_term.toLowerCase() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('plural_term', req.body.plurTerm.toLowerCase() || req.session.plural_term.toLowerCase() ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('skin', req.body.skinSel || req.session.skin,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true }).redirect(302, "/profile");
+				.cookie('alter_term', req.body.altTerm || req.session.alter_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('system_term', req.body.sysTerm || req.session.system_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('subsystem_term', req.body.subTerm || req.session.subsystem_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('innerworld_term', req.body.iwTerm || req.session.innerworld_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('plural_term', req.body.plurTerm || req.session.plural_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('skin', req.body.skinSel || req.session.skin,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.redirect(302, "/profile");
 			}
 		});
 	});
