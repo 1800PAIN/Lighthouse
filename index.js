@@ -169,6 +169,7 @@ app.locals.journalArr= [
 	{val: '8', c: "Pink"}, 
 	{val: '9', c: "White"}, 
 	{val: '10', c: "Black"}, 
+	{val: '23', c:"Brown"},
 	{val: '11', c: "Rainbow"}, 
 	{val: '12', c: "Ocean"}, 
 	{val: '13', c: "Space"}, 
