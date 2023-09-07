@@ -57,7 +57,10 @@
                 <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
             <section>
-
+              <ul class="breadcrumb">
+                <li><a href="/forum">Forums</a></li>
+                <li><a><%= forumName %></a></li>
+              </ul>
               <div id="editForum" class="modal">
 
                 <!-- Modal content -->
@@ -142,7 +145,7 @@
              
               
               
-              <a href="/forum">Back to Forums</a><br>
+              
                 <h2><%- forumName %> <a title="Edit " class="editCat"><i id="ebutton" class="fa fa-pencil" aria-hidden="true"></i></a> <a title="Delete <%- forumName %>"  class="" onclick="confirmDelete('<%- forumName %>', '<%- forumid %>')"><i class="fa fa-trash textless" aria-hidden="true"></i></a></h2>
                 
                 
@@ -159,7 +162,7 @@
                   <tbody>
                     <% for (i in topics){ %> 
                       <tr style="padding: 5em; border-bottom:1px solid black;">
-                        <td style="text-align: left;"><a href="/topic/<%- topics[i].id %>"><%= topics[i].name %></a><br><small>by: <a href="/alter/<%- topics[i].alt_id %>"><%- topics[i].alter %></a> on <%- (topics[i].created_on).toLocaleString().split(",")[0] %><br><span style="padding-left: 2em;"><%- truncate((topics[i].preview).replace(/\<.+?\>/g, ""), 80) %></span></small></td>
+                        <td style="text-align: left;"><a href="/topic/<%- topics[i].id %>"><%= truncate(topics[i].name, 24) %></a><br><small>by: <a href="/alter/<%- topics[i].alt_id %>"><%- topics[i].alter %></a> on <%- (topics[i].created_on).toLocaleString().split(",")[0] %><br><span style="padding-left: 2em;"><%- truncate((topics[i].preview).replace(/\<.+?\>/g, ""), 80) %></span></small></td>
                         <!-- <td style="text-align: right;">No info.</td> -->
                       </tr>
                     <% } %>

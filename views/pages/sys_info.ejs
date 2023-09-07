@@ -53,6 +53,10 @@ var journSkin=[
     %>
     <div id="wrapper">
         <section>
+            <ul class="breadcrumb">
+                <li><a href="/system" title="Your <%= capitalise(cookies.system_term) %>"><%= capitalise(cookies.system_term) %></a></li>
+                <li><%= Buffer.from(session.chosenSys.sys_alias, 'base64').toString() %></li>
+            </ul>
             <div id="Wait"></div>
             <% if (locals.messages.flash) { %>
                 <div class="splash"><%- locals.messages.flash %></div>

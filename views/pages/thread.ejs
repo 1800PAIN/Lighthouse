@@ -72,6 +72,11 @@
                                       </div>
 
         <div id="wrapper">
+          <ul class="breadcrumb">
+            <li><a href="/forum">Forums</a></li>
+            <li><a href="/forum/<%= originalPost.topic_id %>"><%= originalPost.forum_name %></a></li>
+            <li><%= truncate(originalPost.title, 32) %></li>
+          </ul>
             <% if (locals.messages.flash) { %>
                 <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
@@ -82,7 +87,7 @@
                }
                } %>
 
-            <a href="/forum/<%= originalPost.topic_id %>">Back to <%= originalPost.forum_name %></a>
+           
             <h2><%= originalPost.title %> <% if (!opInfo.is_archived){%><a title="Edit <%- originalPost.title %>" class="editCat"><i id="tbutton" class="fa fa-pencil" aria-hidden="true"></i></a> <% } %><a title="Delete <%- originalPost.title %>"  class="" onclick="deleteTopic('<%- originalPost.title %>', '<%- originalPost.id %>')"><i class="fa fa-trash textless" aria-hidden="true"></i></a></h2>
             <section class="threadpost">
                 <div class="user">

@@ -73,8 +73,14 @@ td{
         <% if (locals.messages.flash) { %>
             <div class="splash"><%- locals.messages.flash %></div>
         <% } %>
-        <section>
+        <section>            <ul class="breadcrumb">
+                <li><a href="/system" title=""><%= capitalise(cookies.system_term) %></a></li>
+                <li><a href="/system/<%= alterInfo.sys_id %>" title="Back to <%= capitalise(Buffer.from(alterInfo.sys_alias, "base64").toString()) %>"><%= capitalise(Buffer.from(alterInfo.sys_alias, "base64").toString()) %></a></li>
+                <li><%= Buffer.from(alterInfo.name, 'base64').toString() %></li>
+              </ul> 
             <h2><%= Buffer.from(alterInfo.name, 'base64').toString() %>'s page</h2>
+
+
             <dt>
             <% if (alterInfo.mood) { %>
                 Feeling: <%- moods[alterInfo.mood].name %> <%- moods[alterInfo.mood].emoji %>
@@ -85,7 +91,7 @@ td{
         <% } %><a href="/mood/<%=alterInfo.alt_id %>">Set mood</a><% if (alterInfo.mood) { %>
             | <a href="/del-mood/<%=alterInfo.alt_id %>">Clear mood</a>
         <% } %></small></dd>
-        
+            
             <form method="post" autocomplete="off">
               <input type="text" name="altname" value="<%= Buffer.from(alterInfo.name, 'base64').toString() %>" style="text-align:center;"> is a part of <select name="alterSys" style="text-align:center;"><% for (i in session.sysList){ %>
                 <% if (alterInfo.sys_alias == session.sysList[i].sys_alias){ %>
@@ -377,7 +383,8 @@ td{
         var modal = document.getElementById("myModal");
         var btn = document.getElementById("tbutton");
         var span = document.getElementsByClassName("close")[0];
-        btn.onclick = function() {
+        try{
+            btn.onclick = function() {
           // modal.style.display = "block";
           $("#myModal").fadeIn("fast");
         }
@@ -392,6 +399,10 @@ td{
             $("#myModal").fadeOut("fast");
           }
         }
+        } catch (e){
+            
+        }
+        
         </script>
     <script>
 

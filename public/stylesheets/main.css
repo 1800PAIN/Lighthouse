@@ -57,6 +57,7 @@ a:hover{
     font-family: 'Lexend',Verdana, Arial,sans-serif;
     scroll-margin-top: 10em;
     color: rgb(5,5,5);
+    word-wrap: break-word;
 }
 small{
     font-weight: 300;
@@ -269,6 +270,24 @@ footer{
     background: red;
 	color: white;
 }
+ul.breadcrumb {
+    padding: 10px 16px;
+    list-style: none;
+  }
+  ul.breadcrumb:before{
+    content:"➥";
+  }
+  ul.breadcrumb li {
+    display: inline;
+    font-size: 18px;
+  }
+  ul.breadcrumb li+li:before {
+    padding: 8px;
+    color: black;
+    /* content: "/\00a0"; */
+    content:'/';
+  }
+
 
 
 .grid{

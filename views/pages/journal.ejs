@@ -19,14 +19,16 @@
 <body>
     <%- include ("../partials/nav.ejs") %>
     <div id="wrapper">
+      <ul class="breadcrumb">
+        <li><a href="/system" title="Your <%= capitalise(cookies.system_term) %>"><%= capitalise(cookies.system_term) %></a></li>
+        <li><a href="/system/<%- alterInfo.sys_id %>"><%- alterInfo.sys_alias %></a></li>
+        <li><a href="/alter/<%- alterInfo.alt_id %>"><%- alterInfo.name %></a></li>
+        <li>Journal</li>
+      </ul>
         <section>
           <% if (locals.messages.flash) { %>
             <div class="splash"><%- locals.messages.flash %></div>
         <% } %>
-        <div class="grid-sm padLinks">
-          <a class="linkbutton" href="/system/<%- alterInfo.sys_id %>">Back to <%- alterInfo.sys_alias %></a>
-          <a class="linkbutton" href="/alter/<%- alterInfo.alt_id %>">Close Journal</a>
-        </div>
             <h2><%- alterInfo.name %>'s Journal</h2>
 
             <form method="post">
