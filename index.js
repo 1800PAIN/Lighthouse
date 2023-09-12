@@ -21,6 +21,7 @@ console.log( `Lighthouse v${pjson.version}`);
 const tuning= require('./js/genVars.js');
 const strings= require("./lang/en.json");
 const langVar= require("./js/languages.js");
+const { start } = require('repl');
 
 require('dotenv').config();
 
@@ -178,6 +179,7 @@ app.locals.journalArr= [
 	{val: '16', c: "Spring"}, 
 	{val: '17', c: "Summer"}, 
 	{val: '18', c: "Flowers"},  // 19 is skipped bc that's the legacy journal.
+	{val: '24', c: "Coniferous (🎨Quantum System)"},
 	{val: '20', c: "Witchy"},
 	{val: '21', c: "Spraypaint"},
 	{val: '22', c: "Princess"},
