@@ -121,7 +121,7 @@ article:last-child{
 
 .navel, button, input[type=submit], input[type=reset], .linkbutton {
     display: inline-block;
-    margin: .5em calc(1em);
+    margin: auto calc(1em);
     text-decoration: none;
     transition: 1s;
     vertical-align: middle;
@@ -139,7 +139,10 @@ article:last-child{
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
-
+input[type=submit], input[type=reset], .linkbutton {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
 button:disabled, input[type=submit]:disabled{
     background: silver;
     color: grey;
