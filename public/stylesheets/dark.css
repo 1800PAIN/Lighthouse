@@ -16,6 +16,7 @@
     --ck-color-button-default-hover-background: var(--col2);
     --ck-color-button-default-active-background: var(--col2);
     --ck-color-button-on-hover-background: var(--col2);
+    --polar: rgb(36, 32, 46);
 }
 
 #wrapper{

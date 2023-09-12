@@ -9,6 +9,7 @@
 	--col6: #52565c;
     --col7: #def1f0;
     --col8: #065966;
+    --polar: ghostwhite;  
 }
 .dark_mode{
     background-image: url("../img/night-lighthouse.png"), rgb(30,30,30);
@@ -375,7 +376,7 @@ ul.breadcrumb {
 .polaroid {
     padding-top: calc(.5em);
     padding-bottom: 1em;
-    background: ghostwhite;
+    background: var(--polar);
     text-align: center;
     height: 9em;
     width: 7em;
