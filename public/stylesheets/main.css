@@ -336,7 +336,8 @@ ul.breadcrumb {
     background: var(--col2);
     max-width: 5em;
     /* width: calc(100% * (1/4) - 5px - 1px); */
-}
+    padding: calc(.5em);
+ }
 .grid > a:hover, .alterbutton:hover{
     background: var(--col3);
 }
