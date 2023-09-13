@@ -209,6 +209,16 @@ td{
                    
                   
                   
+                  
+                    <% if (alterInfo.appearance) { %>
+                         <% if (distill(alterInfo.appearance)) { %>
+                            <tr><td>Internal Appearance:</td>
+                            <td><%= Buffer.from(alterInfo.appearance, 'base64').toString() %></td></tr>
+                        <% } %>
+                        <% } %>
+                   
+                  
+                  
                     <% if (alterInfo.birthday) { %>
                     <% if (distill(alterInfo.birthday)) { %>
                                                 <tr><td>Perceived Birthday:</td>
@@ -300,9 +310,13 @@ td{
                     <% } %>
                         <% } %>
 
-                  
-                  
-                    
+                    <% if (alterInfo.hobbies) { %>
+                    <% if (distill(alterInfo.hobbies)) { %>
+                        <tr><td>Hobbies:</td>
+                        <td><%= Buffer.from(alterInfo.hobbies, 'base64').toString() %></td></tr>
+                    <% } %>
+                        <% } %>
+
                     <% if (alterInfo.job) { %>
                     <% if (distill(alterInfo.job)) { %>
                         <tr><td>Internal Job:</td>
@@ -310,9 +324,6 @@ td{
                     <% } %>
                         <% } %>
 
-                  
-                  
-                    
                     <% if (alterInfo.safe_place) { %>
                     <% if (distill(alterInfo.safe_place)) { %>
                         <tr><td>Feels safest when:</td>

@@ -2,6 +2,14 @@
 <html lang="en" dir="ltr" style="visibility: hidden;">
     <head>
         <%- include ("../partials/header.ejs") %>
+        <style>
+                        #signup{
+                color: var(--col4);
+                font-weight: 800;
+                cursor: pointer;
+                text-decoration: underline;
+            }
+        </style>
     </head>
     <body>
         <%- include ("../partials/nav.ejs") %>
@@ -10,6 +18,7 @@
                 <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
             <h2>Log In to Lighthouse</h2>
+            <small>No Account? <a id="signup" href="/signup">Signing Up takes only a minute!</a></small><br/>
             <form method="post">
                 <label for="email">Email: </label>
                 <input type="email" placeholder="something@mail.com" name="email"></br>

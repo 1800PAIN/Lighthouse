@@ -895,8 +895,13 @@ app.get('/lighthouse-system', (req, res, next) => {
       splash=null;
   });
   app.get('/signup', (req, res, next) => {
-      res.render(`pages/signup`, { session: req.session, splash:splash,cookies:req.cookies });
-      splash=null;
+	if (!isLoggedIn(req)){
+	res.render(`pages/signup`, { session: req.session, splash:splash,cookies:req.cookies });
+	} else {
+		splash= req.flash("flash", "You are already signed in.")
+		res.status(403).redirect("/"); 
+	}
+      
   });
 
   app.get('/login', (req, res, next) => {
@@ -916,7 +921,7 @@ app.get('/lighthouse-system', (req, res, next) => {
   app.get('/logout', (req, res)=>{
      
 	 try{
-		req.flash("flash", strings.account.loggedout);
+		splash= req.flash("flash", strings.account.loggedout);
 		//  req.session.destroy();
 		req.session= null;
 	 } catch(e){
@@ -1018,7 +1023,7 @@ app.get('/wish/:id', (req, res) => {
 				console.log(err.stack);
 					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 			}
-			req.flash("flash", strings.wish.granted);
+			splash= req.flash("flash", strings.wish.granted);
 			res.redirect("/wish");
 		});
 		
@@ -1154,7 +1159,7 @@ app.get('/wish-d/:id', (req, res) => {
 				client.query({text: "SELECT * FROM systems WHERE user_id=$1;",values: [`${getCookies(req)['u_id']}`]}, (err, result) => {
 					if (err) {
 					  console.log(err.stack);
-					  req.flash("Our database hit an error.");
+					  splash= req.flash("flash", "Our database hit an error.");
 					  res.status(400).json({code: 400});
 				  } else {
 					var sysArr = new Array();
@@ -1164,7 +1169,7 @@ app.get('/wish-d/:id', (req, res) => {
 					client.query({text: "SELECT * FROM comm_posts WHERE u_id=$1 AND is_pinned=false ORDER BY created_on DESC;",values: [`${getCookies(req)['u_id']}`]}, (err, cresult) => {
 						if (err) {
 						  console.log(err.stack);
-						  req.flash("Our database hit an error.");
+						  splash= req.flash("flash", "Our database hit an error.");
 						  res.status(400).json({code: 400});
 					  } else {
 						var nonPinned= new Array();
@@ -1174,7 +1179,7 @@ app.get('/wish-d/:id', (req, res) => {
 						client.query({text: "SELECT * FROM comm_posts WHERE u_id=$1 AND is_pinned=true ORDER BY created_on DESC;",values: [`${getCookies(req)['u_id']}`]}, (err, dresult) => {
 							if (err) {
 							  console.log(err.stack);
-							  req.flash("Our database hit an error.");
+							  splash= req.flash("flash", "Our database hit an error.");
 							  res.status(400).json({code: 400});
 						  } else {
 							var isPinned= new Array();
@@ -1193,7 +1198,7 @@ app.get('/wish-d/:id', (req, res) => {
 				client.query({text: "SELECT * FROM alters INNER JOIN systems ON alters.sys_id = systems.sys_id WHERE systems.user_id=$1;",values: [`${getCookies(req)['u_id']}`]}, (err, result) => {
 					if (err) {
 					  console.log(err.stack);
-					  req.flash("Our database hit an error.");
+					  splash =req.flash("Our database hit an error.");
 					  res.status(400).json({code: 400});
 				  } else {
 					var resArr= new Array();
@@ -1455,7 +1460,7 @@ app.get('/wish-d/:id', (req, res) => {
   app.get("/edit-alter/:id", (req, res, next)=>{
 
 	if (isLoggedIn(req)){
-		client.query({text: "SELECT alters.* FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alters.alt_id=$1",values: [`${req.params.id}`]}, (err, result) => {
+		client.query({text: "SELECT alters.*, systems.sys_alias FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alters.alt_id=$1",values: [`${req.params.id}`]}, (err, result) => {
 			if (err) {
 			  console.log(err.stack);
 			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
@@ -2526,7 +2531,7 @@ app.get('/wish-d/:id', (req, res) => {
 
 		if (isLoggedIn(req)){
 			// return console.log(`'${Buffer.from(req.body.pronouns).toString('base64')}'`);
-			client.query({text: "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22 WHERE alt_id=$1",values: [
+			client.query({text: "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24 WHERE alt_id=$1",values: [
 				`${req.params.id}`,
 				`'${Buffer.from(req.body.name).toString('base64')}'`,
 				`'${Buffer.from(req.body.postr).toString('base64')}'`,
@@ -2549,6 +2554,8 @@ app.get('/wish-d/:id', (req, res) => {
 				`'${Buffer.from(req.body.source).toString('base64')}'`,
 				`'${Buffer.from(req.body.fronttells).toString('base64')}'`,
 				`'${Buffer.from(req.body.relationships).toString('base64')}'`,
+				`'${Buffer.from(req.body.hobbies).toString('base64')}'`,
+				`'${Buffer.from(req.body.appearance).toString('base64')}'`,
 			]}, (err, result) => {
 				if (err) {
 				  console.log(err.stack);
