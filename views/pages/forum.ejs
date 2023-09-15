@@ -138,7 +138,6 @@
                             </div>
 
                 <h2>Internal Forum <small>Beta version</small></h2>
-                
                 <p>This is an area meant for longer discussion of topics amongst <%= pluralize(cookies.alter_term) %>. This is the earliest version available-- more features to come.</p>
                 <button id="tbutton">Create Category</button>
                 <button id="fbutton" <% if (categories.length == 0) { %> disabled <% } %>>Create Forum</button>
@@ -148,19 +147,20 @@
                   <thead style="border-bottom: 1px solid black;">
                     <tr>
                       <th style="text-align: left; padding-top: 2em; padding-bottom:1em;" ><img src="/img/svg/<%- categories[i].icon || 'lighthouse-icon' %>.svg" class="vtinyimg" style="float:left; margin-right: 1em;">  <%- capitalise(categories[i].name) %> <a id="<%= categories[i].id %>" title="Edit <%- categories[i].name %>" name="<%- capitalise(categories[i].name) %>" class="editCat" onclick="$('#editCat').fadeIn('fast');"><i class="fa fa-pencil" aria-hidden="true"></i></a> <a title="Delete <%- categories[i].name %>" onclick="confirmDelete('<%= categories[i].name %>', '<%= categories[i].id %>')"><i class="fa fa-trash" aria-hidden="true"></i></a>
-
-                        <!-- <br><div name="description" class="desc"><small><%- categories[i].desc %></small></div> -->
                       </th>
-                      <!-- <th style="text-align:right;">Last Posted In</th> -->
+                      <th style="text-align:right;">Latest Topic</th>
                     </tr>
                   </thead>
                   <tbody >
+                    
                       <% for (n in forums){ %>
+                        
                         <% if (forums[n].cat_id == categories[i].id) { %>
                           <tr>
                             <td style="padding-left: 3em; padding-bottom: 1em;"><a href="/forum/<%- forums[n].id %>"><%- forums[n].name %></a><br><small><%- forums[n].desc %></small></td>
                             
-                            <!-- <td style="text-align:right;">No info yet</td> -->
+                            <td name="fetch" style="text-align:right;" id="<%- forums[n].id %>">
+                            </td>
                             </tr>
                         <% } %>
                         
@@ -245,9 +245,37 @@ var catModal = document.getElementById("editCat");
             });
             let body = await response.text();
             let sysInfo = JSON.parse(body);
+            if (sysInfo.code== 200){
+              location.reload(); 
+            }
           }
         }
+
+        $('td[name="fetch"]').each(async function(){
+          let response = await fetch(`/forum-data`, { 
+                method: "GET",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json',
+                  "forumid": `${this.id}`,
+                  "get": "latestPost"
+                }
+            });
+            let body = await response.text();
+            let forumPosts = JSON.parse(body);
+            console.log(forumPosts);
+            // Object { code: 200, thread_id: "8b199ae2-d445-43c6-9b7d-5b0e04fa0196", alt_id: "a4f31a99-8a88-4c6e-98cd-7604950c4b19", name: "Link", title: "Test", date: "2023-08-18T04:22:07.002Z" }
+            if (forumPosts.code== 200){
+              let postDate= (forumPosts.date).substr(0,10).split("-");
+              let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+              $(this).html(`<a href="/topic/${forumPosts.thread_id}">${forumPosts.title}</a> by <a href="/alter/${forumPosts.alt_id}">${forumPosts.name}</a><br/><small>On ${postDate[2]} ${monthNames[parseInt(postDate[1])-1]} ${postDate[0]}</small>`);
+            } else {
+              $(this).html(`<span>No posts yet.</span>`);
+            }
+            
+        })
         </script>
+        
     <%- include ("../partials/footer.ejs") %>
     </body>
 </html>

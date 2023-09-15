@@ -108,7 +108,7 @@
             </section>
 
             <% for (r in replyArr){ %>
-                <section class="threadpost">
+                <section class="threadpost" id="<%= replyArr[r].id %>">
                     <div class="user">
                     <!-- Time to do some alter logic. -->
                     <% for (i in alterArr){ 

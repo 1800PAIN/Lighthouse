@@ -155,7 +155,8 @@
                   <thead>
                     <tr>
                       <th style="text-align: left;">Topics</th>
-                      <!-- <th style="text-align: right;">Last Post</th> -->
+                      <th style="text-align: center">Replies</th>
+                      <th style="text-align: right;">Latest Reply</th>
                     </tr>
                   </thead>
                   
@@ -163,7 +164,8 @@
                     <% for (i in topics){ %> 
                       <tr style="padding: 5em; border-bottom:1px solid black;">
                         <td style="text-align: left;"><a href="/topic/<%- topics[i].id %>"><%= truncate(topics[i].name, 24) %></a><br><small>by: <a href="/alter/<%- topics[i].alt_id %>"><%- topics[i].alter %></a> on <%- (topics[i].created_on).toLocaleString().split(",")[0] %><br><span style="padding-left: 2em;"><%- truncate((topics[i].preview).replace(/\<.+?\>/g, ""), 80) %></span></small></td>
-                        <!-- <td style="text-align: right;">No info.</td> -->
+                        <td name="<%= topics[i].id %>"></td>
+                        <td name="fetch" id="<%- topics[i].id %>" style="text-align: right;"></td>
                       </tr>
                     <% } %>
                   </tbody>
@@ -174,10 +176,10 @@
         var modal = document.getElementById("myModal");
         var btn = document.getElementById("tbutton");
         var span = document.getElementById("closetopic");
-        btn.onclick = function() {
+        // btn.onclick = function() {
           
-          $("#myModal").fadeIn("fast");
-        }
+        //   $("#myModal").fadeIn("fast");
+        // }
         span.onclick = function() {
           // modal.style.display = "none";
           $("#myModal").fadeOut("fast");
@@ -243,6 +245,31 @@
             if (sysInfo.code== 200) location.href= "/forum";
           }
         }
+
+        $('td[name="fetch"]').each(async function(){
+          let response = await fetch(`/forum-data`, { 
+                method: "GET",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json',
+                  "threadid": `${this.id}`,
+                  "get": "latestReply"
+                }
+            });
+            let body = await response.text();
+            let forumPosts = JSON.parse(body);
+            // Object { code: 200, thread_id: "67ae7191-c470-4f7c-b08d-a113faa91b9c", alt_id: "63a7374e-37d7-448c-bd72-f13975286556", name: "2D", date: "2023-08-07T02:32:22.946Z" }
+            if (forumPosts.code== 200){
+              let postDate= (forumPosts.date).substr(0,10).split("-");
+              let monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+              $(this).html(`<a href="/topic/${this.id}#${forumPosts.thread_id}">from</a> <a href="/alter/${forumPosts.alt_id}">${forumPosts.name}</a><br/><small>On ${postDate[2]} ${monthNames[parseInt(postDate[1])-1]} ${postDate[0]}</small>`);
+              $(`td[name="${this.id}"]`).html(forumPosts.reply_count)
+            } else {
+              $(`td[name="${this.id}"]`).html(0)
+              $(this).html(`<span>No replies yet.</span>`);
+            }
+            
+        })
         </script>
     <%- include ("../partials/footer.ejs") %>
     </body>

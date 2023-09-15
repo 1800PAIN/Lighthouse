@@ -616,17 +616,28 @@ app.get('/worksheets', (req, res) => {
 			for (i in result.rows){
 				categories.push({name: decryptWithAES(result.rows[i].name), desc: decryptWithAES(result.rows[i].description), icon: result.rows[i].icon, id: result.rows[i].id});
 			}
+			// var forums= new Array();
+			var forums = []; // Empty this array or create it.
 			client.query({text: "SELECT * FROM forums WHERE u_id=$1;",values: [getCookies(req)['u_id']]}, (err, result) => {
 				if (err) {
 				  console.log(err.stack);
 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
 			  } else {
-				let forums= new Array();
 				for (i in result.rows){
-					forums.push({name: decryptWithAES(result.rows[i].topic), desc: decryptWithAES(result.rows[i].description), cat_id: result.rows[i].cat_id, id: result.rows[i].id});
+					forums.push(
+						{
+							name: decryptWithAES(result.rows[i].topic), 
+							desc: decryptWithAES(result.rows[i].description), 
+							cat_id: result.rows[i].cat_id, 
+							id: result.rows[i].id
+						});
+						
+					
 				}
 				res.render(`pages/forum`, { session: req.session, splash:splash, cookies:req.cookies, categories:categories, forums: forums });
+						// console.log(i)
 			  }
+			  
 			});
 			
 		  }
@@ -749,6 +760,9 @@ app.get('/worksheets', (req, res) => {
 					if (err) {
 					  console.log(err.stack);
 					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+				  } else if( result.rows.length==0){
+					// Deleted forum.
+					  res.status(410).render('pages/410',{ session: req.session, code:"Gone", splash:splash, cookies:req.cookies });
 				  } else {
 					let catArr= new Array();
 					for (i in bresult.rows){
@@ -1621,6 +1635,77 @@ app.get('/wish-d/:id', (req, res) => {
 		}
 
 	});
+	app.get('/forum-data', (req, res, next) => {
+		if (apiEyesOnly(req)){
+			// No browser access.
+			if (req.headers.get== "latestPost"){
+				// Get the latest post from a forum.
+				client.query({text: `SELECT threads.*,alters.* FROM threads INNER JOIN alters ON threads.alt_id = alters.alt_id WHERE threads.topic_id=$1 ORDER BY created_on DESC LIMIT 1;`,values: [req.headers.forumid]}, (err, result) => {
+				if (err) {
+				   console.log(err.stack);
+				   res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+			   } else {
+				if (result.rows.length > 0){
+					res.json({
+					code:200,
+					thread_id: result.rows[0].id,
+					alt_id: result.rows[0].alt_id,
+					name: Buffer.from(result.rows[0].name, "base64").toString(),
+					title: decryptWithAES(result.rows[0].title),
+					date: result.rows[0].created_on
+				})
+				} else {
+					res.json({
+						code:404
+					})
+				}
+				
+			   }
+			   
+		   });
+			} else if (req.headers.get=="latestReply"){
+				// get the latest post from a thread.
+				client.query({text: `SELECT COUNT(thread_posts.id) FROM thread_posts WHERE thread_posts.thread_id=$1;`,values: [req.headers.threadid]}, (err, aresult) => {
+					if (err) {
+					   console.log(err.stack);
+					   res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+				   } else {
+					let replyCount= aresult.rows[0].count || 0;
+					// console.log(replyCount)
+					client.query({text: `SELECT alters.alt_id, alters.name, thread_posts.created_on, thread_posts.id FROM alters INNER JOIN thread_posts ON thread_posts.alt_id=alters.alt_id WHERE thread_posts.thread_id=$1 ORDER BY thread_posts.created_on DESC LIMIT 1;`,values: [req.headers.threadid]}, (err, result) => {
+						if (err) {
+						   console.log(err.stack);
+						   res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+					   } else {
+						if (result.rows.length > 0){
+							res.json({
+							code:200,
+							reply_count: replyCount || 0,
+							thread_id: result.rows[0].id,
+							alt_id: result.rows[0].alt_id,
+							name: Buffer.from(result.rows[0].name, "base64").toString(),
+							date: result.rows[0].created_on
+						})
+						} else {
+							res.json({
+								code:404
+							})
+						}
+						
+					   }
+					   
+				   });
+
+				   }
+				});
+				
+			}
+			
+
+		} else {
+			return res.json({code:403}).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });;
+		}
+	})
 	app.get('/users', (req, res, next) => {
 		if (apiEyesOnly(req)){
 			// No browser peeking!! Only Lighthouse's API can see this!
@@ -1680,6 +1765,7 @@ app.get('/wish-d/:id', (req, res) => {
 		} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 
 	});
+	
 
 
 	/*
