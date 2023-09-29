@@ -103,7 +103,7 @@
                 <textarea name="appearance"><% if (chosenAlter.appearance !== null) { %><%- Buffer.from(chosenAlter.appearance, 'base64').toString() %><% } %></textarea>
                 
                 <label for="imgupload">Upload Avatar (max 2MB)</label> <% if (chosenAlter.img_blob){ %><a id="fileClear" style="display:inline-block;">Remove Uploaded Avatar</a> <% } %>
-                <input type="file" name="imgupload" id="imgupload" accept=".gif,.jpg,.png,.bmp,.webp"> 
+                <input type="file" name="imgupload" id="imgupload" accept="image/*"> 
                 <input type="hidden" id="clear" name="clear">
                 <label for="imgurl">Image URL</label>
                 <input type="text" name="imgurl" value="<% if (chosenAlter.img_url !== null) { %><%- Buffer.from(chosenAlter.img_url, 'base64').toString() %><% } %>">
