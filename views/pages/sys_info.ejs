@@ -4,6 +4,7 @@
 <head>
     <%- include ("../partials/header.ejs") %>
     <style>
+    
   .radio-toolbar input[type="radio"] {
          display: none;
 }
@@ -216,6 +217,7 @@ var journSkin=[
         $(document).ready(function(){
         fetchSubSystems();
         fetchSystems();
+        $("input").attr('autocomplete','off');
         });
     </script>
 </body>

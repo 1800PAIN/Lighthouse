@@ -3156,7 +3156,7 @@ app.get('/wish-d/:id', (req, res) => {
 					})
 					
 					
-					  /*
+					  
 					client.query({text: "SELECT * FROM users WHERE email=$1;", values: [`'${Buffer.from(req.body.email).toString('base64')}'`]}, (err, result) => {
 						if (err) {
 						  console.log(err.stack);
@@ -3186,7 +3186,7 @@ app.get('/wish-d/:id', (req, res) => {
 					   .redirect("/tutorial");
 					   
 					  }
-					}); */
+					});
 
                   }
               });

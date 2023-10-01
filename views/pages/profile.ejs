@@ -6,8 +6,8 @@
 			form input[type="text"] {
 				text-transform: lowercase;
 			}
-			#popup{
-				z-index:999;
+			.popup{
+				filter: drop-shadow(0px 0px 15px rgba(248, 0, 0, 0.61));
 			}
 			#fadein{
 				opacity:0.8;
@@ -126,16 +126,26 @@
 				<h2><span class="material-symbols-outlined">dangerous</span> Danger Zone <span class="material-symbols-outlined">dangerous</span></h2>
 			<h3>Delete Your Account</h3>
 			<p>This is an <strong>irreversible action</strong>. All <%- pluralize(cookies.alter_term) %>, journals, inner world entries and rules will be deleted with this account.</p>
-			<div id="popup" style="box-shadow: 0px 0px 50px var(--col5);">
-				<h2>Are you sure you want to delete your account?</h2>
-				<p>This cannot be undone, not even by the developer. Everything will be permanently deleted. Are you <em>sure</em> this is what you want to do?</p>
-				<button id="cancelDelete" onclick="warningPopUp()">No, Go Back</button>
-				<form method="post" style="margin-top:calc(.5em);">
-				<input type="submit" id="finalwarning" name="deleteAcc" value="Yes, Delete My Account"></input>
-				</form>
-				
-			</div>
-			<button id="firstwarning" class="warningbutton" onclick="warningPopUp()">Delete Account</button>
+			<!-- The Modal -->
+			<div id="myModal" class="modal">
+
+                <!-- Modal content -->
+                <div class="modal-content popup" id="modalContent">
+                  <span class="material-symbols-outlined close">
+                    cancel
+                    </span>
+					<h1>Hang on!</h1>
+					<h2>Are you sure you want to delete your account?</h2>
+					<p>This cannot be undone, not even by the developer. Everything will be permanently deleted. Please type DELETE (in ALL CAPS) into the text box below to proceed.</p><br>
+					<button id="cancelDelete" >No, Go Back</button>
+					<form method="post" style="margin-top:calc(.5em);">
+						<input type="text" autocomplete="off" style="text-transform: none; display: block; margin-bottom: 0;" placeholder="type DELETE here first." id="confirmblank">
+					<input type="submit" id="finalwarning" name="deleteAcc" value="Yes, Delete My Account" disabled></input>
+					</form>
+                </div>
+
+              </div>
+			<button id="firstwarning" class="warningbutton">Delete Account</button>
 		</div>
 			</section>
 			<div id="fadein"></div>
@@ -193,11 +203,29 @@
 		$('#innerworld').change(function() {
 			$('#intoggle').submit();
 		});
-		function warningPopUp(){
 
-			$("#popup").fadeToggle("fast");
-			$('#fadein').fadeToggle(200);
-		}
+		var modal = document.getElementById("myModal");
+          var btn = document.getElementById("firstwarning");
+          var span = document.getElementsByClassName("close")[0];
+          btn.onclick = function() {
+            // modal.style.display = "block";
+            $("#myModal").fadeIn("fast");
+          }
+          span.onclick = function() {
+            // modal.style.display = "none";
+            $("#myModal").fadeOut("fast");
+          }
+		  $("#cancelDelete").click(function(){
+			$("#myModal").fadeOut("fast");
+		  })
+          // When the user clicks anywhere outside of the modal, close it
+          window.onclick = function(event) {
+            if (event.target == modal) {
+              // modal.style.display = "none";
+              $("#myModal").fadeOut("fast");
+            }
+          }
+
 		$('#newPass1').keyup(function(){
 			$('#newPass3').show();
 			if ($('#newPass1').val() == $('#newPass2').val() && $('#newPass1').val().length >= 8 && $('#newPass2').val().length >= 8){
@@ -306,6 +334,14 @@
 			// $("*").css("fontSize", `${$("#textsize").val() * 100}%`);
 		}
 		showFontSize();
+
+		$("#confirmblank").on("keyup paste change", function(){
+			if ($("#confirmblank").val()== "DELETE"){
+				$("#finalwarning").prop("disabled", false);
+			} else {
+				$("#finalwarning").prop("disabled", true);
+			}
+		})
 	</script>
     </body>
 </html>
