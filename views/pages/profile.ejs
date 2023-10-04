@@ -51,10 +51,15 @@
 					<input type="text" id="plurTerm" name="plurTerm" placeholder="<%- cookies.plural_term || session.plural_term %>" minlength="1" maxlength="<%= maxLimit %>"><br>
 
 					<p><small><em>Note: the custom term for "plural" will eventually show itself on the site. Right now, it's not used.</em></small></p>
-					<label for="innerworld">Enable/Disable <%- capitalise(session.innerworld_term) %></label>
+					<label for="innerworld"><%- capitalise(session.innerworld_term) %></label>
 					<select name="innerworld" id="innerworld">
 						<option value="true" <% if (session.inner_worlds == true) { %> selected <%}%>>Enabled</option>
 						<option value="false" <% if (session.inner_worlds == false) { %> selected <%}%>>Disabled</option>
+					</select><br>
+					<label for="ws">Worksheets</label>
+					<select name="ws" id="ws">
+						<option value="true" <% if (session.worksheets_enabled == true) { %> selected <%}%>>Enabled</option>
+						<option value="false" <% if (session.worksheets_enabled == false) { %> selected <%}%>>Disabled</option>
 					</select>
 					<input type="submit" value="Update Settings" style="display:block;">
 					</form>

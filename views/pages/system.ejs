@@ -32,7 +32,7 @@
               <a title= "<%= capitalise(cookies.system_term) %> Rules" href="/rules"><%= capitalise(cookies.system_term) %> Rules</a>
               <% if (session.innerworld == true) { %> <a title="Your <%= capitalise(session.innerworld_term) %>" href="/inner-world"><%= capitalise(session.innerworld_term) %></a> <%}%>
               <a title="Your <%= capitalise(cookies.system_term) %>'s wants, needs, and wishes" href="/wish">Wishlist</a>
-              <a title="Worksheets for trauma (WIP)" href="/worksheets">Worksheets</a>
+              <% if (session.worksheets_enabled == true){ %><a title="Worksheets for trauma (WIP)" href="/worksheets">Worksheets</a><% }%>
               <a title="Crash course on using Lighthouse" href="/tutorial">Tutorial</a>
             </div>
             <p><sub id="sysCount" style="display: none;"></sub></p>

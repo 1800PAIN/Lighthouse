@@ -337,6 +337,7 @@ app.locals.possessive= function(s){
 					req.session.language= result.rows[0].language || "en";
 					req.session.is_dev=([process.env.dev1, process.env.dev2,process.env.dev3].includes(result.rows[0].id));
 					req.session.textsize= result.rows[0].textsize;
+					req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
 				} catch (e){
 					// They logged out!
 					console.log(`Caught error, skipped setting session. User ID might not exist.`)
@@ -487,45 +488,58 @@ app.locals.possessive= function(s){
 			
 			
 		} else {
+			if (!req.session.worksheets_enabled){
+				// Make sure they have worksheets enabled.
+				client.query({text: "SELECT worksheets_enabled FROM users WHERE id=$1;",values: [getCookies(req)['u_id']]}, (err, result) => {
+					if (err) {
+					  console.log(err.stack);
+					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+				  } else {
+					req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
+					if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
+					var plans;
 
-			var plans;
-
-			client.query({text:'SELECT * FROM safetyplans WHERE u_id=$1;', values: [getCookies(req)['u_id']]}, (err, result) => {
-				if (err) {
-				  console.log(err.stack);
-				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-			  } else {
-				if (result.rows.length > 0){
-					// Plan found
-					try{
-							plans= {
-							symptoms: decryptWithAES(result.rows[0].symptoms),
-							safepeople: decryptWithAES(result.rows[0].safepeople),
-							distractions: decryptWithAES(result.rows[0].distractions),
-							keepsafe: decryptWithAES(result.rows[0].keepsafe),
-							gethelp: decryptWithAES(result.rows[0].gethelp),
-							grounding: decryptWithAES(result.rows[0].grounding)
-						}
-					} catch (e){
-						plans= null;
-					}
-					
-					
-				} else {
-					// No plan. Make plan.
-					client.query({text:'INSERT INTO safetyplans (u_id) VALUES ($1);', values: [getCookies(req)['u_id']]}, (err, result) => {
+					client.query({text:'SELECT * FROM safetyplans WHERE u_id=$1;', values: [getCookies(req)['u_id']]}, (err, result) => {
 						if (err) {
-						  console.log(err.stack);
-						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-					  } else {
-						plans = null;
-					  }
+						console.log(err.stack);
+						res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+					} else {
+						if (result.rows.length > 0){
+							// Plan found
+							try{
+									plans= {
+									symptoms: decryptWithAES(result.rows[0].symptoms),
+									safepeople: decryptWithAES(result.rows[0].safepeople),
+									distractions: decryptWithAES(result.rows[0].distractions),
+									keepsafe: decryptWithAES(result.rows[0].keepsafe),
+									gethelp: decryptWithAES(result.rows[0].gethelp),
+									grounding: decryptWithAES(result.rows[0].grounding)
+								}
+							} catch (e){
+								plans= null;
+							}
+							
+							
+						} else {
+							// No plan. Make plan.
+							client.query({text:'INSERT INTO safetyplans (u_id) VALUES ($1);', values: [getCookies(req)['u_id']]}, (err, result) => {
+								if (err) {
+								console.log(err.stack);
+								res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+							} else {
+								plans = null;
+							}
+							});
+						}
+						
+					}
+					res.render(`pages/safetyplan`, { session: req.session, splash:splash, cookies:req.cookies, safetyplan: plans});
 					});
-				}
-				
-			  }
-			  res.render(`pages/safetyplan`, { session: req.session, splash:splash, cookies:req.cookies, safetyplan: plans});
-			});
+
+				  }
+			  });
+			}
+			
 		}
 		
 		
@@ -597,14 +611,40 @@ app.get('/safety-plan/edit', (req, res) => {
 });
   app.get('/DES', (req, res) => {
 	if (isLoggedIn(req)){
-		res.render(`pages/des`, { session: req.session, splash:splash, cookies:req.cookies});
+		if (!req.session.worksheets_enabled){
+			// Make sure they have worksheets enabled.
+			client.query({text: "SELECT worksheets_enabled FROM users WHERE id=$1;",values: [getCookies(req)['u_id']]}, (err, result) => {
+				if (err) {
+				  console.log(err.stack);
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+			  } else {
+				req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
+				if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
+				res.render(`pages/des`, { session: req.session, splash:splash, cookies:req.cookies});
+			  }
+		  });
+		}
+		
 	splash=null;
 	} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 	
 });
 app.get('/coaxing', (req, res) => {
 	if (isLoggedIn(req)){
-		res.render(`pages/coax-alters`, { session: req.session, splash:splash, cookies:req.cookies });
+		if (!req.session.worksheets_enabled){
+			// Make sure they have worksheets enabled.
+			client.query({text: "SELECT worksheets_enabled FROM users WHERE id=$1;",values: [getCookies(req)['u_id']]}, (err, result) => {
+				if (err) {
+				  console.log(err.stack);
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+			  } else {
+				req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
+				if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
+				res.render(`pages/coax-alters`, { session: req.session, splash:splash, cookies:req.cookies });
+			  }
+		  });
+		}
+		
 	} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 	
 })
@@ -615,7 +655,17 @@ app.get('/tutorial', (req, res) => {
 });
 app.get('/worksheets', (req, res) => {
 	if (isLoggedIn(req)){
-		res.render(`pages/worksheets`, { session: req.session, splash:splash, cookies:req.cookies });
+		client.query({text: "SELECT * FROM users WHERE id=$1;",values: [getCookies(req)['u_id']]}, (err, result) => {
+			if (err) {
+			  console.log(err.stack);
+			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+		  } else {
+			req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
+			if (req.session.worksheets_enabled == false) return res.render('pages/worksheetsdisabled', { session: req.session, splash:splash, cookies:req.cookies });
+			res.render(`pages/worksheets`, { session: req.session, splash:splash, cookies:req.cookies });
+		  }
+		});
+		
 	} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 	
   });
@@ -879,10 +929,23 @@ app.get('/worksheets', (req, res) => {
 			  }
 		  });
 		} else {
-			res.render(`pages/bda`, { session: req.session, splash:splash, cookies:req.cookies });
+			if (!req.session.worksheets_enabled){
+				// Make sure they have worksheets enabled.
+				client.query({text: "SELECT worksheets_enabled FROM users WHERE id=$1;",values: [getCookies(req)['u_id']]}, (err, result) => {
+					if (err) {
+					  console.log(err.stack);
+					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+				  } else {
+					req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
+					if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
+
+					res.render(`pages/bda`, { session: req.session, splash:splash, cookies:req.cookies });
+				  }
+			  });
+			}
+			
 		}
 		
-	splash=null;
 	} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 	
   });
@@ -1425,6 +1488,17 @@ app.get('/wish-d/:id', (req, res) => {
 	var alterArr;
   app.get('/system/:id', (req, res, next) => {
     if (isLoggedIn(req)){
+		if (!req.session.worksheets_enabled){
+			// Quick, add that.
+			client.query({text: "SELECT worksheets_enabled FROM users WHERE id=$1;",values: [getCookies(req)['u_id']]}, (err, result) => {
+				if (err) {
+				  console.log(err.stack);
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+			  } else {
+				  req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
+			  }
+			});
+		}
 		client.query({text: "SELECT systems.sys_id, systems.subsys_id, systems.user_id, systems.sys_alias, alters.alt_id, systems.icon FROM systems LEFT JOIN alters ON systems.sys_id = alters.sys_id WHERE systems.sys_id=$1 ORDER BY alters.name ASC;",values: [`${req.params.id}`]}, (err, result) => {
 			if (err) {
 			  console.log(err.stack);
@@ -1852,11 +1926,11 @@ app.get('/wish-d/:id', (req, res) => {
 					req.session.system_term=result.rows[0].system_term;
 					req.session.plural_term= result.rows[0].plural_term;
 					req.session.innerworld_term= result.rows[0].innerworld_term;
+					req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
 					var theirEmail = Buffer.from(result.rows[0].email, "base64").toString();
 					var theirName = Buffer.from(result.rows[0].username, "base64").toString();
 				}
 				res.render(`pages/profile`, { session: req.session, splash:splash,cookies:req.cookies, theirEmail: theirEmail, theirName: theirName });
-				splash=null;
 			});
 		} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 
@@ -2360,6 +2434,17 @@ app.get('/wish-d/:id', (req, res) => {
 						}
 					});
 				}
+				if (req.body.ws){
+					// Toggle worksheets
+					client.query({text: 'UPDATE users SET worksheets_enabled= $2 WHERE id=$1', values: [getCookies(req)['u_id'], req.body.ws]}, async (err, result)=>{
+						if (err) {
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+						} else {
+							req.session.worksheets_enabled = req.body.ws;
+							req.flash("flash", strings.account.updated);
+						}
+					});
+				}
 				// After all those changes.
 				// res.cookie('subsystem_term', req.body.subTerm,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true });
 				res
@@ -2371,6 +2456,7 @@ app.get('/wish-d/:id', (req, res) => {
 				.cookie('innerworld_term', req.body.iwTerm || req.session.innerworld_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
 				.cookie('plural_term', req.body.plurTerm || req.session.plural_term ,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
 				.cookie('skin', req.body.skinSel || req.session.skin,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('worksheets_enabled', req.body.ws || req.session.worksheets_enabled,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
 				.cookie('textsize', req.body.textsize || req.session.textsize || 1,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
 				.redirect(302, "/profile");
 			}
@@ -3235,6 +3321,7 @@ app.get('/wish-d/:id', (req, res) => {
 					req.session.username = Buffer.from(result.rows[0].username, 'base64').toString();
 					req.session.is_legacy= result.rows[0].is_legacy;
 					req.session.textsize= result.rows[0].textsize;
+					req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
 			  // getCookies(req)['u_id']= result.rows[0].id;
 					  // Add to cookies
 					  res.cookie('loggedin', true, { maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
@@ -3247,7 +3334,8 @@ app.get('/wish-d/:id', (req, res) => {
 					  .cookie('subsystem_term', result.rows[0].subsystem_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
 					  .cookie('innerworld_term', result.rows[0].innerworld_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
 					  .cookie('plural_term', result.rows[0].plural_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-					  .cookie('textsize', result.rows[0].textsize,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true });
+					  .cookie('textsize', result.rows[0].textsize,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+					  .cookie('worksheets_enabled', result.rows[0].worksheets_enabled,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true });
 			  		req.flash("flash", strings.account.loggedin);
 				 	res.redirect(302, '/');
 				}
@@ -3361,6 +3449,7 @@ app.get('/wish-d/:id', (req, res) => {
 				req.session.username = Buffer.from(result.rows[0].username, 'base64').toString();
 				req.session.is_legacy= result.rows[0].is_legacy;
 				req.session.textsize= result.rows[0].textsize;
+				req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
 
 				 // Add to cookies
 				 res
@@ -3374,7 +3463,8 @@ app.get('/wish-d/:id', (req, res) => {
 				.cookie('subsystem_term', result.rows[0].subsystem_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
 				.cookie('innerworld_term', result.rows[0].innerworld_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
 				.cookie('plural_term', result.rows[0].plural_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('textsize', result.rows[0].textsize,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true });
+				.cookie('textsize', result.rows[0].textsize,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+				.cookie('worksheets_enabled', result.rows[0].worksheets_enabled,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true });
 				res.redirect(302, '/');
 		   }
        }
