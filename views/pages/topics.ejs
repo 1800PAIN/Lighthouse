@@ -178,6 +178,20 @@
                   </tbody>
                   </table>
             </section>
+            <% if (topicPages > 1){ %>
+              <section class="pageJump">
+                Pages:
+                <ul>
+                  <% if (currPage > 1){ %><li><i class="fa fa-arrow-left" aria-hidden="true"></i> <a href="/forum/<%= forum %>/<%= parseInt(currPage) - 1 %>">Previous</a></li><% } %>
+                <li class="currPage"><%= currPage %></li>
+                <% if (currPage < topicPages){ %><li><a href="/forum/<%= forum %>/<%= parseInt(currPage) + 1 %>">Next <i class="fa fa-arrow-right" aria-hidden="true"></i></a></li><% } %>
+                </ul>
+                <form method="none">
+                <label for="page">Go to page: </label><input type="number" min="1" max="<%= topicPages %>" name="page" id="page" style="width: 3em;">
+                <button id="go">Go</button>
+                </form>
+              </section>            
+                <% } %>
     </div>
     <script>
         var modal = document.getElementById("myModal");
@@ -276,6 +290,10 @@
               $(this).html(`<span>No replies yet.</span>`);
             }
             
+        });
+        $("#go").on("click", function(){
+          event.preventDefault();
+          window.location= `/topic/<%= forum %>/${$("#page").val()}`
         })
         </script>
     <%- include ("../partials/footer.ejs") %>

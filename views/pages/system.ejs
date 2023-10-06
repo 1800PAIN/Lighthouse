@@ -25,6 +25,7 @@
           <% if (locals.messages.flash) { %>
             <div class="splash"><%- locals.messages.flash %></div>
         <% } %>
+        <% let currentP= 0; %>
             
             <h2 id="sysHeader"></h2>
             <div class="grid-sm padLinks" style="margin: auto;text-align:center;line-height: 1;">
@@ -172,6 +173,7 @@ async function fetchPosts(){
             // sysArr, nonPinned, isPinned
             $("#Wait").empty();
             $("#WaitSys").empty();
+            if (sysInfo.code == 400) return $("#Wait").html("<p><img src='/img/svg/broken_anchor.svg' class='tinyimg'><em>There was an error loading your Communal Journal. Please reload or try again later.</em></p>");
             (sysInfo.sysArr).sort((a, b) => a.alias.localeCompare(b.alias));
             var sysCount = 0;
             var subSysCount = 0;
@@ -216,6 +218,8 @@ async function fetchPosts(){
             $("#sysCount").text(`You have ${sysCount} ${sysCount == 1 ? '<%- cookies.system_term %>' : '<%- pluralize(cookies.system_term) %>'} and ${subSysCount} ${subSysCount == 1 ? '<%- cookies.subsystem_term %>' : 'visible <%- pluralize(cookies.subsystem_term) %>'}.`);
             $("#sysHeader").text(`Your ${sysCount == 1 ? '<%- capitalise(cookies.system_term) %>' : '<%- capitalise(pluralize(cookies.system_term)) %>'}`);
             var language = window.navigator.userLanguage || window.navigator.language;
+            
+            
             if (sysInfo.isPinned.length > 0){
             for (i in sysInfo.isPinned){
                           var bodyArr= (sysInfo.isPinned[i].body).replace(/\r/gi, '').split("\n").filter(function() { return true; });

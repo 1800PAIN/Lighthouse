@@ -890,7 +890,7 @@ app.get('/worksheets', (req, res) => {
 	
   });
   
-  app.get('/forum/:id', (req, res) => {
+  app.get('/forum/:id/:pg?', (req, res) => {
 	if (isLoggedIn(req)){
 		// Get Forum Name
 		client.query({text: "SELECT * FROM forums WHERE u_id=$1 AND id=$2;",values: [getCookies(req)['u_id'], req.params.id]}, (err, aresult) => {
@@ -908,6 +908,7 @@ app.get('/worksheets', (req, res) => {
 				for (i in result.rows){
 					topics.push({name: decryptWithAES(result.rows[i].title), preview: decryptWithAES(result.rows[i].body), alt_id: result.rows[i].alt_id, is_sticky: result.rows[i].is_sticky, is_locked: result.rows[i].is_locked, is_popular: result.rows[i].is_popular, created_on: result.rows[i].created_on, id: result.rows[i].id, alter: Buffer.from(result.rows[i].alt_name, "base64").toString()});
 				}
+				let topicArr= paginate(topics, 25);
 				client.query({text: `SELECT * FROM categories WHERE u_id=$1;`,values: [getCookies(req)['u_id']]}, (err, bresult) => {
 					if (err) {
 					  console.log(err.stack);
@@ -922,7 +923,7 @@ app.get('/worksheets', (req, res) => {
 					for (i in bresult.rows){
 						catArr.push({id: bresult.rows[i].id, name: decryptWithAES(bresult.rows[i].name)})
 					}
-				res.render(`pages/topics`, { session: req.session, splash:splash, cookies:req.cookies, topics:topics, forumName: decryptWithAES(aresult.rows[0].topic), forumid: aresult.rows[0].id, catArr: catArr });
+				res.render(`pages/topics`, { session: req.session, splash:splash, cookies:req.cookies, topics:topicArr[req.params.pg -1 || 0], forumName: decryptWithAES(aresult.rows[0].topic), forumid: aresult.rows[0].id, catArr: catArr, topicPages: topicArr.length, currPage: req.params.pg || 1, forum: req.params.id });
 				  }
 				})
 			  }
@@ -1407,6 +1408,8 @@ app.get('/wish-d/:id', (req, res) => {
 						for (i in dresult.rows){
 							isPinned.push({ title: decryptWithAES(dresult.rows[i].title), body: decryptWithAES(dresult.rows[i].body),  created_on: dresult.rows[i].created_on, id: dresult.rows[i].id})
 						}
+
+							// var currPage= paginate(nonPinned,2);
 							res.json({code: 200, sysArr: sysArr, nonPinned: nonPinned, isPinned: isPinned});
 						  }
 						});
