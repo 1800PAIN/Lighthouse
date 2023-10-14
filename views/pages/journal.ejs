@@ -98,8 +98,9 @@ async function pinPosts(pID){
                   "postID": `${pID}`
                 })
             });
-            console.log("Sending Req.")
             let body = await response.text();
+            if (!response.ok) return $("#Wait").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
+
             let sysInfo = JSON.parse(body);
             fetchPosts();
           }
@@ -118,6 +119,8 @@ async function pinPosts(pID){
                 } 
             });
             let body = await response.text();
+            if (!response.ok) return $("#Wait").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
+
             let sysInfo = JSON.parse(body);
             // sysArr, nonPinned, isPinned
             $("#Wait").empty();

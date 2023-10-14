@@ -173,6 +173,7 @@ var journSkin=[
             let body = await response.text();
             let sysInfo = JSON.parse(body);
             $("#Wait").empty();
+            if (!response.ok) return $("#Wait").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
             (sysInfo.systems).sort((a, b) => a.name.localeCompare(b.name));
             if (sysInfo.systems.length > 0){
                 // There is a subsystem!
@@ -200,6 +201,7 @@ var journSkin=[
             let body = await response.text();
             let sysInfo = JSON.parse(body);
             $("#Wait").empty();
+            if (!response.ok) return $("#Wait").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
             (sysInfo.systems).sort((a, b) => a.alias.localeCompare(b.alias));
             // Look for this system's parent 
             for (i in sysInfo.systems){

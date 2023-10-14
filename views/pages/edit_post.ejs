@@ -14,7 +14,7 @@
             <% } %>
             <h2>Edit <%- cJourn.title %></h2>
             <div id="Wait"></div>
-            <form method="post">
+            <form method="post" id="editpost">
                 <% if (cJourn.is_comm == false){ %> 
                     <input type="hidden" name="journalid" value="<%= journalID %>">
                     <input type="hidden" name="alt_id" value="<%= alt_id %>">
@@ -60,6 +60,7 @@
                 } 
             });
             let body = await response.text();
+            if (!response.ok) return $("#editpost").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
             let resInfo = JSON.parse(body);
             let chosenJournal= '<%- cJourn.id %>';
             for (i in resInfo.search){

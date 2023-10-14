@@ -164,6 +164,8 @@
                 } 
             });
             body = await response.text();
+            if (!response.ok) return $("#wrapper").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
+
             sysInfo = JSON.parse(body);
             for (i in sysInfo.systems){
                 $("#sysLoc").append(`<option value="${sysInfo.systems[i].sys_id}">${sysInfo.systems[i].alias}</option>`);
@@ -200,6 +202,7 @@
                 })
             });
             let body = await response.text();
+            if (!response.ok) return $("#wrapper").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
             let sysInfo = JSON.parse(body);
             if (sysInfo.code==200){
                 // We're good!
@@ -245,6 +248,7 @@
                 })
             });
              body = await response.text();
+             if (!response.ok) return $("#wrapper").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
              sysInfo = JSON.parse(body);
 
                 i++;                    //  increment the counter

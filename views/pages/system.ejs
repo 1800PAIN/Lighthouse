@@ -168,11 +168,13 @@ async function fetchPosts(){
                   "grab": "comm-posts"
                 } 
             });
+            
             let body = await response.text();
             let sysInfo = JSON.parse(body);
             // sysArr, nonPinned, isPinned
             $("#Wait").empty();
             $("#WaitSys").empty();
+            if (!response.ok) return $("#Wait").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
             if (sysInfo.code == 400) return $("#Wait").html("<p><img src='/img/svg/broken_anchor.svg' class='tinyimg'><em>There was an error loading your Communal Journal. Please reload or try again later.</em></p>");
             (sysInfo.sysArr).sort((a, b) => a.alias.localeCompare(b.alias));
             var sysCount = 0;
@@ -269,6 +271,7 @@ async function pinPosts(pID){
                 })
             });
             let body = await response.text();
+            if (!response.ok) return $("#Wait").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
             let sysInfo = JSON.parse(body);
             fetchPosts();
           }

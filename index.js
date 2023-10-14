@@ -924,7 +924,7 @@ app.get('/worksheets', (req, res) => {
 					for (i in bresult.rows){
 						catArr.push({id: bresult.rows[i].id, name: decryptWithAES(bresult.rows[i].name)})
 					}
-				res.render(`pages/topics`, { session: req.session, splash:splash, cookies:req.cookies, topics:topicArr[req.params.pg -1 || 0], forumName: decryptWithAES(aresult.rows[0].topic), forumid: aresult.rows[0].id, catArr: catArr, topicPages: topicArr.length, currPage: req.params.pg || 1, forum: req.params.id });
+				res.render(`pages/topics`, { session: req.session, splash:splash, cookies:req.cookies, topics:topicArr[req.params.pg -1 || 0], forumName: decryptWithAES(aresult.rows[0].topic), forumDesc: decryptWithAES(aresult.rows[0].description), forumid: aresult.rows[0].id, catArr: catArr, topicPages: topicArr.length, currPage: req.params.pg || 1, forum: req.params.id });
 				  }
 				})
 			  }
@@ -2139,7 +2139,7 @@ app.get('/wish-d/:id', (req, res) => {
 				  }
 				});
 			} else if (req.body.editSubmit){
-				client.query({text: "UPDATE forums SET cat_id=$4, topic=$3 WHERE id=$2 AND u_id=$1",values: [getCookies(req)['u_id'], req.params.id, `${encryptWithAES(req.body.newName)}`, req.body.newcat]}, (err, result) => {
+				client.query({text: "UPDATE forums SET cat_id=$4, topic=$3, description=$5 WHERE id=$2 AND u_id=$1",values: [getCookies(req)['u_id'], req.params.id, `${encryptWithAES(req.body.newName)}`, req.body.newcat, `${encryptWithAES(req.body.newDesc)}`]}, (err, result) => {
 					if (err) {
 					  console.log(err.stack);
 					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });

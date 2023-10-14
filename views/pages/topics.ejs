@@ -72,6 +72,8 @@
                     <form method="post">
                       <label for="newName">New Forum Name</label>
                       <input name="newName" id="newName" type="text"> <br>
+                      <label for="newDesc">New Forum Description</label>
+                      <input name="newDesc" id="newDesc" type="text"> <br>
                       <label for="newcat">Forum Category</label>
                       <select name="newcat" id="newCat">
                         <% for (i in catArr){ %> 
@@ -212,6 +214,7 @@
         var editspan = document.getElementById("closeEdit");
         editbtn.onclick = function() {
           $("#newName").val("<%- forumName %>");
+          $("#newDesc").val("<%- forumDesc %>");
           $("#editForum").fadeIn("fast");
         }
         editspan.onclick = function() {
@@ -237,6 +240,7 @@
                 } 
             });
             let body = await response.text();
+            if (!response.ok) return $("#wrapper").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
             let sysInfo = JSON.parse(body);
             for (i in sysInfo.search){
               if (!sysInfo.search[i].is_archived){

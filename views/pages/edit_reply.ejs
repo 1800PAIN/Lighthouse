@@ -11,7 +11,7 @@
             <% } %>
             <section>
                 <h2>Edit Reply</h2>
-                <form method="post">
+                <form method="post" id="editReply">
                     <input type="hidden" name="threadid" value="<%= chosenReply.thread_id %>">
                     <label for="editor3">Reply Body</label>
                     <textarea id="editor3" name="editor3">
@@ -68,6 +68,8 @@
                 } 
             });
             let body = await response.text();
+            if (!response.ok) return $("#editReply").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
+
             let sysInfo = JSON.parse(body);
             for (i in sysInfo.search){
             if ('<%- chosenReply.alt_id %>' == sysInfo.search[i].alt_id){

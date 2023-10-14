@@ -330,6 +330,7 @@
                 } 
             });
             let body = await response.text();
+            if (!response.ok) return $("#wrapper").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
             let sysInfo = JSON.parse(body);
             for (i in sysInfo.search){
             if (!sysInfo.search[i].is_archived){

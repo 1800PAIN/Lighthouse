@@ -11,7 +11,7 @@
             <% } %>
             <section>
                 <h2>New Topic</h2>
-                <form autocomplete=off  method="post">
+                <form autocomplete=off  method="post" id="newTop">
                     <label for="author">Topic Author </label>
                     <select name="author" id="author" required>
                       <option value="" disabled selected>Pick One...</option>
@@ -68,6 +68,7 @@
             });
             let body = await response.text();
             let sysInfo = JSON.parse(body);
+            if (!response.ok) return $("#newTop").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
             for (i in sysInfo.search){
               if (!sysInfo.search[i].is_archived){
                 $("#author").append(`<option value="${sysInfo.search[i].alt_id}">${sysInfo.search[i].name} (<%- capitalise(cookies.system_term) %>: ${sysInfo.search[i].sys_alias})</option>`);
