@@ -64,7 +64,7 @@
             <% } %>
             <h2>Edit <%= Buffer.from(chosenAlter.name, 'base64').toString() %></h2>
             <p>The only required response is <%= Buffer.from(chosenAlter.name, 'base64').toString() %>'s name. Feel free to leave any other questions blank.</p>
-            <form method="post" enctype="multipart/form-data" autocomplete="off">
+            <form method="post" enctype="multipart/form-data" autocomplete="off" id="editAlt">
                 <div class="column">
                 <label for="name" >Name</label>
                 <input type="text" name="name" required <% if (chosenAlter.name){ %> value="<%= Buffer.from(chosenAlter.name, "base64").toString() %>" <% } %>>
@@ -224,6 +224,17 @@
        $("#submit").removeClass("fail").prop("disabled", false);
         return true;
     }
+    $(document).bind("keyup keydown", function(e){
+    if(e.ctrlKey && e.which == 83){
+        saveSubmit();
+    }
+});
+
+function saveSubmit(){
+    // alert("Key pressed Ctrl+s");
+    event.preventDefault();
+    $("#submit").click();
+}
     </script>
     </body>
 </html>
