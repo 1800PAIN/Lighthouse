@@ -11,6 +11,9 @@
     color-scheme: light;
     --forum-shade: rgba(52, 163, 52, 0.05);
 }
+#wrapper{
+    background: rgba(255,255,255,.4);
+}
 html{
     background-image: url("../img/spring-bg.png");
     background-size: cover;
@@ -35,4 +38,8 @@ html{
 }
 #logoname, #logoname > *{
     color: var(--col7)
+}
+hr{
+    height:3em;
+    background-image:url('../img/svg/horizontal_rule_spring.svg');
 }

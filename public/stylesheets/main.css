@@ -246,7 +246,14 @@ h4{
     border: 1px solid black;
     /* border-radius: 10px; */
 }
-
+#logo{
+    display: inline-block; 
+    margin-left: 30px; width:100%;
+    filter: drop-shadow(0 0 .2em black);
+}
+.greeting{
+    color:var(--col3);line-height: .3;
+}
 #logo a{
     color: white;
     text-decoration: none;
@@ -507,7 +514,7 @@ text-align: center;
     display: block;
     /* vertical-align: middle; */
     margin-top: calc(1em);
-    border-top: 1px solid #911111;
+    /* border-top: 1px solid #911111; */
     padding: 2vh 0;
 }
 .subsystem{
@@ -849,3 +856,11 @@ img.emoji {
   /* .tabulator-row .tabulator-cell{
     background-color: var(--col7);
   } */
+  .clearfix {
+    overflow: auto;
+  }
+  .clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+  }

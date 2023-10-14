@@ -6,13 +6,16 @@
     --col4: #8a775e;
     --col5: #8a5e44;
 	--col6: #614d43;
-    --col7: #cfc1ae;
+    --col7: #eee3d4;
     --col8: #504116;
     color-scheme: light;
     --forum-shade: rgba(104, 59, 1, 0.05);
 }
+#wrapper{
+    background: rgba(255,255,255,.4);
+}
 html{
-    background-image: url("../img/autumn-bg.png");
+    background-image: url("../img/sand.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -35,4 +38,7 @@ html{
 }
 #logoname, #logoname > *{
     color: var(--col7)
+}
+hr{
+    background-image:url('../img/svg/horizontal_rule_sand.svg');
 }

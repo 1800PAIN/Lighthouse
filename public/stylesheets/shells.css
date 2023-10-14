@@ -2,7 +2,7 @@
 :root{
     --col1: #5a0539;
     --col2: #e887e0;
-    --col3: #dd3287;
+    --col3: #ffa34c;
     --col4: #973c80;
     --col5: #b327a0;
 	--col6: #421d3a;
@@ -10,6 +10,9 @@
     --col8: #501638;
     color-scheme: light;
     --forum-shade: rgba(209, 33, 33, 0.05);
+}
+#wrapper{
+    background: rgba(255,255,255,.4);
 }
 html{
     background-image: url("../img/shells.png");
@@ -34,4 +37,8 @@ html{
 }
 #logoname, #logoname > *{
     color: var(--col7)
+}
+hr{
+    height: 3em;
+    background-image:url('../img/svg/horizontal_rule_shells.svg');
 }

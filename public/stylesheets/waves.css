@@ -6,10 +6,13 @@
     --col4: #29489c;
     --col5: #000b6e;
 	--col6: #1d2c42;
-    --col7: #62a3c9;
+    --col7: #cee7f5;
     --col8: #1f2b5f;
     color-scheme: light;
     --forum-shade: rgba(10, 13, 153, 0.05);
+}
+#wrapper{
+    background: rgba(255,255,255,.4);
 }
 html{
     background-image: url("../img/water.png");
@@ -24,7 +27,7 @@ html{
 }
 #menubg:after{
     content:' ';
-    background: linear-gradient(90deg, rgb(186, 230, 255) 0%, rgba(153, 161, 255, 0) 100%);
+    background: linear-gradient(90deg, rgb(50, 115, 153) 0%, rgba(153, 161, 255, 0) 100%);
     width: 50%;
     height: 150px;
     z-index: -3;
@@ -34,4 +37,7 @@ html{
 }
 #logoname > *{
     color: var(--col5)
+}
+hr{
+    background-image:url('../img/svg/horizontal_rule_waves.svg');
 }

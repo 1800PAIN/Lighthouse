@@ -13,7 +13,7 @@
                 transition: 0.5s;
             }
             tbody tr:hover{
-                background-color: rgba(0,0,0,.1);
+                background-color: rgba(32, 136, 255, 0.1);
             }
             td{
                 text-align: center;
@@ -25,11 +25,11 @@
                 border-bottom: 1px dashed var(--col1);
             }
             input[type=text]{
-                border-bottom: 1px solid black;
+                border-bottom: 1px solid rgb(0, 81, 255);
                 border-top: none;
                 border-left:none;
                 border-right: none;
-                background: rgba(0,0,0,.1);
+                background: rgba(46, 125, 243, 0.1);
                 margin-bottom: 0;
             }
             .short{
@@ -65,7 +65,7 @@
                 <p>This page is on how to coax out <%= pluralize(cookies.alter_term) %> in a safe, positive way that mitigates dissociative symptoms. <strong>Dissociation is a spectrum experience, and certain tips may not apply to you.</strong> This page does not save, that way it can be used later on.</p><p>Follow along with the sentences and try to practice as you go. Remember, the <%= cookies.alter_term %> you're coaxing out may not want to come out, and that's ok.</p>
                 <hr>
                 
-                <label for="who">I'm trying to coax out </label><input type="text" id="alter-name" class="short">. <label for="grounding">I can help <span class="alter-name">them</span> feel safe in the moment by</label> <input id="grounding" type="text" class="long">. I might also want to find a quiet, insulated space for <span class="alter-name">them</span> to feel comfortable in. <label for="triggers">Something safe and positive that seems to bring out <span class="alter-name">them</span> often is</label> <input type="text" id="triggers" class="medium">. <label for="likes">I can try to start a conversation with them by talking about</label> <input type="text" class="long" id="likes">.
+                <label for="who">I'm trying to coax out </label><input type="text" id="alter-name" class="short">. <label for="grounding">I can help <span class="alter-name">them</span> feel safe in the moment by</label> <input id="grounding" type="text" class="long">. <label>I might also want to find a quiet, insulated space for <span class="alter-name">them</span> to feel comfortable in.</label> <label for="triggers">Something safe and positive that seems to bring out <span class="alter-name">them</span> often is</label> <input type="text" id="triggers" class="medium">. <label for="likes">I can try to start a conversation with them by talking about</label> <input type="text" class="long" id="likes">.
                 <p>After establishing a safe place, try to talk aloud or write to <span class="alter-name">them</span> about <span class="alter-likes">things</span>. Be sure to remind them where they are, what the date is, and that they're safe to make sure they are grounded. Notice how the page continues to reference <span class="alter-name">alter</span> by name in an attempt to call them out.</p>
                 <label for="start">If <span class="alter-name">alter</span> has started to talk, what are some things that's being said?</label><br>
                 <textarea id="start"></textarea>

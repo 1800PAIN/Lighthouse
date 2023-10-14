@@ -11,6 +11,9 @@
     color-scheme: light;
     --forum-shade: rgba(33, 209, 33, 0.05);
 }
+#wrapper{
+    background: rgba(255,255,255,.4);
+}
 html{
     background-image: url("../img/fish.png");
     background-size: cover;
@@ -52,4 +55,8 @@ a:visited{
 
 .systembutton > *{
     color: var(--col5);
+}
+hr{
+    height:3em;
+    background-image:url('../img/svg/horizontal_rule_mermaid.svg');
 }

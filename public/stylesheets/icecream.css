@@ -1,12 +1,4 @@
-/* Coral Theme Colours */
-/* 
-#a6bbce 
-#9e7daa 
-#e7a6c8 
-#f0cccc 
-#f3f2ed 
-#d0bd95 
-*/
+/* Ice Cream Theme Colours */
 :root{
     --col1: #791122;
     --col2: #f0cccc;
@@ -18,6 +10,9 @@
     --col8: #500921;
     color-scheme: light;
     --forum-shade: rgba(177, 0, 147, 0.05);
+}
+#wrapper{
+    background: rgba(255,255,255,.4);
 }
 html{
     background-image: url("../img/sorbet.png");
@@ -42,4 +37,8 @@ html{
 }
 .topnav a{
     color: white;
+}
+hr{
+    height:3em;
+    background-image:url('../img/svg/horizontal_rule_icecream.svg');
 }

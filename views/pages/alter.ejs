@@ -99,6 +99,195 @@ td{
               </select>
               <input type="submit" name="modify" value="Update">
             </form>
+            <section class="clearfix">
+                <!-- For adding alter info. -->
+                <h2>About <%= Buffer.from(alterInfo.name, 'base64').toString() %> <% if (alterInfo.pronouns){ %><% if (distill(alterInfo.pronouns)){ %> (<%- Buffer.from(alterInfo.pronouns, "base64").toString() %>) <% } %> <% } %></h2>
+                <a title="Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %>" href="/edit-alter/<%= alterInfo.alt_id %>" class="editbtn" style="width:auto;margin: auto;display:block;">Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %></a>
+                <% if (alterInfo.img_blob){ %> <img class="medimg" style="float:left; margin-right:calc(1em);" src="data:<%= alterInfo.blob_mimetype %>;base64,<%= Buffer.from(alterInfo.img_blob).toString("base64") %>"> <% } else if (distill(alterInfo.img_url)) { %>
+                <img src="<%= Buffer.from(alterInfo.img_url, 'base64').toString() %>" class="medimg" style="float:left; margin-right:calc(1em);">
+                <% } else { %> 
+                    <img src="https://i.ibb.co/vkwmWjF/avatar-default.jpg" class="medimg" style="float:left; margin-right:calc(1em);" alt="<%= Buffer.from(alterInfo.name, 'base64').toString() %>'s icon">
+                <% } %>
+                <table>
+                    <tbody>
+                      
+                        <% if (alterInfo.agetext) { %>
+                             <% if (distill(alterInfo.agetext)) { %>
+                                <tr><td>Perceived Age:</td>
+                                <td><%= Buffer.from(alterInfo.agetext, 'base64').toString() %></td></tr>
+                            <% } %>
+                            <% } %>
+                       
+                      
+                      
+                      
+                        <% if (alterInfo.appearance) { %>
+                             <% if (distill(alterInfo.appearance)) { %>
+                                <tr><td>Internal Appearance:</td>
+                                <td><%= Buffer.from(alterInfo.appearance, 'base64').toString() %></td></tr>
+                            <% } %>
+                            <% } %>
+                       
+                      
+                      
+                        <% if (alterInfo.birthday) { %>
+                        <% if (distill(alterInfo.birthday)) { %>
+                                                    <tr><td>Perceived Birthday:</td>
+                                                    <td><%= Buffer.from(alterInfo.birthday, 'base64').toString() %></td></tr>
+                                                <% } %>
+                            <% } %>
+                        
+                      
+                      
+                        <% if (alterInfo.gender) { %>
+                        <% if (distill(alterInfo.gender)) { %>
+                                                    <tr><td>Gender:</td>
+                                                    <td name="gender"><%= Buffer.from(alterInfo.gender, 'base64').toString() %></td></tr>
+                                                <% } %>
+                            <% } %>
+                        
+                      
+                      
+                        <% if (alterInfo.sexuality) { %>
+                        <% if (distill(alterInfo.sexuality)) { %>
+                                                    <tr><td>Romatic/Sexual Orientation:</td>
+                                                    <td name="sexuality"><%= Buffer.from(alterInfo.sexuality, 'base64').toString() %></td></tr>
+                                                <% } %>
+                            <% } %>
+                        
+                      
+                      
+                        <% if (alterInfo.first_noted) { %>
+                            <% if (distill(alterInfo.first_noted)) { %>
+                                                        <tr><td>First Noted:</td>
+                                                        <td><%= Buffer.from(alterInfo.first_noted, 'base64').toString() %></td></tr>
+                                                    <% } %>
+                            <% } %>
+                        
+                      
+                      
+                        
+                        <% if (alterInfo.type) { %>
+                        <% if (distill(alterInfo.type)) { %>
+                           <tr> <td>Type:</td>
+                            <td><%= alterInfo.type %></td></tr>
+                        <% } %>
+                            <% } %>
+                        
+                      
+                      
+                        
+                        <% if (alterInfo.source) { %>
+                        <% if (distill(alterInfo.source)) { %>
+                            <tr><td>Source:</td>
+                            <td><%= Buffer.from(alterInfo.source, 'base64').toString() %></td></tr>
+                        <% } %>
+                            <% } %>
+                        
+                      
+                      
+                        
+                        <% if (alterInfo.triggers_pos) { %>
+                        <% if (distill(alterInfo.triggers_pos)) { %>
+                            <tr><td>Positive Triggers:</td>
+                            <td><%= Buffer.from(alterInfo.triggers_pos, 'base64').toString() %></td></tr>
+                        <% } %>
+                            <% } %>
+    
+                      
+                      
+                        <% if (alterInfo.triggers_neg) { %>
+                        <% if (distill(alterInfo.triggers_neg)) { %>
+                            <tr><td>Negative Triggers:</td>
+                            <td><%= Buffer.from(alterInfo.triggers_neg, 'base64').toString() %></td></tr>
+                        <% } %>
+                            <% } %>
+    
+                      
+                      
+                        <% if (alterInfo.likes) { %>
+                        <% if (distill(alterInfo.likes)) { %>
+                            <tr><td>Likes:</td>
+                            <td><%= Buffer.from(alterInfo.likes, 'base64').toString() %></td></tr>
+                        <% } %>
+                            <% } %>
+    
+                      
+                      
+                        <% if (alterInfo.dislikes) { %>
+                        <% if (distill(alterInfo.dislikes)) { %>
+                            <tr><td>Dislikes:</td>
+                            <td><%= Buffer.from(alterInfo.dislikes, 'base64').toString() %></td></tr>
+                        <% } %>
+                            <% } %>
+    
+                        <% if (alterInfo.hobbies) { %>
+                        <% if (distill(alterInfo.hobbies)) { %>
+                            <tr><td>Hobbies:</td>
+                            <td><%= Buffer.from(alterInfo.hobbies, 'base64').toString() %></td></tr>
+                        <% } %>
+                            <% } %>
+    
+                        <% if (alterInfo.job) { %>
+                        <% if (distill(alterInfo.job)) { %>
+                            <tr><td>Internal Job:</td>
+                            <td><%= Buffer.from(alterInfo.job, 'base64').toString() %></td></tr>
+                        <% } %>
+                            <% } %>
+    
+                        <% if (alterInfo.safe_place) { %>
+                        <% if (distill(alterInfo.safe_place)) { %>
+                            <tr><td>Feels safest when:</td>
+                            <td><%= Buffer.from(alterInfo.safe_place, 'base64').toString() %></td></tr>
+                        <% } %>
+                            <% } %>
+    
+                      
+                      
+                        
+                        <% if (alterInfo.wants) { %>
+                        <% if (distill(alterInfo.wants)) { %>
+                            <tr><td>Wants/Wishes:</td>
+                            <td><%= Buffer.from(alterInfo.wants, 'base64').toString() %></td></tr>
+                        <% } %>
+                            <% } %>
+    
+                      
+                      
+                        <% if (alterInfo.acc) { %>
+                        <% if (distill(alterInfo.acc)) { %>
+                            <tr><td>Needs accommodated for:</td>
+                            <td><%= Buffer.from(alterInfo.acc, 'base64').toString() %></td></tr>
+                        <% } %>
+                            <% } %>
+    
+                      
+                                          
+                        <% if (alterInfo.notes) { %>
+                        <% if (distill(alterInfo.notes)) { %>
+                            <tr><td>Other Notes:</td>
+                            <td><%- (Buffer.from(alterInfo.notes, 'base64').toString()).replace(/\n/g, "<br>") %></td></tr>
+                        <% } %>
+                            <% } %>
+                        <% if (alterInfo.fronttells) { %>
+                        <% if (distill(alterInfo.fronttells)) { %>
+                            <tr><td>Might be fronting if:</td>
+                            <td><%- (Buffer.from(alterInfo.fronttells, 'base64').toString()).replace(/\n/g, "<br>") %></td></tr>
+                        <% } %>
+                            <% } %>
+                        <% if (alterInfo.relationships) { %>
+                        <% if (distill(alterInfo.relationships)) { %>
+                            <tr><td>Relationships with other <%- pluralize(cookies.alter_term) %>:</td>
+                            <td><%- (Buffer.from(alterInfo.relationships, 'base64').toString()).replace(/\n/g, "<br>") %></td></tr>
+                        <% } %>
+                            <% } %>
+    
+                      
+                    </tbody>
+                    </table>
+                    
+            </section>
+            <hr>
             <% if (altJournal.length > 0){ %>
                 <div class="indented">
                 <p>This journal is <strong><%= altJournal[0].is_private == true ? 'password protected' : 'unlocked' %>.</strong>
@@ -185,195 +374,7 @@ td{
                 </form>
             <% } %>
         </section>
-        <hr>
-        <section>
-            <!-- For adding alter info. -->
-            <h2>About <%= Buffer.from(alterInfo.name, 'base64').toString() %> <% if (alterInfo.pronouns){ %><% if (distill(alterInfo.pronouns)){ %> (<%- Buffer.from(alterInfo.pronouns, "base64").toString() %>) <% } %> <% } %></h2>
 
-            <% if (alterInfo.img_blob){ %> <img class="medimg" style="float:left; margin-right:calc(1em);" src="data:<%= alterInfo.blob_mimetype %>;base64,<%= Buffer.from(alterInfo.img_blob).toString("base64") %>"> <% } else if (distill(alterInfo.img_url)) { %>
-            <img src="<%= Buffer.from(alterInfo.img_url, 'base64').toString() %>" class="medimg" style="float:left; margin-right:calc(1em);">
-            <% } else { %> 
-                <img src="https://i.ibb.co/vkwmWjF/avatar-default.jpg" class="medimg" style="float:left; margin-right:calc(1em);" alt="<%= Buffer.from(alterInfo.name, 'base64').toString() %>'s icon">
-            <% } %>
-            <table>
-                <tbody>
-                  
-                    <% if (alterInfo.agetext) { %>
-                         <% if (distill(alterInfo.agetext)) { %>
-                            <tr><td>Perceived Age:</td>
-                            <td><%= Buffer.from(alterInfo.agetext, 'base64').toString() %></td></tr>
-                        <% } %>
-                        <% } %>
-                   
-                  
-                  
-                  
-                    <% if (alterInfo.appearance) { %>
-                         <% if (distill(alterInfo.appearance)) { %>
-                            <tr><td>Internal Appearance:</td>
-                            <td><%= Buffer.from(alterInfo.appearance, 'base64').toString() %></td></tr>
-                        <% } %>
-                        <% } %>
-                   
-                  
-                  
-                    <% if (alterInfo.birthday) { %>
-                    <% if (distill(alterInfo.birthday)) { %>
-                                                <tr><td>Perceived Birthday:</td>
-                                                <td><%= Buffer.from(alterInfo.birthday, 'base64').toString() %></td></tr>
-                                            <% } %>
-                        <% } %>
-                    
-                  
-                  
-                    <% if (alterInfo.gender) { %>
-                    <% if (distill(alterInfo.gender)) { %>
-                                                <tr><td>Gender:</td>
-                                                <td name="gender"><%= Buffer.from(alterInfo.gender, 'base64').toString() %></td></tr>
-                                            <% } %>
-                        <% } %>
-                    
-                  
-                  
-                    <% if (alterInfo.sexuality) { %>
-                    <% if (distill(alterInfo.sexuality)) { %>
-                                                <tr><td>Romatic/Sexual Orientation:</td>
-                                                <td name="sexuality"><%= Buffer.from(alterInfo.sexuality, 'base64').toString() %></td></tr>
-                                            <% } %>
-                        <% } %>
-                    
-                  
-                  
-                    <% if (alterInfo.first_noted) { %>
-                        <% if (distill(alterInfo.first_noted)) { %>
-                                                    <tr><td>First Noted:</td>
-                                                    <td><%= Buffer.from(alterInfo.first_noted, 'base64').toString() %></td></tr>
-                                                <% } %>
-                        <% } %>
-                    
-                  
-                  
-                    
-                    <% if (alterInfo.type) { %>
-                    <% if (distill(alterInfo.type)) { %>
-                       <tr> <td>Type:</td>
-                        <td><%= alterInfo.type %></td></tr>
-                    <% } %>
-                        <% } %>
-                    
-                  
-                  
-                    
-                    <% if (alterInfo.source) { %>
-                    <% if (distill(alterInfo.source)) { %>
-                        <tr><td>Source:</td>
-                        <td><%= Buffer.from(alterInfo.source, 'base64').toString() %></td></tr>
-                    <% } %>
-                        <% } %>
-                    
-                  
-                  
-                    
-                    <% if (alterInfo.triggers_pos) { %>
-                    <% if (distill(alterInfo.triggers_pos)) { %>
-                        <tr><td>Positive Triggers:</td>
-                        <td><%= Buffer.from(alterInfo.triggers_pos, 'base64').toString() %></td></tr>
-                    <% } %>
-                        <% } %>
-
-                  
-                  
-                    <% if (alterInfo.triggers_neg) { %>
-                    <% if (distill(alterInfo.triggers_neg)) { %>
-                        <tr><td>Negative Triggers:</td>
-                        <td><%= Buffer.from(alterInfo.triggers_neg, 'base64').toString() %></td></tr>
-                    <% } %>
-                        <% } %>
-
-                  
-                  
-                    <% if (alterInfo.likes) { %>
-                    <% if (distill(alterInfo.likes)) { %>
-                        <tr><td>Likes:</td>
-                        <td><%= Buffer.from(alterInfo.likes, 'base64').toString() %></td></tr>
-                    <% } %>
-                        <% } %>
-
-                  
-                  
-                    <% if (alterInfo.dislikes) { %>
-                    <% if (distill(alterInfo.dislikes)) { %>
-                        <tr><td>Dislikes:</td>
-                        <td><%= Buffer.from(alterInfo.dislikes, 'base64').toString() %></td></tr>
-                    <% } %>
-                        <% } %>
-
-                    <% if (alterInfo.hobbies) { %>
-                    <% if (distill(alterInfo.hobbies)) { %>
-                        <tr><td>Hobbies:</td>
-                        <td><%= Buffer.from(alterInfo.hobbies, 'base64').toString() %></td></tr>
-                    <% } %>
-                        <% } %>
-
-                    <% if (alterInfo.job) { %>
-                    <% if (distill(alterInfo.job)) { %>
-                        <tr><td>Internal Job:</td>
-                        <td><%= Buffer.from(alterInfo.job, 'base64').toString() %></td></tr>
-                    <% } %>
-                        <% } %>
-
-                    <% if (alterInfo.safe_place) { %>
-                    <% if (distill(alterInfo.safe_place)) { %>
-                        <tr><td>Feels safest when:</td>
-                        <td><%= Buffer.from(alterInfo.safe_place, 'base64').toString() %></td></tr>
-                    <% } %>
-                        <% } %>
-
-                  
-                  
-                    
-                    <% if (alterInfo.wants) { %>
-                    <% if (distill(alterInfo.wants)) { %>
-                        <tr><td>Wants/Wishes:</td>
-                        <td><%= Buffer.from(alterInfo.wants, 'base64').toString() %></td></tr>
-                    <% } %>
-                        <% } %>
-
-                  
-                  
-                    <% if (alterInfo.acc) { %>
-                    <% if (distill(alterInfo.acc)) { %>
-                        <tr><td>Needs accommodated for:</td>
-                        <td><%= Buffer.from(alterInfo.acc, 'base64').toString() %></td></tr>
-                    <% } %>
-                        <% } %>
-
-                  
-                                      
-                    <% if (alterInfo.notes) { %>
-                    <% if (distill(alterInfo.notes)) { %>
-                        <tr><td>Other Notes:</td>
-                        <td><%- (Buffer.from(alterInfo.notes, 'base64').toString()).replace(/\n/g, "<br>") %></td></tr>
-                    <% } %>
-                        <% } %>
-                    <% if (alterInfo.fronttells) { %>
-                    <% if (distill(alterInfo.fronttells)) { %>
-                        <tr><td>Might be fronting if:</td>
-                        <td><%- (Buffer.from(alterInfo.fronttells, 'base64').toString()).replace(/\n/g, "<br>") %></td></tr>
-                    <% } %>
-                        <% } %>
-                    <% if (alterInfo.relationships) { %>
-                    <% if (distill(alterInfo.relationships)) { %>
-                        <tr><td>Relationships with other <%- pluralize(cookies.alter_term) %>:</td>
-                        <td><%- (Buffer.from(alterInfo.relationships, 'base64').toString()).replace(/\n/g, "<br>") %></td></tr>
-                    <% } %>
-                        <% } %>
-
-                  
-                </tbody>
-                </table>
-                <a title="Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %>" href="/edit-alter/<%= alterInfo.alt_id %>" class="editbtn">Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %></a>
-        </section>
         <hr>
         <section>
             <h2><span class="material-symbols-outlined">dangerous</span> Danger Zone <span class="material-symbols-outlined">dangerous</span></h2>

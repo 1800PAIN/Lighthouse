@@ -3305,7 +3305,7 @@ app.get('/wish-d/:id', (req, res) => {
   app.post('/signup', function(req, res) {
 	// Bookmarks: signup post, post signup
 
-	  if (req.body.spamcheck) return console.log("(:"); // It's a bot. Do not let them load anything.
+	  if (req.body.mjl2fbbz8s) return res.send("(:"); // It's a bot. Do not let them load anything.
       var query = {
         text: "SELECT * FROM users WHERE email=$1 OR username=$2;",
         values: [`'${Buffer.from((req.body.email).toLowerCase()).toString('base64')}'`, `'${Buffer.from(req.body.username).toString('base64')}'`]

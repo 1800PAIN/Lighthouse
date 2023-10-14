@@ -125,3 +125,8 @@ dt{
   .tabulator-cell {
     border: 1px solid rgba(222, 222, 247,.4);
   }
+
+  hr{
+    height: 2em;
+    background-image:url('../img/svg/horizontal_rule.svg');
+  }

@@ -36,3 +36,7 @@ html{
     top:0;
     lefT:0;
 }
+hr{
+    height: 2em;
+    background-image:url('../img/svg/horizontal_rule.svg');
+}
