@@ -194,6 +194,7 @@ app.locals.journalArr= [
 	{val: '28', c: "Fantasy (🎨Galaxii Kingdom)"},
 	{val: '29', c: "Fangs (CW: Teeth) (🎨Galaxii Kingdom)"},
 	{val: '30', c: "Lighthouse (🎨Galaxii Kingdom)"},
+	{val: '31', c: "Constellation (🎨Constellation Collective)"},
 ]
 app.locals.strings=strings;
 app.locals.apiKey= process.env.apiKey;
