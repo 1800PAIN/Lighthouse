@@ -1659,14 +1659,13 @@ app.get('/wish-d/:id', (req, res) => {
   app.get("/alter/:id", (req, res, next)=>{
 	 if (isLoggedIn(req)){
 		// Grab alters, moods, and the system alias from this alter's id.
-		 client.query({text: "SELECT alter_moods.*, alters.*, systems.sys_alias FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id LEFT JOIN alter_moods ON alters.alt_id = alter_moods.alt_id WHERE alters.alt_id=$1;",values: [`${req.params.id}`]}, (err, result) => {
+		 client.query({text: "SELECT alter_moods.*, alters.*, systems.sys_alias, systems.user_id FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id LEFT JOIN alter_moods ON alters.alt_id = alter_moods.alt_id WHERE alters.alt_id=$1;",values: [`${req.params.id}`]}, (err, result) => {
 			 if (err) {
 			   console.log(err.stack);
 			   return res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 		   } else {
 			// This is our selected alter.
-			// console.log("Backend")
-			// console.log((result.rows[0].img_blob))
+			if (getCookies(req)['u_id'] !== result.rows[0].user_id) return res.status(404).render('pages/404',{ session: req.session, code:"Not Found", splash:splash,cookies:req.cookies }); //False 404 to avoid any further penetration attacks
 			var alterInfo= result.rows[0];
 			try{
 				
@@ -1811,6 +1810,7 @@ app.get('/wish-d/:id', (req, res) => {
 			   console.log(err.stack);
 			   res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 		   } else {
+			if (getCookies(req)['u_id'] !== result.rows[0].user_id) return res.status(404).render('pages/404',{ session: req.session, code:"Not Found", splash:splash,cookies:req.cookies }); //False 404 to avoid any further penetration attacks
 				let alterInfo= {
 					alt_id: result.rows[0].alt_id,
 					name: Buffer.from(result.rows[0].name, "base64").toString(),
@@ -1835,6 +1835,7 @@ app.get('/wish-d/:id', (req, res) => {
 				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 			} else {
 				// console.log(result.rows[0]);
+				// if (getCookies(req)['u_id'] !== result.rows[0].u_id) return res.status(404).render('pages/404',{ session: req.session, code:"Not Found", splash:splash,cookies:req.cookies }); //False 404 to avoid any further penetration attacks
 				req.session.jPost= result.rows[0];
 				req.session.jPost.body= decryptWithAES(req.session.jPost.body);
 				req.session.jPost.title= decryptWithAES(req.session.jPost.title);
