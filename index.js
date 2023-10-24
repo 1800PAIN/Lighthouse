@@ -1805,7 +1805,7 @@ app.get('/wish-d/:id', (req, res) => {
 
   app.get('/journal/:id', (req, res)=>{
 	 if (isLoggedIn(req)){
-		client.query({text: "SELECT journals.*, alters.*, systems.sys_alias FROM journals INNER JOIN alters ON journals.alt_id= alters.alt_id INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alters.alt_id=$1;",values: [`${req.params.id}`]}, (err, result) => {
+		client.query({text: "SELECT journals.*, alters.*, systems.sys_alias, systems.user_id FROM journals INNER JOIN alters ON journals.alt_id= alters.alt_id INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alters.alt_id=$1;",values: [`${req.params.id}`]}, (err, result) => {
 			if (err) {
 			   console.log(err.stack);
 			   res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
