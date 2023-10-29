@@ -11,13 +11,24 @@
     
     domReady(() => {
       // Display body when DOM is loaded
-      if (localStorage.getItem("lighthouse_mode") == "light"){
-        $("html").addClass("light-mode");
-      $("head").append(`<link rel="stylesheet" href="/stylesheets/<%- cookies.skin ||"lighthouse" %>.css?v=1.0.5">`);        
+      let isDark= window.matchMedia("(prefers-color-scheme: dark)");
+      console.log(localStorage.getItem("lighthouse_mode"))
+      if (localStorage.getItem("lighthouse_mode")){
+        document.querySelector("html").setAttribute("data-theme", localStorage.getItem("lighthouse_mode"));
       } else {
-        $("html").addClass("dark-mode");
-        $("head").append(`<link rel="stylesheet" href="/stylesheets/dark.css?v=1.0.5">`);         
+        let modeChoice= isDark.matches == true ? "dark" : "light";
+        console.log(modeChoice)
+        document.querySelector("html").setAttribute("data-theme", modeChoice);
       }
+      // if (localStorage.getItem("lighthouse_mode") == "light"){
+      // //   $("html").addClass("light-mode");
+      // // $("head").append(`<link rel="stylesheet" href="/stylesheets/<%- cookies.skin ||"lighthouse" %>.css?v=1.0.5">`);   
+      // document.querySelector("html").setAttribute("data-theme", "light");    
+      // } else {
+      //   // $("html").addClass("dark-mode");
+      //   // $("head").append(`<link rel="stylesheet" href="/stylesheets/dark.css?v=1.0.5">`); 
+      //   document.querySelector("html").setAttribute("data-theme", "dark");      
+      // }
       <% if (cookies.textsize) { %> 
         // <% if (!cookies.textsize !== 1) {%> 
         //   $("*:not(.ck,.ck-reset,.ck-editor,.ck-rounded-corners)").css("fontSize", `<%= (parseFloat(cookies.textsize) || 1) * 100 %>%`);
@@ -31,8 +42,6 @@
           $(this).css("font-size", `${parseInt($(this).css("font-size")) * <%= parseFloat(cookies.textsize) || 1 %>}px`)
         });
       <% } %>
-			
-
       document.body.style.visibility = 'visible';
       try{
       twemoji.parse(document.body);

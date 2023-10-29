@@ -37,7 +37,7 @@
             <h2>Import from Pluralkit</h2>
             <p>Use Pluralkit? We can fetch your <%- pluralize(cookies.alter_term) %> and add them to your account. Importing will create a new <%- cookies.system_term %> that can be renamed on the <a href="/system">My <%- capitalise(cookies.system_term) %></a> page</a>.</p>
             <p><em>Don't know your system ID?</em> Direct message "pk;s" to Pluralkit, or type "pk;s" in a channel that Pluralkit can view.</p>
-            <p>Adding your Pluralkit token is completely optional. Adding your token allows Lighthouse to fetch your private <%- pluralize(cookies.alter_term) %> as well. We do not store this token. <strong>Do not share your token with anyone you do not trust.</strong></p>
+            <p>Adding your Pluralkit token is completely optional. Adding your token allows Lighthouse to fetch your private <%- pluralize(cookies.alter_term) %> as well. We do not store this token, or your <%= cookies.system_term %>'s ID. <strong>Do not share your token with anyone you do not trust.</strong></p>
             <p><strong>Moving things over from Pluralkit can take some time.</strong> The more alters you select, the longer this process will take. We apologise in advance!</p>
             <form>
                 <label for="pid">Pluralkit system ID</label>

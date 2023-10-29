@@ -97,12 +97,16 @@
             <% if (locals.messages.flash) { %>
                 <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
-            <% for (i in alterArr){ 
+          
+            <% 
+            var opInfo= {id: null, name: "Blurry", pronouns:'', type:'', avatar:'', sys_alias:'', is_archived: false, img_blob:'', mimetype:''}
+                for (i in alterArr){ 
                if (alterArr[i].id == originalPost.alt_id){ 
-                var opInfo= alterArr[i];
+                opInfo= alterArr[i];
                 break;
                }
-               } %>
+               }
+               %>
 
            
             <h2><% if (originalPost.is_sticky== true){ %>(Pinned) <% } %><% if (originalPost.is_locked== true){ %>(Locked) <% } %><%= originalPost.title %> <% if (!opInfo.is_archived){%></h2>
@@ -117,8 +121,22 @@
                 <% if (originalPost.is_locked== true) { %><i title="Unlock thread and allow replies."  onclick="modThread('lock', '<%= originalPost.id %>')" class="fa fa-unlock" aria-hidden="true"></i><% } else { %><i title="Lock thread and prevent replies." onclick="modThread('lock', '<%= originalPost.id %>')" class="fa fa-lock" aria-hidden="true"></i><% } %>
               </div>
             <% } %>
+
+            <!-- OP Post -->
             <% if (currPage == 1) { %>
-            <section class="threadpost">
+              <% if (originalPost.alt_id== null){ %> 
+                <section class="threadpost">
+                  <div class="user">
+                    <h3><a>Blurry <i class='far fa-newspaper' title="Original Author" aria-hidden="false"></i></a></h3>
+                    <img src="/img/avatar-default.jpg" class="smallimg">
+                  </div>
+                  <div class="post">
+                      <p> <small>Posted <%- (originalPost.created_on).toLocaleString().split(",")[0] %></small></p>
+                      <%- originalPost.body %>
+                  </div>
+              </section>
+              <% } else { %>
+                <section class="threadpost">
                 <div class="user">
                 <!-- Time to do some alter logic. -->
                 <% for (i in alterArr){ %> 
@@ -143,13 +161,20 @@
                     <%- originalPost.body %>
                 </div>
             </section>
+              <% } %>
+            
             <% } %>
             <% for (r in replyArr){ %>
                 <section class="threadpost" id="<%= replyArr[r].id %>">
                     <div class="user">
                     <!-- Time to do some alter logic. -->
-                    <% for (i in alterArr){ 
-                      %> 
+                    <% if (replyArr[r].alt_id== null){ %> 
+                    <!-- Blurry -->
+                    <h3 style="padding-bottom:0;"><a href="/alter/<%= alterArr[i].id %>"><%= alterArr[i].name %> <% if (alterArr[i].id == originalPost.alt_id){ %> <i class='far fa-newspaper' title="Original Author" aria-hidden="false"></i> <% } %></a></h3><img src="/img/avatar-default.jpg" class="smallimg">
+
+                    <% } else { %>
+                    <!-- Not Blurry -->
+                    <% for (i in alterArr){  %> 
                         <% if (alterArr[i].id == replyArr[r].alt_id){ 
                           var is_archived = alterArr[i].is_archived;
                           %> 
@@ -168,7 +193,9 @@
                             <% if (alterArr[i].type){ %>Type: <%= alterArr[i].type %><% } %>
                             <% var replyAuthor= alterArr[i].name %>
                         <% break; } %>
+                      <% } %>
                     <% } %>
+                    
                     </div>
                     <div class="post">
                         <p><small>Posted <%- (replyArr[r].created_on).toLocaleString().split(",")[0] %><% if (!is_archived){ %><a title="Edit reply" class="editCat" href="/reply/<%- replyArr[r].id %>"><i class="fa fa-pencil" aria-hidden="true"></i></a><% } %> <a title="Delete <%- replyAuthor %>'s Reply" onclick="deleteReply('<%- replyAuthor %>','<%- replyArr[r].id %>')"><i class="fa fa-trash textless" aria-hidden="true"></i></a></small></p>
@@ -204,6 +231,7 @@
                             <option value="<%= alterArr[i].id %>"><%= alterArr[i].name %> (System: <%= alterArr[i].sys_alias %>)</option>
                             <% } %>
                         <% } %>
+                        <option value="blur">Blurry</option>
                     </select><br>
                     <label for="editor">Type Reply Below</label><br>
                     <textarea name="reply" id="editor" autocomplete="off" cols="60" rows="15"></textarea><br/>
@@ -343,6 +371,7 @@
             }
             
             }
+            $("#author").append('<option value="blur">Blurry</option>')
         }
         getAlters();
         $("#go").on("click", function(){

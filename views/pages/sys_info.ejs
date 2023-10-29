@@ -19,8 +19,8 @@
     background:#9CD9D3 !important;
 }
 .archived{
-    background: silver !important;
-    color: dimgrey !important;
+    background: var(--archivedbg) !important;
+    color: var(--archivedtxt) !important;
 }
     </style>
 </head>
@@ -217,7 +217,7 @@ var journSkin=[
         $("input").attr('autocomplete','off');
 
         if($("#sysContainer a").length <= 3){
-            $("#sysContainer").css({"justify-content": "space-evenly", "width": "50%", "margin": "auto"})
+            $("#sysContainer").css({"justify-content": "space-evenly", "width": "50%"})
         }
         });
     </script>

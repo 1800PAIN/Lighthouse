@@ -37,9 +37,13 @@ td{
     padding: calc(.5em);
     border-bottom: 1px solid rgba(0,0,0,.2)
 }
+.alt{
+    color: <%= alterInfo.colour %> !important;
+}
     </style>
 </head>
 <body>
+    <% var skinGroups=["Default", "Misc. User Skins", "Galaxii Kingdom", "Constellation Collection", "Chaotic Troop", "Pax Vesania Collective", "Pride"] %>
     <%- include ("../partials/nav.ejs") %>
                   <!-- The Modal -->
                   <div id="myModal" class="modal">
@@ -74,7 +78,7 @@ td{
                 <li><a href="/system/<%= alterInfo.sys_id %>" title="Back to <%= capitalise(Buffer.from(alterInfo.sys_alias, "base64").toString()) %>"><%= capitalise(Buffer.from(alterInfo.sys_alias, "base64").toString()) %></a></li>
                 <li><%= Buffer.from(alterInfo.name, 'base64').toString() %></li>
               </ul> 
-            <h2><%= Buffer.from(alterInfo.name, 'base64').toString() %>'s page</h2>
+            <h2 class="alt"><%= Buffer.from(alterInfo.name, 'base64').toString() %>'s page</h2>
 
 
             <dt>
@@ -101,8 +105,8 @@ td{
             </form>
             <section class="clearfix">
                 <!-- For adding alter info. -->
-                <h2>About <%= Buffer.from(alterInfo.name, 'base64').toString() %> <% if (alterInfo.pronouns){ %><% if (distill(alterInfo.pronouns)){ %> (<%- Buffer.from(alterInfo.pronouns, "base64").toString() %>) <% } %> <% } %></h2>
-                <a title="Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %>" href="/edit-alter/<%= alterInfo.alt_id %>" class="editbtn" style="width:auto;margin: auto;display:block;">Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %></a>
+                <h2 class="alt">About <%= Buffer.from(alterInfo.name, 'base64').toString() %> <% if (alterInfo.pronouns){ %><% if (distill(alterInfo.pronouns)){ %> (<%- Buffer.from(alterInfo.pronouns, "base64").toString() %>) <% } %> <% } %></h2>
+                <a title="Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %>" href="/edit-alter/<%= alterInfo.alt_id %>" class="editbtn" style="width:auto;margin-bottom: calc(.5em);display:block;">Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %></a>
                 <% if (alterInfo.img_blob){ %> <img class="medimg" style="float:left; margin-right:calc(1em);" src="data:<%= alterInfo.blob_mimetype %>;base64,<%= Buffer.from(alterInfo.img_blob).toString("base64") %>"> <% } else if (distill(alterInfo.img_url)) { %>
                 <img src="<%= Buffer.from(alterInfo.img_url, 'base64').toString() %>" class="medimg" style="float:left; margin-right:calc(1em);">
                 <% } else { %> 
@@ -298,7 +302,6 @@ td{
                 <% } %></p>
                 </div>
 
-                <!-- <p><%= altJournal[0].is_private %></p> -->
 				<p>Click on the journal to enter.</p>
                 <div id="blogpopup" style="display:none;">
                     <form method="post" autocomplete="off">
@@ -330,17 +333,16 @@ td{
             <form method="post" name="changejournal" id="changejournal">
                 <label for="skin">Change Journal skin:</label>
                 <select name="skin" id="skin">
-                 <% for (i in journalArr) { %>
-                    <% if (parseInt((altJournal[0].skin).replace("'", "")) == parseInt(journalArr[i].val)){ %>
-                        <option value="<%- journalArr[i].val %>" selected><%- journalArr[i].c %></option>
-                    <% } else { %>
-                        <option value="<%- journalArr[i].val %>"><%- journalArr[i].c %></option>
-                    <% } %>
-                    <% } %>
-                    <% if (session.is_legacy){ %>
-                        <option value="19">Old Journal (Exclusive Skin)</option>
-                    <% } %>
-                    
+                <% for (i in journalArr) { %>
+                    <optgroup label="<%= skinGroups[i] %>">
+                      <% for (n in journalArr[i]){ %> 
+                        <option value="<%= journalArr[i][n].val %>" <% if (parseInt((altJournal[0].skin).replace("'", "")) == parseInt(journalArr[i][n].val)){ %>selected<% } %>><%= journalArr[i][n].c %></option>
+                      <% } %>  
+                    </optgroup>
+                <% } %>
+                <% if (session.is_legacy){ %>
+                    <optgroup label="Unlockables"><option value="19"<% if (parseInt((altJournal[0].skin).replace("'", "")) == 19){ %>selected<% } %>>Old Journal (Exclusive Skin)</option></optgroup>
+                <% } %>
                 </select> 
                 <input type="submit" name="newjournalSkin" id="newSkin" value="Update Journal Skin">
                 
@@ -475,7 +477,6 @@ td{
         });
 
         });
-
     </script>
 </body>
 

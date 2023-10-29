@@ -11,33 +11,68 @@
     font-family: "Roboto Slab";
     src: url("../fonts/RobotoSlab.ttf");
 }
-:root{
-    color-scheme: dark light;
+[data-theme="light"] {
     --col1: #123859;
     --col2: #9CD9D3;
+    --nav-txt: #9aedf3;
     --col3: #D9B23D;
     --col4: #D93425;
     --col5: #911111;
 	--col6: #52565c;
     --col7: #def1f0;
     --col8: #065966;
-    --polar: ghostwhite;  
+    --polar: ghostwhite; 
+    --input: rgba(160, 193, 236, .2); 
     --forum-shade: rgba(0,0,0,.05);
-}
+    --bg-img: url("../img/lighthouse-photo-bw.png"), var(--col7);
+    --menu-bg: url("/img/day-beach.png"), var(--col2);
+    --wrapper: rgba(255,255,255,.4);
+    --text: black;
+    --archivedtxt: grey;
+    --archivedbg: silver;
+    --lighthouse: rgb(99, 232, 241);
+    --grad1: rgba(32, 95, 189,0);
+    --grad2: rgba(5, 54, 100,1);
+  }
+  
+  [data-theme="dark"] {
+    --col1: #aad1f1;
+    --col2: #2c4c77;
+    --nav-txt: #2ebdc7;
+    --col3: #f09b1d;
+    --col4: #b81e10;
+    --col5: #aa7ecc;
+	--col6: #000f25;
+    --col7: #6e6683;
+    --col8: #33c8df;
+    --input: rgb(56, 29, 68); 
+    --bg-img: url("../img/night-lighthouse.png"), rgb(30,30,30);
+    --menu-bg: url("/img/night.png"), var(--col5);
+    --wrapper: rgba(52, 24, 75, 0.4);
+    --text: rgb(204, 195, 211);
+    --polar: rgb(74, 78, 82);
+    --archivedtxt: rgb(56, 53, 53);
+    --archivedbg: rgb(170, 153, 153);
+    --lighthouse: rgb(255, 183, 74);
+    --grad1: rgb(18, 34, 58,0);
+    --grad2: rgb(1, 7, 12,1);
+
+    /* CKEditor */
+    --ck-color-base-border: #746fbd !important;
+    --ck-color-toolbar-background: #6762ad !important;
+    --ck-color-base-background: #33273d !important;
+    --ck-color-tooltip-background: var(--col3) !important;
+    --ck-color-split-button-hover-background: var(--col2) !important;
+    --ck-color-button-default-hover-background: var(--col2) !important;
+    --ck-color-button-default-active-background: var(--col2) !important;
+    --ck-color-button-on-hover-background: var(--col2) !important;
+  }
+  
 *{
     font-family: 'Lexend',Verdana, Arial,sans-serif;
     scroll-margin-top: 10em;
-    color: rgb(5,5,5);
+    color: var(--text);
     word-wrap: break-word;
-}
-.dark_mode{
-    background-image: url("../img/night-lighthouse.png"), rgb(30,30,30);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}
-.light_mode{
-    background: var(--col7);
 }
 hr {
     display:block;
@@ -50,10 +85,12 @@ hr {
 html{
     overflow-y: scroll;
     overflow-x: hidden;
+    background: var(--bg-img);
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
     height: 100%;
+    
 }
 
 body{
@@ -78,8 +115,12 @@ small{
     font-weight: 300;
 }
 
-input{
+input, textarea{
     margin-bottom: calc(2em);
+    background: var(--input);
+    border: 1px solid var(--col1);
+    color: var(--col1);
+
 }
 
 dt{
@@ -130,7 +171,113 @@ article:last-child{
 input[type=checkbox]{
     width: 1em;
 }
-
+.topnav {
+    background-color: var(--col6);
+    position: absolute;
+    left: 0;
+    top: 100px;
+    width: 100%;
+    z-index:200;
+    color: var(--nav-txt);
+  }
+  .topnav > *{
+    color: var(--col7);
+  }
+  
+  .topnav a {
+    float: left;
+    display: block;
+    color: var(--nav-txt);
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+  }
+  .topnav .icon {
+    display: none;
+  }
+  
+  .dropdown {
+    float: left;
+    overflow: hidden;
+  }
+  
+  .dropdown .dropbtn {
+    font-size: 17px;    
+    border: none;
+    outline: none;
+    color: var(--nav-txt);
+    padding: 14px 16px;
+    background-color: inherit;
+    font-family: inherit;
+    margin: 0;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--col6);
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 100!important;
+  }
+  
+  .dropdown-content a {
+    float: none;
+    color: var(--col2);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+  }
+  
+  .topnav a:hover, .dropdown:hover .dropbtn {
+    background-color: var(--col3);
+    color: var(--col4);
+  }
+  
+  .dropdown-content a:hover {
+    background-color: var(--col3);
+    color: var(--col1);
+  }
+  
+  /* .dropdown:hover .dropdown-content {
+    display: block;
+  } */
+  
+  @media screen and (max-width: 800px) {
+    .topnav a:not(:first-child), .dropdown .dropbtn {
+      display: none;
+    }
+    .topnav a.icon {
+      float: right;
+      display: block;
+    }
+  }
+  
+  @media screen and (max-width: 800px) {
+    .topnav .responsive {
+      z-index: 8000;
+      margin-bottom: 3em;
+    }
+    .topnav.responsive .icon {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    .topnav.responsive a {
+      float: none;
+      display: block;
+      text-align: left;
+    }
+    .topnav.responsive .dropdown {float: none;}
+    .topnav.responsive .dropdown-content {position: relative;}
+    .topnav.responsive .dropdown .dropbtn {
+      display: block;
+      width: 100%;
+      text-align: left;
+    }
+  }
 .navel, button, input[type=submit], input[type=reset], .linkbutton {
     display: inline-block;
     margin: auto calc(1em);
@@ -221,10 +368,11 @@ footer{
     min-height: 10vh;
     padding: calc(2em);
     margin: 9vh auto auto auto;
-    background: rgba(255,255,255,.4);
+    background: var(--wrapper);
+    color: var(--text)
 }
 #wrapper > *{
-    color: rgb(5,5,5)
+    color: var(--text);
 }
 
 #wrapper::after{
@@ -273,7 +421,7 @@ h4{
 }
 
 #logoname, #mobilenav{
-    color: var(--col7);
+    color: var(--lighthouse);
 	font-family: 'Berkshire Swash','Lobster Two', cursive;
     font-size: 2em;
 }
@@ -325,7 +473,7 @@ ul.breadcrumb {
   }
   ul.breadcrumb li+li:before {
     padding: 8px;
-    color: black;
+    color: var(--text);
     /* content: "/\00a0"; */
     content:'/';
   }
@@ -593,7 +741,9 @@ button[disabled=disabled]{
   background-color: #cccccc;
   color: #666666;
 }
-
+#replysec{
+    display: block;
+}
 @media only screen and (max-width: 800px) {
     body{
         position: relative;
@@ -746,7 +896,8 @@ img.emoji {
  }
 
  #menubg{
-    background: grey;
+    background: var(--menu-bg);
+    background-size: cover;
     width: 100%;
     height: 150px;
     z-index:-333;
@@ -754,6 +905,16 @@ img.emoji {
     top:0;
     left:0;
  }
+ #menubg:after{
+    content:' ';
+    background: linear-gradient(90deg, var(--grad2) 0%, var(--grad1) 100%);
+    width: 50%;
+    height: 150px;
+    z-index: -3;
+    position: absolute;
+    top:0;
+    left:0;
+}
  .importantterm{
     color: var(--col5);
  }

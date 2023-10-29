@@ -115,7 +115,8 @@
                 <textarea name="notes"><% if (chosenAlter.notes !== null) { %><%- Buffer.from(chosenAlter.notes, 'base64').toString() %><% } %></textarea>
                 <label for="appearance">Internal Appearance</label>       
                 <textarea name="appearance"><% if (chosenAlter.appearance !== null) { %><%- Buffer.from(chosenAlter.appearance, 'base64').toString() %><% } %></textarea>
-                
+                <label for="colour">Name Colour </label><input type="color" id="colour" name="colour" value="<%= chosenAlter.colour %>">
+                <label for="outline">Name Outline Colour </label><input type="color" id="outline" name="outline" value="<%= chosenAlter.outline %>">
                 <label for="imgupload">Upload Avatar (max 2MB)</label> <% if (chosenAlter.img_blob){ %><a id="fileClear" style="display:inline-block;">Remove Uploaded Avatar</a> <% } %>
                 <input type="file" name="imgupload" id="imgupload" accept="image/*"> 
                 <input type="hidden" id="clear" name="clear">

@@ -31,6 +31,24 @@ function getKeyByValue(object, value) {
 	return Object.keys(object).find(key => object[key] === value);
   }
 
+  function compareByGroup(a, b) {
+	return a.group - b.group;
+  }
+  
+  const splitByGroup = (array) => {
+	const groups = {};
+	array.forEach((element) => {
+	  const group = element.group;
+	  if (!groups[group]) {
+		groups[group] = [];
+	  }
+	  groups[group].push(element);
+	});
+  
+	return Object.values(groups);
+  };
+  
+
 const getCookies = (req) => {
  // We extract the raw cookies from the request headers
  if (!req.headers.cookie) return 'undefined';
@@ -84,6 +102,11 @@ function idCheck(req){
 
 var splash;
 
+function sortFunction(a,b){  
+    var dateA = new Date(a.date).getTime();
+    var dateB = new Date(b.date).getTime();
+    return dateA > dateB ? 1 : -1;  
+}; 
 
 function apiEyesOnly(req) {
 	if (req.headers['api-lh-call']) {
@@ -164,43 +187,57 @@ app.locals.editorColours=[
 	{color: 'black', label: 'Black'}, 
 	{color: 'white', label: "White"}
 ]
-app.locals.journalArr= [
-	{val: '1', c: "Red"}, 
-	{val: '2', c: "Orange"}, 
-	{val: '3', c: "Yellow"}, 
-	{val: '4', c: "Green"}, 
-	{val: '5', c: "Teal"}, 
-	{val: '6', c: "Blue"}, 
-	{val: '7', c: "Purple"}, 
-	{val: '8', c: "Pink"}, 
-	{val: '9', c: "White"}, 
-	{val: '10', c: "Black"}, 
-	{val: '23', c:"Brown"},
-	{val: '11', c: "Rainbow"}, 
-	{val: '12', c: "Ocean"}, 
-	{val: '13', c: "Space"}, 
-	{val: '14', c: "Winter"}, 
-	{val: '15', c: "Autumn"}, 
-	{val: '16', c: "Spring"}, 
-	{val: '17', c: "Summer"}, 
-	{val: '18', c: "Flowers"},  // 19 is skipped bc thato's the legacy journal.	
-	{val: '20', c: "Witchy"},
-	{val: '21', c: "Spraypaint"},
-	{val: '22', c: "Princess"},
-	{val: '24', c: "Coniferous (🎨Quantum System)"},
-	{val: '25', c: "Cosmos (🎨Galaxii Kingdom)"},
-	{val: '26', c: "Lunar (🎨Galaxii Kingdom)"},
-	{val: '27', c: "Axolotl (🎨Galaxii Kingdom)"},
-	{val: '28', c: "Fantasy (🎨Galaxii Kingdom)"},
-	{val: '29', c: "Fangs (CW: Teeth) (🎨Galaxii Kingdom)"},
-	{val: '30', c: "Lighthouse (🎨Galaxii Kingdom)"},
-	{val: '32', c: "Fiery (🎨Galaxii Kingdom)"},
-	{val: '31', c: "Constellation (🎨Constellation Collective)"},
-	{val: '35', c: "Sun in Shadows (🎨 Constellation Collective)"},
-	{val: '36', c: "Tangerine (🎨 Constellation Collective)"},
-	{val: '33', c: "Composition Notebook (🎨 Chaotic Troop)"},
-	{val: '34', c: "Spiralbound Notebook (🎨 Chaotic Troop)"},
-]
+// Group 1: Default Skins.
+// Group 2: Single user skins (These users didn't make more than 1 skin)
+// Group 3: Galaxii Kingdom
+// Group 4: Constellation Collection
+// Group 5: Chaotic Troop
+// Group 6: Pax Vesania Collective
+// Group 7: Pride
+app.locals.journalArr= splitByGroup([
+	{val: '1', c: "Red", group:1}, 
+	{val: '2', c: "Orange", group:1}, 
+	{val: '3', c: "Yellow", group:1}, 
+	{val: '4', c: "Green", group:1}, 
+	{val: '5', c: "Teal", group:1}, 
+	{val: '6', c: "Blue", group:1}, 
+	{val: '7', c: "Purple", group:1}, 
+	{val: '8', c: "Pink", group:1}, 
+	{val: '9', c: "White", group:1}, 
+	{val: '10', c: "Black", group:1}, 
+	{val: '23', c:"Brown", group:1},
+	{val: '11', c: "Rainbow", group:1}, 
+	{val: '12', c: "Ocean", group:1}, 
+	{val: '13', c: "Space", group:1}, 
+	{val: '14', c: "Winter", group:1}, 
+	{val: '15', c: "Autumn", group:1}, 
+	{val: '16', c: "Spring", group:1}, 
+	{val: '17', c: "Summer", group:1}, 
+	{val: '18', c: "Flowers", group:1},  // 19 is skipped bc thato's the legacy journal.	
+	{val: '20', c: "Witchy", group:1},
+	{val: '21', c: "Spraypaint", group:1},
+	{val: '22', c: "Princess", group:1},
+	{val: '24', c: "Coniferous (🎨Quantum System)", group:2},
+	{val: '25', c: "Cosmos (🎨Galaxii Kingdom)", group:3},
+	{val: '26', c: "Lunar (🎨Galaxii Kingdom)", group:3},
+	{val: '27', c: "Axolotl (🎨Galaxii Kingdom)", group:3},
+	{val: '28', c: "Fantasy (🎨Galaxii Kingdom)", group:3},
+	{val: '29', c: "Fangs (CW: Teeth) (🎨Galaxii Kingdom)", group:3},
+	{val: '30', c: "Lighthouse (🎨Galaxii Kingdom)", group:3},
+	{val: '32', c: "Fiery (🎨Galaxii Kingdom)", group:3},
+	{val: '31', c: "Constellation (🎨Constellation Collective)", group:4},
+	{val: '35', c: "Sun in Shadows (🎨 Constellation Collective)", group:4},
+	{val: '36', c: "Tangerine (🎨 Constellation Collective)", group:4},
+	{val: '33', c: "Composition Notebook (🎨 Chaotic Troop)", group:5},
+	{val: '34', c: "Spiralbound Notebook (🎨 Chaotic Troop)", group:5},
+	{val: '37', c: "Neon Galaxy (🎨 Tragicomic Troupe)", group:2},
+	{val: '38', c: "Notebook (🎨 Pax Vesania Collective)", group:6},
+	{val: '39', c: "String-bound Notebook (🎨 Pax Vesania Collective)", group:6},
+	{val: '40', c: "Spellbook (🎨 Pax Vesania Collective)", group:6},
+	{val: '41', c: "Trans Pride (🎨 Redgrave System)", group:7},
+	{val: '42', c: "Nonbinary Pride (🎨 Redgrave System)", group:7},
+	{val: '43', c: "Pan Pride (🎨 Redgrave System)", group:7},
+]);
 app.locals.strings=strings;
 app.locals.apiKey= process.env.apiKey;
 app.locals.legacyJournal= {val: '19', c: "Legacy"};
@@ -415,7 +452,6 @@ app.locals.possessive= function(s){
 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
 			  } else {
 				var donators= result.rows;
-				req.flash("flash", "Welcome to Lighthouse! We are happy to see you here, and hope we can provide you with a safe, supportive space.<br>We are thrilled to announce that Lighthouse has gone viral on TikTok! This is an incredible achievement, and we are so grateful for your support. We are currently experiencing a massive influx of users, and we are working hard to ensure that our website can handle the increased traffic. However, you may experience some technical difficulties as we adjust. We ask for your patience and understanding as we work to accommodate this growth. Thank you.💕")
 				res.render(`pages/index`, { session: req.session, splash:splash, userCount:userCount, cookies:req.cookies, donators:donators });
 			  }
 			});
@@ -953,8 +989,17 @@ app.get('/worksheets', (req, res) => {
 				for (i in result.rows){
 					topics.push({name: decryptWithAES(result.rows[i].title), preview: decryptWithAES(result.rows[i].body), alt_id: result.rows[i].alt_id, is_sticky: result.rows[i].is_sticky, is_locked: result.rows[i].is_locked, is_popular: result.rows[i].is_popular, created_on: result.rows[i].created_on, id: result.rows[i].id, alter: Buffer.from(result.rows[i].alt_name, "base64").toString()});
 				}
-				let topicArr= paginate(topics, 25);
-				client.query({text: `SELECT * FROM categories WHERE u_id=$1;`,values: [getCookies(req)['u_id']]}, (err, bresult) => {
+				client.query({text: `SELECT * from threads WHERE u_id=$1 AND alt_id is null ORDER BY created_on DESC;`,values: [getCookies(req)['u_id']]}, (err, hresult) => {
+					if (err) {
+					  console.log(err.stack);
+					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+				  } else {
+					for (i in hresult.rows){
+						topics.push({name: decryptWithAES(hresult.rows[i].title), preview: decryptWithAES(hresult.rows[i].body), alt_id: null, is_sticky: hresult.rows[i].is_sticky, is_locked: hresult.rows[i].is_locked, is_popular: hresult.rows[i].is_popular, created_on: hresult.rows[i].created_on, id: hresult.rows[i].id, alter: "Blurry"});
+					}
+					topics.sort(sortFunction);
+					let topicArr= paginate(topics, 25);
+					client.query({text: `SELECT * FROM categories WHERE u_id=$1;`,values: [getCookies(req)['u_id']]}, (err, bresult) => {
 					if (err) {
 					  console.log(err.stack);
 					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
@@ -970,7 +1015,11 @@ app.get('/worksheets', (req, res) => {
 					}
 				res.render(`pages/topics`, { session: req.session, splash:splash, cookies:req.cookies, topics:topicArr[req.params.pg -1 || 0], forumName: decryptWithAES(aresult.rows[0].topic), forumDesc: decryptWithAES(aresult.rows[0].description), forumid: aresult.rows[0].id, catArr: catArr, topicPages: topicArr.length, currPage: req.params.pg || 1, forum: req.params.id });
 				  }
-				})
+				});
+				  }
+				});
+				
+				
 			  }
 			});
 		  }
@@ -2065,7 +2114,8 @@ app.get('/wish-d/:id', (req, res) => {
 	*/
 	app.post('/forum/:id/new', (req, res) => {
 		if (isLoggedIn(req)){
-			client.query({text: "INSERT INTO threads (u_id, topic_id, title, body, alt_id) VALUES ($1, $2, $3, $4, $5);",values: [getCookies(req)['u_id'], req.params.id, `${encryptWithAES(req.body.fTitle)}`, `${encryptWithAES(req.body.topicBody)}`, req.body.author]}, (err, result) => {
+			let postAuth= req.body.author== "blur" ? null : req.body.author;
+			client.query({text: "INSERT INTO threads (u_id, topic_id, title, body, alt_id) VALUES ($1, $2, $3, $4, $5);",values: [getCookies(req)['u_id'], req.params.id, `${encryptWithAES(req.body.fTitle)}`, `${encryptWithAES(req.body.topicBody)}`, postAuth]}, (err, result) => {
 				if (err) {
 				  console.log(err.stack);
 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
@@ -2130,7 +2180,8 @@ app.get('/wish-d/:id', (req, res) => {
 
 	app.post('/reply/:id', (req, res) => {
 		if (isLoggedIn(req)){
-			client.query({text: "UPDATE thread_posts SET body=$2, alt_id=$3 WHERE id=$1;",values: [`${req.params.id}`, `${encryptWithAES(req.body.editor3)}`, req.body.replyauthor]}, (err, result) => {
+			let postAuth= req.body.replyauthor== "blur" ? null : req.body.author;
+			client.query({text: "UPDATE thread_posts SET body=$2, alt_id=$3 WHERE id=$1;",values: [`${req.params.id}`, `${encryptWithAES(req.body.editor3)}`, postAuth]}, (err, result) => {
 				if (err) {
 				  console.log(err.stack);
 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
@@ -2146,7 +2197,8 @@ app.get('/wish-d/:id', (req, res) => {
 
 	app.post('/topic/:id/:pg?', (req, res)=>{
 		if (req.body.newtop){
-			client.query({text: "INSERT INTO thread_posts (alt_id, body, thread_id) VALUES ($1, $2, $3)",values: [req.body.replyauthor, `${encryptWithAES(req.body.reply)}`, req.params.id]}, (err, result) => {
+			let postAuth= req.body.replyauthor== "blur" ? null : req.body.replyauthor;
+			client.query({text: "INSERT INTO thread_posts (alt_id, body, thread_id) VALUES ($1, $2, $3)",values: [postAuth, `${encryptWithAES(req.body.reply)}`, req.params.id]}, (err, result) => {
 				if (err) {
 				console.log(err.stack);
 				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
@@ -2157,7 +2209,8 @@ app.get('/wish-d/:id', (req, res) => {
 			}
 			})	
 		} else if (req.body.editop){
-			client.query({text: "UPDATE threads SET title=$3, body=$4, topic_id=$5, alt_id=$6 WHERE u_id=$1 AND id=$2",values: [getCookies(req)['u_id'], req.params.id, `${encryptWithAES(req.body.newtitle)}`, `${encryptWithAES(req.body.newbody)}`, req.body.topicforum, req.body.author]}, (err, result) => {
+			let postAuth= req.body.author== "blur" ? null : req.body.author;
+			client.query({text: "UPDATE threads SET title=$3, body=$4, topic_id=$5, alt_id=$6 WHERE u_id=$1 AND id=$2",values: [getCookies(req)['u_id'], req.params.id, `${encryptWithAES(req.body.newtitle)}`, `${encryptWithAES(req.body.newbody)}`, req.body.topicforum, postAuth]}, (err, result) => {
 				if (err) {
 				console.log(err.stack);
 				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
@@ -2974,10 +3027,11 @@ app.get('/wish-d/:id', (req, res) => {
 	app.post("/edit-alter/:id", (req, res, next)=>{
 		if (isLoggedIn(req)){
 			// return console.log(`'${Buffer.from(req.body.pronouns).toString('base64')}'`);
+			console.log(req.body.colour)
 			if (req.files){
 				// They've uploaded a thing.
 				// console.log("Caught an upload.")
-				client.query({text: "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24, img_blob=$25, blob_mimetype=$26 WHERE alt_id=$1",values: [
+				client.query({text: "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24, img_blob=$25, blob_mimetype=$26, colour=$27 WHERE alt_id=$1",values: [
 					`${req.params.id}`,
 					`'${Buffer.from(req.body.name).toString('base64')}'`,
 					`'${Buffer.from(req.body.postr).toString('base64')}'`,
@@ -3003,7 +3057,8 @@ app.get('/wish-d/:id', (req, res) => {
 					`'${Buffer.from(req.body.hobbies).toString('base64')}'`,
 					`'${Buffer.from(req.body.appearance).toString('base64')}'`,
 					req.body.clear ? null : req.files.imgupload.data,
-					req.body.clear ? null : req.files.imgupload.mimetype
+					req.body.clear ? null : req.files.imgupload.mimetype,
+					req.body.colour
 				]}, (err, result) => {
 					if (err) {
 					  console.log(err.stack);
@@ -3017,7 +3072,7 @@ app.get('/wish-d/:id', (req, res) => {
 			} else {
 				// No upload was made.
 				// console.log("No upload.");
-				client.query({text: "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24 WHERE alt_id=$1",values: [
+				client.query({text: "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24, colour=$25 WHERE alt_id=$1",values: [
 					`${req.params.id}`,
 					`'${Buffer.from(req.body.name).toString('base64')}'`,
 					`'${Buffer.from(req.body.postr).toString('base64')}'`,
@@ -3041,7 +3096,8 @@ app.get('/wish-d/:id', (req, res) => {
 					`'${Buffer.from(req.body.fronttells).toString('base64')}'`,
 					`'${Buffer.from(req.body.relationships).toString('base64')}'`,
 					`'${Buffer.from(req.body.hobbies).toString('base64')}'`,
-					`'${Buffer.from(req.body.appearance).toString('base64')}'`
+					`'${Buffer.from(req.body.appearance).toString('base64')}'`,
+					req.body.colour
 				]}, (err, result) => {
 					if (err) {
 					  console.log(err.stack);
