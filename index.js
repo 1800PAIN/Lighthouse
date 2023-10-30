@@ -3029,7 +3029,6 @@ app.get('/wish-d/:id', (req, res) => {
 	app.post("/edit-alter/:id", (req, res, next)=>{
 		if (isLoggedIn(req)){
 			// return console.log(`'${Buffer.from(req.body.pronouns).toString('base64')}'`);
-			console.log(req.body.colour)
 			if (req.files){
 				// They've uploaded a thing.
 				// console.log("Caught an upload.")

@@ -38,7 +38,7 @@ td{
     border-bottom: 1px solid rgba(0,0,0,.2)
 }
 .alt{
-    color: <%= alterInfo.colour %> !important;
+    color: <%= alterInfo.colour == "#000000" ? "inherit" : alterInfo.colour %>!important;
 }
     </style>
 </head>
