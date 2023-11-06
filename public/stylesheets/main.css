@@ -1,8 +1,5 @@
 
-@font-face {
-    font-family: "Lexend";
-    src: url("../fonts/Lexend.ttf");
-}
+
 @font-face {
     font-family: "Berkshire Swash";
     src: url("../fonts/BerkshireSwash.ttf");
@@ -69,8 +66,7 @@
   }
   
 *{
-    font-family: 'Lexend',Verdana, Arial,sans-serif;
-    scroll-margin-top: 10em;
+    /* scroll-margin-top: 10em; */
     color: var(--text);
     word-wrap: break-word;
 }

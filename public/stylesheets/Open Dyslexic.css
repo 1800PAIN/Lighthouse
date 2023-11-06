@@ -1,0 +1,26 @@
+@font-face {
+    font-family: 'Open Dyslexic';
+    src: url('../fonts/OpenDyslexic-Regular.otf');
+  }
+  
+  @font-face {
+    font-family: 'Open Dyslexic';
+    font-weight: bold;
+    src: url('../fonts/OpenDyslexic-Bold.otf');
+  }
+  
+  @font-face {
+    font-family: 'Open Dyslexic';
+    font-style: italic;
+    src: url('../fonts/OpenDyslexic-Italic.otf');
+  }
+  
+  @font-face {
+    font-family: 'Open Dyslexic';
+    font-weight: bold;
+    font-style: italic;
+    src: url('../fonts/OpenDyslexic-BoldItalic.otf');
+  }
+  *{
+    font-family: 'Open Dyslexic', Arial, Helvetica, sans-serif
+}

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" style="visibility: hidden;">
     <head>
+      <link rel="stylesheet" href="/stylesheets/Lexend.css?v=1.0.7">
         <%- include ("../partials/header.ejs") %>
         <style>
           input[type=email],input[type=username],input[type=password],input[type=submit], #passSplash{
@@ -21,7 +22,7 @@
           <% if (locals.messages.flash) { %>
             <div class="splash"><%- locals.messages.flash %></div>
         <% } %>
-            <h2>Sign Up to Lighthouse</h2>
+            <h1>Sign Up to Lighthouse</h1>
             <p>We're happy to have you! But first, we need some  information. <strong>Please use a valid, non-temporary email.</strong> That way if you lose your password, you can still reset it. We only email you when you've made an account, when you delete an account, if you lose your password, or if there's a situation in which we need to email all of our users (like a Terms of Service update, or when we eventually implement 2FA).</p>
             <form method="post" autocomplete="off">
               <label for="email">Email: <br></label><input style="display:inline-block;" type="email" autocomplete="off" placeholder="Email" id="email" name="email" required><span  id="emailpf"></span>
@@ -34,6 +35,21 @@
                 <label for="v-password">Verify Password: </label>
                 <input minlength="8" type="password" autocomplete="off" placeholder="Write it again." name="v-password" id="v-pass" required>
                 <span id="passSplash"></span>
+                <hr>
+                <h2>Optional Information</h2>
+                <div>
+                  <label for="systerm">What term do you use for "system"? </label><input type="text" min="1" max="16" id="systerm" name='systerm' value="system">
+                </div>
+
+                <div>
+                  <label for="alterm">What term do you use for "alter"? </label><input type="text" min="1" max="16" id="alterm" name='alterm' value="alter">
+                </div>
+
+                <label for="ws">Lighthouse has interactive trauma worksheets to help process emotions and memories. Would you like to have these enabled on your account? You can always enable or disable them later.</label><br>
+                <input type="radio" name="ws" value="true"> Yes <input type="radio" name="ws" value="false"> No
+                <br>
+                <label for="iw">Would you like to have inner worlds enabled on your account for your <span id="sysword"></span> to write about?</label><br><input type="radio" name="iw" value="true"> Yes <input type="radio" name="iw" value="false"> No
+                <hr>
                 <input type="checkbox" style="margin-top: 1em;" id="agreement" onchange="verifySubmit()"> <label for="agreement">By signing up, you agree to the <a href="/tos" target="_blank">Terms of Service</a> and <a href="/cookies" target="_blank">cookie usage</a>. See our <a href="/privacypolicy" target="_blank">Privacy Policy</a>.</label>
                 <!-- Weird name to bypass any software that looks for keywords, like "spam", "verify" -->
                 <input type="hidden" name="mjl2fbbz8s" id="mjl2fbbz8s" placeholder="Users should not see this! This is a bot honeypot.">
@@ -42,6 +58,10 @@
         </div>
         <%- include ("../partials/footer.ejs") %>
         <script>
+          $("#sysword").text($("#systerm").val());
+          $("#systerm").on("change keyup keydown paste", function(){
+            $("#sysword").text($("#systerm").val());
+          });
           /* -------------------------------- */
           const button= document.querySelector("#signup");
           const pass= document.querySelector("#pass");

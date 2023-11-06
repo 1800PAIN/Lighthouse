@@ -188,12 +188,14 @@ app.locals.editorColours=[
 	{color: 'white', label: "White"}
 ]
 // Group 1: Default Skins.
-// Group 2: Single user skins (These users didn't make more than 1 skin)
+// Group 2: Single user skins (These users didn't make more than 2 skins)
 // Group 3: Galaxii Kingdom
 // Group 4: Constellation Collection
 // Group 5: Chaotic Troop
 // Group 6: Pax Vesania Collective
 // Group 7: Pride
+// Group 8: DivineChrysalism
+// Group 9: GOOPYGAMER9000
 app.locals.journalArr= splitByGroup([
 	{val: '1', c: "Red", group:1}, 
 	{val: '2', c: "Orange", group:1}, 
@@ -237,6 +239,30 @@ app.locals.journalArr= splitByGroup([
 	{val: '41', c: "Trans Pride (🎨 Redgrave System)", group:7},
 	{val: '42', c: "Nonbinary Pride (🎨 Redgrave System)", group:7},
 	{val: '43', c: "Pan Pride (🎨 Redgrave System)", group:7},
+	{val: '44', c: "Blossoms (🎨 DivineChrysalism)", group:8},
+	{val: '45', c: "Vaporwave Sunset (🎨 DivineChrysalism)", group:8},
+	{val: '46', c: "Watermelon Sweet (🎨 DivineChrysalism)", group:8},
+	{val: '47', c: "Beholding (🎨 Calculator System)", group:2},
+	{val: '48', c: "Dreamy Paradise (🎨 DivineChrysalism)", group:8},
+	{val: '49', c: "Buried (🎨 Calculator System)", group:2},
+	{val: '50', c: "Lavender Gift (🎨 DivineChrysalism)", group:8},
+	{val: '51', c: "Teddybear Blanket (🎨 DivineChrysalism)", group:8},
+	{val: '52', c: "MISSINGTEXTURE.PNG (🎨 GOOPYGAMER9000)", group:9},
+	{val: '53', c: "Cartman's Jornal (🎨 loserraysxd)", group:2},
+	{val: '54', c: "Pink Frosted Journal (🎨 DivineChrysalism)", group:8},
+	{val: '55', c: "Journl (🎨 DivineChrysalism)", group:8},
+	{val: '56', c: "Magic Midnight Dreams (🎨 DivineChrysalism)", group:8},
+	{val: '57', c: "Melty Goo (🎨 DivineChrysalism)", group:8},
+	{val: '58', c: "Lavender Boba (🎨 DivineChrysalism)", group:8},
+	{val: '59', c: "Star Cat (🎨 GhostyStarShaker)", group:2},
+	{val: '60', c: "POISON GRADIENT (🎨 GOOPYGAMER9000)", group:9},
+	{val: '61', c: "GREEN TO BLUE (🎨 GOOPYGAMER9000)", group:9},
+	{val: '62', c: "A FUNKY LIL ALIEN GUY (🎨 GOOPYGAMER9000)", group:7},
+	{val: '63', c: "pink stars (🎨 era vulgaris)", group:2},
+	{val: '64', c: "lightshow (🎨 era vulgaris)", group:2},
+	{val: '65', c: "Retro Classic (🎨 DivineChrysalism)", group:8},
+	{val: '66', c: "Vaporwave Nightscape (🎨 DivineChrysalism)", group:8},
+	{val: '67', c: "Chained Spellbook (🎨 DivineChrysalism)", group:8},
 ]);
 app.locals.strings=strings;
 app.locals.apiKey= process.env.apiKey;
@@ -411,6 +437,7 @@ app.locals.possessive= function(s){
 					req.session.is_dev=([process.env.dev1, process.env.dev2,process.env.dev3].includes(result.rows[0].id));
 					req.session.textsize= result.rows[0].textsize;
 					req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
+					req.session.font= result.rows[0].font;
 				} catch (e){
 					// They logged out!
 					console.log(`Caught error, skipped setting session. User ID might not exist.`)
@@ -426,6 +453,7 @@ app.locals.possessive= function(s){
 		req.session.subsystem_term="subsystem";
 		req.session.innerworld_term= "inner world";
 		req.session.plural_term= "plural";
+		req.session.font="Lexend";
 	}
 	req.next();
   });
@@ -1172,23 +1200,7 @@ app.get('/glossary', (req, res, next) => {
 	  }
   }); */
 
-});
-app.get('/thank-you', (req, res, next) => {
-	res.redirect("/lighthouse-system")
-});
-app.get('/lighthouse-system', (req, res, next) => {
-	let alterCount= new Number();
-		// Dev environment
-		client.query({text: "SELECT count(alters.alt_id) FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id INNER JOIN users ON users.id= systems.user_id WHERE users.id=$1;",values: [`${process.env.environment== "dev" ? process.env.dev3 : process.env.dev2}`]}, (err, result) => {
-			if (err) {
-			  console.log(err.stack);
-			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-		  } else {
-			res.render(`pages/lighthouse-system`, { session: req.session, splash:splash, cookies:req.cookies, alterCount: result.rows[0].count });
-		  }
-		});
-	
-});
+}); 
 
 // app.get('/philosophy', (req, res, next) => { res.render(`pages/philo`, { session: req.session, splash:splash, cookies:req.cookies })});
   
@@ -2666,6 +2678,17 @@ app.get('/wish-d/:id', (req, res) => {
 						}
 					});
 				}
+				if (req.body.font){
+					// Change fonts
+					client.query({text: 'UPDATE users SET font= $2 WHERE id=$1', values: [getCookies(req)['u_id'], req.body.font]}, async (err, result)=>{
+						if (err) {
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+						} else {
+							req.session.font = req.body.font;
+							req.flash("flash", strings.account.updated);
+						}
+					});
+				}
 				// After all those changes.
 				// res.cookie('subsystem_term', req.body.subTerm,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true });
 				res
@@ -3438,15 +3461,21 @@ app.get('/wish-d/:id', (req, res) => {
             } else {
                 // Write to the db
                 var query = {
-                  text: "INSERT INTO users (email, username, pass, email_link) VALUES ($1, $2, $3, $4)",
-                  values: [`'${Buffer.from(email).toString('base64')}'`, `'${Buffer.from(req.body.username).toString('base64')}'`, `'${CryptoJS.SHA3(req.body.password)}'`, `'${Math.random().toString(36).substr(2, 16)}'`]
-                }
+                  text: "INSERT INTO users (email, username, pass, email_link, worksheets_enabled, system_term, alter_term) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                  values: [
+					`'${Buffer.from(email).toString('base64')}'`, 
+					`'${Buffer.from(req.body.username).toString('base64')}'`, 
+					`'${CryptoJS.SHA3(req.body.password)}'`, 
+					`'${Math.random().toString(36).substr(2, 16)}'`,
+					req.body.ws || true,
+					req.body.system_term || "system",
+					req.body.alter_term || "alter"
+				]}
                 client.query(query, (err, aresult) => {
                     if (err) {
                       console.log(err.stack);
                       res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
                   } else {
-					console.log(`Welcome to Lighthouse, ${req.body.username}. <3`);
 					client.query({text: "SELECT * FROM users WHERE email=$1;", values: [`'${Buffer.from(req.body.email).toString('base64')}'`]}, (err, result) => {
 						if (err) {
 						  console.log(err.stack);
@@ -3489,6 +3518,7 @@ app.get('/wish-d/:id', (req, res) => {
 					   	req.session.u_id= result.rows[0].id;
 					   	req.session.username = Buffer.from(result.rows[0].username, 'base64').toString();
 					   	req.session.is_legacy= result.rows[0].is_legacy;
+						req.session.font= result.rows[0].font;
 					   	req.flash("flash", strings.account.created);
 					   res
 					   .cookie('loggedin', true, { maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })

@@ -1,0 +1,7 @@
+@font-face {
+    font-family: "Lexend";
+    src: url("../fonts/Lexend.ttf");
+}
+*{
+    font-family:'Lexend','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}

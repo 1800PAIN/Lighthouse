@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" style="visibility: hidden;">
     <head>
+		<link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7">
         <%- include ("../partials/header.ejs") %>
 		<style>
 			form input[type="text"] {
@@ -28,7 +29,7 @@
 		</style>
     </head>
     <body>
-		<% var maxLimit= 12 %>
+		<% var maxLimit= 16 %>
         <%- include ("../partials/nav.ejs") %>
 		<!-- <div id="pseudofade" style="z-index:-9999998; background: rgba(0,0,0,.75); position: absolute; top: -30vh; left: -30vw; width: 0; height: 0; opacity: 0; transition:0.7s;"></div> -->
         <div id="wrapper">
@@ -103,7 +104,7 @@
 				</form>
 			</section>
 			<section>
-				<h3>Customisation</h3>
+				<h3>Accessibility</h3>
 				<form method="post" style="margin-top:calc(.5em);">
 					<label for="skinSel">Select a skin for Lighthouse (Light mode only): </label>
 					<select id="skinSel" name="skinSel" onchange="flashInfo()">
@@ -125,8 +126,15 @@
 					<label for="textsize">Website text size</label><br>
 					<div style="display:flex; align-items: center;">
 					<input type="range" name="textsize" id="textsize" min="0.75" max="1.5" value="<% if (cookies.textsize){ %><%= cookies.textsize %><% } else { %>1<% } %>" step=".25" onchange="showFontSize()"> <span id="sizesplash" style="font-size: .75em;"></span><br>
-						
 					</div>
+					<label for="font">Website Body Font </label><select name="font" id="font">
+						<option value="Lexend" <% if (session.font=="Lexend"){ %>selected<%} %>>Lexend (Default)</option>
+						<option value="Comic Sans" <% if (session.font=="Comic Sans"){ %>selected<%} %>>Comic Sans</option>
+						<option value="Open Dyslexic" <% if (session.font=="Open Dyslexic"){ %>selected<%} %>>Open Dyslexic</option>
+						<option value="Open Dyslexic-Alternate" <% if (session.font=="Open Dyslexic-Alternate"){ %>selected<%} %>>Open Dyslexic (Alternate)</option>
+						<option value="Tiresias" <% if (session.font=="Tiresias"){ %>selected<%} %>>Tiresias InfoFont</option>
+						<option value="Times" <% if (session.font=="Times"){ %>selected<%} %>>Times New Roman</option>
+					</select><br>
 					<input type="submit" value="Set Customisation Settings">
 				</form>
 			</section>

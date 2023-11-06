@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'Tiresias';
+    src: url('../fonts/Tiresias_Infofont.ttf');
+  }
+
+  
+  @font-face {
+    font-family: 'Tiresias';
+    font-style: italic;
+    src: url('../fonts/Tiresias_Infofont_Italic.ttf');
+  }
+
+  *{
+    font-family: 'Tiresias','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}

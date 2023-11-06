@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr" style="visibility: hidden;">
 
 <head>
+  <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7">
     <%- include ("../partials/header.ejs") %>
     <style>
       .textless{
@@ -36,12 +37,12 @@
               <input type="text" name="rule" required minlength="8"><br/>
               <input type="submit" value="Add New Rule" name="create">
             </form>
-            <ol>
+            <ul>
               <% for (i in session.sys_rules){ %>
                 <li><%= Buffer.from(session.sys_rules[i].rule, 'base64').toString() %> <form method="post" style="display: inline;"><button type="submit" name="<%= session.sys_rules[i].id %>" value="Remove" class="textless" onclick="deleteWarn('<%= Buffer.from(session.sys_rules[i].rule, 'base64').toString() %>')"><span class="material-symbols-outlined textless"> delete</span></button></form></li>
                 
               <% } %>
-            </ol>
+            </ul>
         </section>
     </div>
     <%- include ("../partials/footer.ejs") %>
