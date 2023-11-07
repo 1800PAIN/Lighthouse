@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 
 <head>
-    <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7">
+    <!-- <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7"> -->
     <%- include ("../partials/header.ejs") %>
     <style>
     
@@ -24,6 +24,7 @@
     color: var(--archivedtxt) !important;
 }
     </style>
+                
 </head>
 
 <body>
@@ -54,6 +55,12 @@ var journSkin=[
 ]
     %>
     <div id="wrapper">
+        <% if (process.env.environment == "dev"){ %>
+        <section>
+            <h3>Add Test Alters</h3>
+            <button id="addAlts">Add 25 Alters</button>
+        </section>
+        <% } %>
         <section>
             <ul class="breadcrumb">
                 <li><a href="/system" title="Your <%= capitalise(cookies.system_term) %>"><%= capitalise(cookies.system_term) %></a></li>
@@ -119,7 +126,7 @@ var journSkin=[
             <a href="/deletesys/<%= session.chosenSys.sys_id %>" name="<%= session.chosenSys.sys_id %>" class="linkbutton deletebtn">Delete</a>&emsp;<a href="/editsys/<%= session.chosenSys.sys_id %>" name="<%= session.chosenSys.sys_id %>" class="linkbutton editbtn">Edit</a>
             <form method="post" style="margin-top: calc(2vh);">
                 <label for="altname">Add a New <%= capitalise(cookies.alter_term) %></label>
-                <input type="text" name="altname" placeholder="New <%= capitalise(cookies.alter_term) %> Name Here" autofocus="autofocus">
+                <input type="text" name="altname" placeholder="New <%= capitalise(cookies.alter_term) %> Name Here" style="width: 50%">
                 <input type="submit" name="submit" value="Add">
             </form>
             <button onclick="$('#subsysForm').toggle('fast')"><%- capitalise(cookies.subsystem_term) %> settings</button>
@@ -221,6 +228,33 @@ var journSkin=[
             $("#sysContainer").css({"justify-content": "space-evenly", "width": "50%"})
         }
         });
+        if ($("#addAlts").length){
+            function randomise (arr){ return arr[Math.floor(Math.random()*arr.length)] }
+            $("#addAlts").on("click", async function(){
+                var phFirst=["Stuart", "Murdoc", "Noodle", "Russel", "Ace", "Del", "Paula", "Eleanor", "Soup"]
+                var phLast=["Pot", "Niccals", "Hobbs", "Copular", "Funky", "Cracker", "Homosapien", "Shack"]
+                event.preventDefault();
+            for (let step = 0; step < 25; step++) {
+                let response = await fetch(`/system-data`, { 
+                method: "PUT",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json'
+                  
+                }, 
+                body: JSON.stringify({
+                    "edit": "add-ph-alter",
+                    "altName": `${randomise(phFirst)} ${randomise(phLast)}`,
+                    "sysid": "<%- session.chosenSys.sys_id %>"
+                }) 
+            });
+            let body = await response.text();
+        }
+            location.reload();
+            // End function
+            });
+        }
+            
     </script>
 </body>
 

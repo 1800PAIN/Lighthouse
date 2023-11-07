@@ -301,7 +301,8 @@ app.locals.moods=[
 	{name: "Hurt", postive: false, emoji: "😢"},
 	{name: "Affectionate", positive: true, emoji: "💖"},
 	{name: "Unreal", positive: false, emoji: "😶‍🌫️"},
-	{name: "Distressed", positive: false, emoji: "😫"}
+	{name: "Distressed", positive: false, emoji: "😫"},
+	{name: "Bored", positive: false, emoji: "🥱"}
 ]
 app.locals.isLoggedIn = function (cookies){
 	if (!cookies.u_id){
@@ -409,35 +410,35 @@ app.locals.possessive= function(s){
   app.set('views', path.join(__dirname, 'views'))
   app.set('view engine', 'ejs');
 
-  app.all('*', (req, res) => {
+  app.all('*', function (req, res){
 	// Loads before all other routes.
 	if (isLoggedIn(req)){
 			// Grab their IDs real quick.
-		client.query({text: "SELECT * FROM users WHERE id=$1;",values: [getCookies(req)['u_id']]}, (err, result) => {
+		client.query({text: "SELECT * FROM users WHERE id=$1;",values: [getCookies(req)['u_id']]}, async function (err, result) {
 			if (err) {
 			console.log(err.stack);
 			// req.flash("flash", strings.account.sessionExpired);
 			res.redirect("/");
-			
 			} else{
 				// Let's grab IDs while we're at it.
+				var userResults= await result.rows[0];
 				try{
-					req.session.u_id= result.rows[0].id;
-					req.session.is_legacy= result.rows[0].is_legacy;
-					req.session.username= result.rows[0].username;
-					req.session.email= result.rows[0].email;
-					req.session.skin= result.rows[0].skin;
-					req.session.system_term= truncate(result.rows[0].system_term || getCookies(req)['system_term'] || "system",16);
-					req.session.alter_term= truncate(result.rows[0].alter_term || getCookies(req)['alter_term'] || "alter",16);
-					req.session.subsystem_term= truncate(result.rows[0].subsystem_term || getCookies(req)['subsystem_term'] || "subsystem",16);
-					req.session.inner_worlds = result.rows[0].inner_worlds || false;
-					req.session.innerworld_term= truncate(result.rows[0].innerworld_term || getCookies(req)['innerworld_term'] || "inner world",16);
-					req.session.plural_term= truncate(result.rows[0].plural_term || getCookies(req)['plural_term'] || "plural",16);
-					req.session.language= result.rows[0].language || "en";
-					req.session.is_dev=([process.env.dev1, process.env.dev2,process.env.dev3].includes(result.rows[0].id));
-					req.session.textsize= result.rows[0].textsize;
-					req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
-					req.session.font= result.rows[0].font;
+					req.session.u_id= userResults.id;
+					req.session.is_legacy= userResults.is_legacy;
+					req.session.username= userResults.username;
+					req.session.email= userResults.email;
+					req.session.skin= userResults.skin;
+					req.session.system_term= truncate(userResults.system_term || getCookies(req)['system_term'] || "system",16);
+					req.session.alter_term= truncate(userResults.alter_term || getCookies(req)['alter_term'] || "alter",16);
+					req.session.subsystem_term= truncate(userResults.subsystem_term || getCookies(req)['subsystem_term'] || "subsystem",16);
+					req.session.inner_worlds = userResults.inner_worlds || false;
+					req.session.innerworld_term= truncate(userResults.innerworld_term || getCookies(req)['innerworld_term'] || "inner world",16);
+					req.session.plural_term= truncate(userResults.plural_term || getCookies(req)['plural_term'] || "plural",16);
+					req.session.language= userResults.language || "en";
+					req.session.is_dev=([process.env.dev1, process.env.dev2,process.env.dev3].includes(userResults.id));
+					req.session.textsize= userResults.textsize;
+					req.session.worksheets_enabled= userResults.worksheets_enabled;
+					req.session.font= userResults.font;
 				} catch (e){
 					// They logged out!
 					console.log(`Caught error, skipped setting session. User ID might not exist.`)
@@ -455,6 +456,7 @@ app.locals.possessive= function(s){
 		req.session.plural_term= "plural";
 		req.session.font="Lexend";
 	}
+	
 	req.next();
   });
 
@@ -945,26 +947,34 @@ app.get('/worksheets', (req, res) => {
 				replyArr= replyPages[req.params.pg-1 || 0];
 				
 				// console.log(`Post pagination: ${replyArr.length} replies loading.`);
-				client.query({text: "SELECT * FROM alters INNER JOIN systems ON alters.sys_id = systems.sys_id WHERE systems.user_id=$1;",values: [`${getCookies(req)['u_id']}`]}, (err, bresult) => {
+				client.query({text: `
+				SELECT alters.*, alters.alt_id AS "altid", systems.sys_alias, alter_moods.* FROM alters 
+				INNER JOIN systems ON alters.sys_id = systems.sys_id 
+				LEFT OUTER JOIN alter_moods ON alters.alt_id = alter_moods.alt_id 
+				WHERE systems.user_id=$1`,values: [`${getCookies(req)['u_id']}`]}, (err, bresult) => {
 					if (err) {
 					  console.log(err.stack);
 					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
 				  } else { 
 					// Get alters
 					let alterArr = new Array();
+					
 					for (i in bresult.rows){
 						alterArr.push({
-								id: bresult.rows[i].alt_id,
+								id: bresult.rows[i].altid,
 								name: Buffer.from(bresult.rows[i].name, "base64").toString(),
 								pronouns: bresult.rows[i].pronouns?  Buffer.from(bresult.rows[i].pronouns, "base64").toString() : null,
 								type: bresult.rows[i].type,
 								avatar: Buffer.from(bresult.rows[i].img_url, "base64").toString() || "",
-								sys_alias: Buffer.from(bresult.rows[i].sys_alias, "base64").toString() || "",
+								sys_alias: bresult.rows[i].sys_alias== null ? "Null" : Buffer.from(bresult.rows[i].sys_alias, "base64").toString(),
 								is_archived: bresult.rows[i].is_archived,
 								img_blob: bresult.rows[i].img_blob,
 								mimetype: bresult.rows[i].blob_mimetype,
-								colour: bresult.rows[i].colour
+								colour: bresult.rows[i].colour,
+								mood: bresult.rows[i].mood,
+								reason: bresult.rows[i].reason ? decryptWithAES(bresult.rows[i].reason) : null
 							})
+
 					}
 					client.query({text: "SELECT * FROM forums WHERE u_id=$1;",values: [`${getCookies(req)['u_id']}`]}, (err, cresult) => {
 						if (err) {
@@ -1031,7 +1041,7 @@ app.get('/worksheets', (req, res) => {
 					for (i in hresult.rows){
 						topics.push({name: decryptWithAES(hresult.rows[i].title), preview: decryptWithAES(hresult.rows[i].body), alt_id: null, is_sticky: hresult.rows[i].is_sticky, is_locked: hresult.rows[i].is_locked, is_popular: hresult.rows[i].is_popular, created_on: hresult.rows[i].created_on, id: hresult.rows[i].id, alter: "Blurry"});
 					}
-					topics.sort(sortFunction);
+					topics.sort(sortFunction).reverse();
 					let topicArr= paginate(topics, 25);
 					client.query({text: `SELECT * FROM categories WHERE u_id=$1;`,values: [getCookies(req)['u_id']]}, (err, bresult) => {
 					if (err) {
@@ -2228,8 +2238,15 @@ app.get('/wish-d/:id', (req, res) => {
 			}
 			})	
 		} else if (req.body.editop){
-			let postAuth= req.body.author== "blur" ? null : req.body.author;
-			client.query({text: "UPDATE threads SET title=$3, body=$4, topic_id=$5, alt_id=$6 WHERE u_id=$1 AND id=$2",values: [getCookies(req)['u_id'], req.params.id, `${encryptWithAES(req.body.newtitle)}`, `${encryptWithAES(req.body.newbody)}`, req.body.topicforum, postAuth]}, (err, result) => {
+			let postAuth= req.body.author== "blur" ? null : `${req.body.author}`;
+			client.query({text: "UPDATE threads SET title=$3, body=$4, topic_id=$5, alt_id=$6 WHERE u_id=$1 AND id=$2",values: [
+				getCookies(req)['u_id'], 
+				req.params.id, 
+				`${encryptWithAES(req.body.newtitle)}`, 
+				`${encryptWithAES(req.body.newbody)}`, 
+				req.body.topicforum, 
+				postAuth
+			]}, (err, result) => {
 				if (err) {
 				console.log(err.stack);
 				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
@@ -3962,15 +3979,6 @@ app.put("/forum-data", (req,res) => {
 				})
 
 				} else if(editMode=="sp-alter"){
-					/*
-					"edit": "sp-alter",
-                  "sysId": `${chosenSystem}`,
-                  "name": sysInfo.content.name,
-                  "pronouns": sysInfo.content.pronouns,
-                  "avatar": sysInfo.content.avatarUrl,
-                  "colour": sysInfo.content.color,
-                  "notes": sysInfo.content.desc
-					*/
 					// Place selected alters in database.
 					let altName= req.body.name == null ? `'${Buffer.from('New alter').toString('base64')}'`: `'${Buffer.from(req.body.name).toString('base64')}'`;
 					let altPro= req.body.pronouns == null ? null: `'${Buffer.from(req.body.pronouns).toString('base64')}'`;
@@ -3983,6 +3991,22 @@ app.put("/forum-data", (req,res) => {
 						altAva,
 						req.body.colour,
 						`'${Buffer.from(req.body.notes).toString('base64')}'`
+					]}, (err, result) => {
+						if (err) {
+						console.log(err.stack);
+						res.status(400);
+						} else {
+							res.status(200).json({code: 200})
+						}
+					
+					});
+				} else if(editMode=="add-ph-alter"){
+					// Place placeholder alters in database.
+					let iconNo= "https://www.writelighthouse.com/img/" + getRandomInt(1,42) + ".png";
+					client.query({text: "INSERT INTO alters (name, sys_id, img_url) VALUES($1, $2, $3);",values: [
+						`'${Buffer.from(req.body.altName).toString('base64')}'`, 
+						req.body.sysid,
+						`'${Buffer.from(iconNo).toString('base64')}'`
 					]}, (err, result) => {
 						if (err) {
 						console.log(err.stack);

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" style="visibility: hidden;">
     <head>
-      <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7">
+      <!-- <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7"> -->
         <%- include ("../partials/header.ejs") %>
         <style>
           .modpanel{
@@ -109,7 +109,6 @@
                }
                %>
 
-           
             <h2><% if (originalPost.is_sticky== true){ %>(Pinned) <% } %><% if (originalPost.is_locked== true){ %>(Locked) <% } %><%= originalPost.title %> <% if (!opInfo.is_archived){%></h2>
               <span>Moderation Panel</span>
               <div class="modpanel">
@@ -142,6 +141,7 @@
                 <!-- Time to do some alter logic. -->
                 <% for (i in alterArr){ %> 
                     <% if (alterArr[i].id == originalPost.alt_id){ %> 
+                      
                         <h3><a href="/alter/<%= alterArr[i].id %>" style="color:<%= alterArr[i].colour == "#000000" ? "" : alterArr[i].colour %>"><%= alterArr[i].name %> <i class='far fa-newspaper' title="Original Author" aria-hidden="false"></i></a></h3>
 
                         <% if (alterArr[i].img_blob){ %> 
@@ -152,8 +152,10 @@
                           <img src="/img/avatar-default.jpg" class="smallimg">
                         <% } %>
                             <br>
+                        <% if (alterArr[i].sys_alias){ %><small><%= capitalise(cookies.system_term) %>: <%= alterArr[i].sys_alias %><br></small><% } %>
                         <% if (alterArr[i].pronouns){ %><small>Pronouns: <%= alterArr[i].pronouns %><br></small><% } %>
-                        <% if (alterArr[i].type){ %><small>Type: <%= alterArr[i].type %></small><% } %>
+                        <% if (alterArr[i].type){ %><small>Type: <%= alterArr[i].type %></small><br><% } %>
+                        <% if (alterArr[i].mood){ %><small>Mood: <%= moods[alterArr[i].mood].name %> <%= moods[alterArr[i].mood].emoji %></small><br><% } %>
                     <% break; } %>
                 <% } %>
                 </div>
@@ -190,9 +192,11 @@
                           <img src="/img/avatar-default.jpg" class="smallimg">
                         <% } %>
                             <br>
+                            <% if (alterArr[i].sys_alias){ %><small><%= capitalise(cookies.system_term) %>: <%= alterArr[i].sys_alias %><br></small><% } %>
                             <% if (alterArr[i].pronouns){ %>Pronouns: <%= alterArr[i].pronouns %><br><% } %>
                             <% if (alterArr[i].type){ %>Type: <%= alterArr[i].type %><% } %>
                             <% var replyAuthor= alterArr[i].name %>
+                            <% if (alterArr[i].mood){ %><small>Mood: <%= moods[alterArr[i].mood].name %> <%= moods[alterArr[i].mood].emoji %><% if (alterArr[i].reason){ %>- (<%= alterArr[i].reason %>)<% } %></small><br><% } %>
                         <% break; } %>
                       <% } %>
                     <% } %>
