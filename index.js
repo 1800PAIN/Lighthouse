@@ -309,7 +309,8 @@ async function query(client, customQuery, customValues, res, req) {
 	// console.log(result.rows)
 	return result.rows;
 	} catch(e){
-	res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
+	 console.error(e)
+	 return res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
 
 	}
 	
@@ -1537,8 +1538,9 @@ app.get('/wish-d/:id', (req, res) => {
 		}
 		const sysMap= await query(client, "SELECT systems.sys_id, systems.subsys_id, systems.user_id, systems.sys_alias, alters.alt_id, systems.icon FROM systems LEFT JOIN alters ON systems.sys_id = alters.sys_id WHERE systems.sys_id=$1 ORDER BY alters.name ASC", [`${req.params.id}`], res, req);
 		req.session.chosenSys= sysMap[0];
-		if (req.session.chosenSys.subsys_id != null){
-			// There's a subsystem.
+		// invalid input syntax for type uuid: "null"
+		if (req.session.chosenSys.subsys_id !== null){
+			// Subsystems...?
 			const subsysInf= await query(client, "SELECT sys_alias FROM systems WHERE sys_id=$1", [`${req.session.chosenSys.subsys_id}`], res, req);
 			req.session.chosenSys.subsys_alias= subsysInf[0].sys_alias;
 		}
@@ -1618,10 +1620,8 @@ app.get('/wish-d/:id', (req, res) => {
 				})
 			})
 			} catch(e){
-				console.error(e)
 				// Keep archivedPosts empty.
 			}
-			console.log(archivedPosts)
 			res.render(`pages/archived-alter`, { session: req.session, splash:splash,cookies:req.cookies, alterTypes:alterTypes, alterInfo:selectedAlt, altJournal:altJournal, archivedPosts:archivedPosts });
 		} else {
 			// Just render alter ejs.
@@ -3804,13 +3804,14 @@ app.put("/forum-data", (req,res) => {
 					let altPro= req.body.pronouns == null ? null: `'${Buffer.from(req.body.pronouns).toString('base64')}'`;
 					let altBirth= req.body.birthday == null ? null: `'${Buffer.from(req.body.birthday).toString('base64')}'`;
 					let altAva= req.body.avatar == null ? `'${Buffer.from('https://www.writelighthouse.com/img/avatar-default.jpg').toString('base64')}'`: `'${Buffer.from(req.body.avatar).toString('base64')}'`;
+					let altNotes= req.body.notes == null ? null : `'${Buffer.from(req.body.notes).toString('base64')}'`;
 					client.query({text: "INSERT INTO alters (name, sys_id, pronouns, img_url, colour, notes) VALUES($1, $2, $3, $4, $5, $6);",values: [
 						altName, 
 						req.body.sysId,
 						altPro,
 						altAva,
 						req.body.colour,
-						`'${Buffer.from(req.body.notes).toString('base64')}'`
+						altNotes,
 					]}, (err, result) => {
 						if (err) {
 						console.log(err.stack);
