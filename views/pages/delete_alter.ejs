@@ -17,6 +17,7 @@
             <h3 class="warningtext">Warning: This cannot be undone!</h3>
             <p><%= Buffer.from(chosenAlter.name, 'base64').toString() %>'s journal and posts will be permanently deleted. Are you absolutely sure this is what you want to do? Press the "delete" button if so.</p>
             <form method="post">
+                <input type="hidden" id="sysid" name="sysid" value="<%= chosenAlter.sys_id %>">
                 <input class="warningbutton" type="submit" value="Delete <%= Buffer.from(chosenAlter.name, 'base64').toString() %> forever" name="delete">
             </form>
         </section>

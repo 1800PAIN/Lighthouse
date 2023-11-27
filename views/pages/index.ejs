@@ -67,19 +67,23 @@
                     <% if (((new Date().getMonth()+1)== 7) && (new Date().getDate()) == 15) { %>
                         <p>👥 Today is Plural Pride Day!<a href="/glossary#plurality">Read here.</a></p>
                         <% } %>
+
+                        <div id="loggedIn" class="splash" style="display:none">Hi, <span id="greeting">friend</span>! You are now logged in. Redirecting you now...</div>
+                <div id="wrongpass" class="splash" style="display:none">Incorrect email and/or password. <a href="/forgot-password">Need to reset your password?</a></div>
             </div>
             <!-- <h1 style="font-family: 'Berkshire Swash','Lobster Two', cursive;font-size:3em;margin-bottom:-.5em">Lighthouse</h1> -->
             <% if (messages.flash){ %> <p class="splash"><%- messages.flash %></p><% } %>
             <%  if (!cookies.loggedin){ %>
                 <!-- Login -->
-                <form method="post" id="login" style="float: left; height: auto;">
+                <form method="post" style="float: left; height: auto;">
                     <h2>Log In</h2>
                     <small>No Account? <a id="signup" href="/signup">Signing Up takes only a minute!</a></small><br/>
                     <label for="email">Email: </label>
-                    <input type="email" placeholder="something@mail.com" name="email"></br>
+                    <input type="email" placeholder="something@mail.com" name="email" id="email"></br>
                     <label for="password">Password: </label>
-                    <input type="password" name="password"><br/>
-                    <input type="submit" value="Log in" name="loggingin">
+                    <input type="password" name="password" id="password"><br/>
+                    <button id="login">Log In</button>
+                    <div id="Wait" style="display:none"><img src="/img/svg/bubbles.svg" class="tinyimg"></div>
                 </form>
                 <% } %>   
                 <% 
@@ -101,6 +105,7 @@
                     subsysTerm= "subsystem";
                 }
                 %>
+                
             <hgroup style="text-align:center;">
                 <h2>Journal Together</h2></hgroup>
                 
@@ -175,23 +180,38 @@
     </div>
     <%- include ("../partials/footer.ejs") %>
     <script>
-        const button= document.querySelector("#signup");
-        const pass= document.querySelector("#pass");
-        const vPass= document.querySelector("#v-pass");
-        const passSplash= document.querySelector("#passSplash");
-        function checkPass(){
-          // console.log(pass.value);
-          // console.log(vPass.value);
-          if (pass.value !== vPass.value){
-            passSplash.innerHTML="Passwords do not match.";
-            button.disabled= true;
-          } else {
-            passSplash.innerHTML="";
-            button.disabled= false;
-          }
+        $("#login").click(async function(){
+            event.preventDefault();
+            $("#login").hide();
+            $("#Wait").show();
+        let response = await fetch(`/api/user/auth`, { 
+            method: "GET",
+            headers: { 
+              "api-lh-call": "api-lh-call",
+              'Content-Type': 'application/json',
+              'email': $("#email").val(),
+              'tok': $("#password").val(),
+            }
+        });
+        let resBod = await response.text();
+        if (response.ok){
+            // Good. Proceed to log in.
+            let userInfo = JSON.parse(resBod);
+            $("#wrongpass").hide();
+            $("#loggedIn").slideDown();
+            // $("#fgglow").removeClass("glow");
+            $("#greeting").text(userInfo.name)
+            setTimeout(async function(){
+                window.location.replace("/system");
+            }, 3000);
+        } else {
+            $("#login").show();
+            $("#Wait").hide();
+            $("#wrongpass").slideDown();
+            $("#loggedIn").hide();
+            // $("#fgglow").addClass("glow");
         }
-
-
+        })
     </script>
     </body>
 </html>

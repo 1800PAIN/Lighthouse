@@ -19,9 +19,14 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
-          <% if (locals.messages.flash) { %>
-            <div class="splash"><%- locals.messages.flash %></div>
-        <% } %>
+          <% if (cookies.loggedin){ %>
+            <img src="/img/svg/buoy.svg" style="height:calc(24em); float: left;">
+            <h1>You're already signed in.</h1>
+            <p>We appreciate your enthusiasm, but you already have an account.</p>
+          <% } else { %>
+            <% if (locals.messages.flash) { %>
+              <div class="splash"><%- locals.messages.flash %></div>
+          <% } %>
             <h1>Sign Up to Lighthouse</h1>
             <p>We're happy to have you! But first, we need some  information. <strong>Please use a valid, non-temporary email.</strong> That way if you lose your password, you can still reset it. We only email you when you've made an account, when you delete an account, if you lose your password, or if there's a situation in which we need to email all of our users (like a Terms of Service update, or when we eventually implement 2FA).</p>
             <form method="post" autocomplete="off">
@@ -55,6 +60,9 @@
                 <input type="hidden" name="mjl2fbbz8s" id="mjl2fbbz8s" placeholder="Users should not see this! This is a bot honeypot.">
                 <input type="submit" id="signup" value="Sign Up" disabled>
             </form>
+          <% } %>
+          
+            
         </div>
         <%- include ("../partials/footer.ejs") %>
         <script>

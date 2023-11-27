@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" style="visibility: hidden;">
+    <head>
+        <!-- <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7"> -->
+        <%- include ("../partials/header.ejs") %>
+        <style>
+            #output{
+                border: 1px solid black;
+                min-height: 4em;
+                width: 80%
+            }
+        </style>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
+            <section>
+                <h1><img alt="lighthouse logo" src="/img/logo.png" class="vtinyimg">Test the Lighthouse API</h1>
+                <p>Test the Lighthouse API on here.</p>
+
+                <label for="endpoint">Endpoint: </label><input type="text" id="endpoint"><br>
+                <label for="userid">User ID: </label><input type="text" id="userid"><br>
+                <label for="token">Token: </label><input type="text" id="token" autocomplete="off"><br>
+                <button id="api">Go</button>
+            </section>
+            <section style="margin-top: 1em;">
+                <span><small>Output</small></span>
+                <div id="output"></div>
+            </section>
+    </div>
+    <%- include ("../partials/footer.ejs") %>
+    <script>
+        $("#api").click(async function(){
+            console.log($("#token").val())
+            let response = await fetch(`/api/${$("#endpoint").val()}/${$("#userid").val()}`, { 
+                method: "GET",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json',
+                  'usertoken': $("#token").val()
+                }
+            });
+            let resBod = await response.text();
+            alert(resBod)
+        });
+    </script>
+    </body>
+</html>

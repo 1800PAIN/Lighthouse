@@ -1,0 +1,55 @@
+// DATABASE
+require('dotenv').config();
+
+const { Pool, Client,pg, Query } = require('pg');
+  if (process.env['environment']== "dev"){
+	console.log("Starting Lighthouse in SANDBOX mode.");
+	var client = new Client({
+		user: "postgres",
+		host: "localhost",
+		database: "Sandbox",
+		password: "",
+		port: 5432
+	  });
+} else {
+	console.log("Starting Lighthouse in PRODUCTION mode.");
+	var client = new Client({
+		user: process.env.DB_USER,
+		host: process.env.DB_HOST,
+		database: process.env.DB_NAME,
+		password: process.env.DB_PASS,
+		port: process.env.DB_PORT,
+		ssl: { rejectUnauthorized: false }
+	  });
+	
+}
+
+// Database functions now that all that is declared.
+/**
+ * Run a database query. Renders a 400 error if nothing works. Use with "await".
+ * @param {object} client The database client credentials. Differs between production and dev.
+ * @param {string} customQuery The string query with $1, $2, etc.
+ * @param {array} customValues array of values for $1, $2, etc.
+ * @param {object} res The ExpressJS API response
+ * @param {object} req The ExpressJS API request
+ * @returns {array} Array of matching rows to query.
+ */
+async function query(client, customQuery, customValues, res, req) {
+	try{
+		const result= await client.query({ text: customQuery, values: customValues });
+	// console.log(result.rows)
+	return result.rows;
+	} catch(e){
+		console.log(e)
+	res.status(400).render('pages/400',{ session: req.session, code:"Bad Request",cookies:req.cookies });
+
+	}
+	
+  }
+client.connect();
+
+// MODULE EXPORTS
+module.exports = {
+	query,
+	client:client
+  };

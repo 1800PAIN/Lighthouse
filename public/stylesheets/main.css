@@ -161,7 +161,7 @@ nav {
 }
 
 .required::before{
-  content: "* ";
+  content: "*";
   color: red
 }
 

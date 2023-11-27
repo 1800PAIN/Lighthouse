@@ -3,6 +3,28 @@
     <head>
         <!-- <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7"> -->
         <%- include ("../partials/header.ejs") %>
+        <style>
+              .radio-toolbar input[type="checkbox"] {
+         display: none;
+}
+
+.radio-toolbar label {
+  display: block;
+  cursor: pointer;
+  text-align:center;
+}
+
+.radio-toolbar input[type="checkbox"]:checked ~ * { 
+    background:#9CD9D3 !important;
+    float: left;
+}
+input{
+    margin-bottom:0;
+}
+select{
+    margin-bottom: 2em;
+}
+        </style>
     </head>
     <body>
         <%- include ("../partials/nav.ejs") %>
@@ -12,9 +34,208 @@
             <% } %>
             <section>
                 <h1>Combine <%= pluralize(cookies.alter_term) %></h1>
-                <p>Still under construction.</p>
+                <div id="window1">
+                    <p>If two or more <%= pluralize(cookies.alter_term) %> have experienced a lowering of dissociative barriers, then they may sometimes end up becoming one. While this typically happens with integrated <%= pluralize(cookies.alter_term) %>, not all integrated <%= pluralize(cookies.alter_term) %> will end up becoming one.</p>
+                <hr>
+                <p>Select two or more <%= pluralize(cookies.alter_term) %> below.</p>
+                <div class="grid" id="alters">
+                </div>
+                <p>Which from the below is the best action for the selected <%= pluralize(cookies.alter_term) %>?</p>
+                <div>
+                    <label for="archive"><input type="radio" id="archive" name="handle" value="archive">Archive them</label><br>
+                    <label for="delete"><input type="radio" id="delete" name="handle" value="delete">Delete them</label><br>
+                    <label for="combine-del"><input type="radio" id="combine-del" name="handle" value="combine-del">Combine their data and delete the old <%= pluralize(cookies.alter_term) %></label><br/>
+                    <label for="combine-arch"><input type="radio" id="combine-arch" name="handle" value="combine-arch">Combine their data and archive the old <%= pluralize(cookies.alter_term) %></label><br>
+                    <label for="combine-noth"><input type="radio" id="combine-noth" name="handle" value="combine-noth">Combine their data and do nothing else</label><br>
+                    <label for="noth"><input type="radio" id="noth" name="handle" value="noth">Do nothing/Handle this later</label><br>
+                </div>
+                <hr>
+                <h3>New <%= capitalise(cookies.alter_term) %></h3>
+                <p>The only required blank is a name.</p>
+                <div>
+                    <p><label for="newname" class="required">Name:</label> <input id="newname" name="newname" type="text"></p>
+                    <p><label for="newpro">Pronouns:</label> <input id="newpro" name="newpro" type="text"></p>
+                    <p><label for="newtype">Type:</label> <input id="newtype" name="newtype" type="text"></p>
+                </div>
+                <div>
+                    <label for="sysLoc">Place this new <%= cookies.alter_term %> into the following system: </label><select name="sysLoc" id="sysLoc"></select>
+                </div>
+                <button id="combineAlts" disabled>Combine <%= capitalise(pluralize(cookies.alter_term)) %></button>
+                </div>
+                <div id="window2" style="display:none;">
+                    <p>The new <%= cookies.alter_term %> page is being created.</p>
+                    <img src="/img/svg/bubbles.svg" class="medimg">
+                    <p id="done"></p>
+                </div>
             </section>
     </div>
     <%- include ("../partials/footer.ejs") %>
+    <script>
+        function makeString(arr) {
+        if (arr.length === 1) return arr[0];
+        const firsts = arr.slice(0, arr.length - 1);
+        const last = arr[arr.length - 1];
+        return firsts.join(', ') + ' and ' + last;
+        }
+        function distill(str){
+            if (str.charAt(0) == "\""){
+                str= str.substring(1);
+            }
+            if (str.charAt(0) == "'"){
+                str= str.substring(1);
+            }
+            if (str.charAt(str.length-1) == "\""){
+                str= str.substring(0, str.length - 1);
+            }
+            if (str.charAt(str.length-1) == "'"){
+                str= str.substring(0, str.length - 1);
+            }
+            return str
+        }
+        async function grabAlters(){
+            let response = await fetch(`/system-data`, { 
+            method: "GET",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json',
+                  "grab": "alters"
+                } 
+            });
+            let body= await response.text();
+            let alters= (JSON.parse(body)).search;
+            // console.log(alters)
+            alters.forEach((alter)=>{
+                if (alter.img_blob){
+                    $("#alters").append(`
+                <div class="radio-toolbar child">
+                            <input type="checkbox" id="${alter.alt_id}" name="alter" value="${alter.name}" class="checkAlt">
+                            <label for="${alter.alt_id}">$<img class="smallimg" src='data:${alter.blob_mimetype};base64,${Buffer.from(alterArr[i].img_blob).toString("base64")}'>${alter.name}</label>
+                        </div>
+                `)
+                } else if(distill(alter.img_url)){
+                    $("#alters").append(`
+                <div class="radio-toolbar child">
+                            <input type="checkbox" id="${alter.alt_id}" name="alter" value="${alter.name}" class="checkAlt">
+                            <label for="${alter.alt_id}"><img class="smallimg" src="${alter.img_url}">${alter.name}</label>
+                        </div>
+                `)
+                } else {
+                    $("#alters").append(`
+                <div class="radio-toolbar child">
+                            <input type="checkbox" id="${alter.alt_id}" name="alter" value="${alter.name}" class="checkAlt">
+                            <label for="${alter.alt_id}"><img class="smallimg" src="https://i.ibb.co/vkwmWjF/avatar-default.jpg">${alter.name}</label>
+                        </div>
+                `)
+                }
+                
+            })
+        }
+        grabAlters();
+        
+
+        
+        function countingAlters(method){
+            var countAlts;
+            var altList= new Array();
+            let altArr= $(".checkAlt:checked");
+            for (i in altArr){
+                if (method=="id"){
+                    if (altArr[i].id){
+                        // console.log(altArr[i].id);
+                        altList.push(altArr[i].id); 
+                    }
+                } else {
+                    if (altArr[i].id){
+                        altList.push(altArr[i].value);
+                    }
+                }
+                
+            }
+            return altList;
+        }
+
+        function verifySub(){
+            // If the name blank is filled, alters have been checked and a radio checkbox is clicked.
+            if ($(".checkAlt:checked").length > 1 && $(":radio:checked").length > 0 && $("#newname").val() !== ""){
+                // Disable button?
+                $("#combineAlts").prop("disabled", false);
+            } else {
+                // Disable button?
+                $("#combineAlts").prop("disabled", true);
+            }
+        }
+
+        
+        async function grabSystems(){
+           const lhRes = await fetch(`/system-data`, { 
+                method: "GET",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json',
+                  "grab": "systems"
+                } 
+            });
+
+            const lhBody = await lhRes.text();
+            if (!lhRes.ok) return $("#wrapper").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
+
+            sysInfo = JSON.parse(lhBody);
+            for (i in sysInfo.systems){
+                $("#sysLoc").append(`<option value="${sysInfo.systems[i].sys_id}">${sysInfo.systems[i].alias}</option>`);
+            }
+
+        }
+
+        async function combineAlts(){
+            // Lets make a call, see what we need to do with selected <%= pluralize(cookies.alter_term) %>
+            let aArr= countingAlters("id");
+            let method= $('[name="handle"]:checked').val();
+            let fusedNames= makeString(countingAlters("names"));
+            $("#window1").slideUp(1000);
+            setTimeout(async function(){
+                $("#window2").fadeIn(1000);
+                const comRes = await fetch(`/system-data`, { 
+                method: "PUT",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "edit": "add-comb-alter",
+                    "sys_id": $("#sysLoc").val(),
+                    "name": $("#newname").val(),
+                    "pronouns": $("#newpro").val() == "" ? "" : $("#newpro").val(),
+                    "type": $("#newtype").val() == "" ? "" : $("#newtype").val(),
+                    "alts": aArr,
+                    "method": method,
+                    "names": fusedNames
+                })
+            });
+            let makeRes= await comRes.json();
+            if (makeRes.code == 200){
+                $("#done").text(`${$("#newname").val()} has been created from combining ${fusedNames}. You'll be redirected in 8 seconds.`)
+                setTimeout(function(){
+                    window.location.replace(`/system/${$("#sysLoc").val()}`)
+                }, 8000)
+            }
+            }, 1500)
+            
+            
+
+        }
+
+        $('#wrapper').on("keyup change", function(){
+            verifySub();
+        });
+
+        $("#combineAlts").click(async function(){
+            combineAlts();
+        });
+
+        $(document).ready(function(){
+            verifySub();
+            grabSystems();
+        });
+    </script>
     </body>
 </html>

@@ -15,20 +15,55 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
-            <% if (messages.flash){ %> <p class="splash"><%= messages.flash %></p><% } %>
+            <div id="loggedIn" class="splash" style="display:none">Hi, <span id="greeting">friend</span>! You are now logged in. Redirecting you now...</div>
+            <div id="wrongpass" class="splash" style="display:none">Incorrect email and/or password. <a href="/forgot-password">Need to reset your password?</a></div>
             <h2>Log In to Lighthouse</h2>
             <small>No Account? <a id="signup" href="/signup">Signing Up takes only a minute!</a></small><br/>
             <form method="post">
                 <label for="email">Email: </label>
-                <input type="email" placeholder="something@mail.com" name="email"></br>
+                <input type="email" placeholder="something@mail.com" name="email" id="email"></br>
                 <label for="password">Password: </label>
-                <input type="password" name="password"><br/>
-                <input type="submit" value="Log in"><br/>
-                
+                <input type="password" name="password" id="password"><br/>
+                <button id="login">Log In</button>
+                <div id="Wait" style="display:none"><img src="/img/svg/bubbles.svg" class="tinyimg"></div>
             </form>
             <br/>
-            <a href="/forgot-password">Forgot your password, or need to reset it?</a>
+            <a id="fgglow" href="/forgot-password">Forgot your password, or need to reset it?</a>
         </div>
         <%- include ("../partials/footer.ejs") %>
+        <script>
+            $("#login").click(async function(){
+                event.preventDefault();
+                $("#login").hide();
+                $("#Wait").show();
+            let response = await fetch(`/api/user/auth`, { 
+                method: "GET",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json',
+                  'email': $("#email").val(),
+                  'tok': $("#password").val(),
+                }
+            });
+            let resBod = await response.text();
+            if (response.ok){
+                // Good. Proceed to log in.
+                let userInfo = JSON.parse(resBod);
+                $("#wrongpass").hide();
+                $("#loggedIn").slideDown();
+                $("#fgglow").removeClass("glow");
+                $("#greeting").text(userInfo.name)
+                setTimeout(async function(){
+                    window.location.replace("/system");
+                }, 3000);
+            } else {
+                $("#login").show();
+                $("#Wait").hide();
+                $("#wrongpass").slideDown();
+                $("#loggedIn").hide();
+                $("#fgglow").addClass("glow");
+            }
+            })
+        </script>
     </body>
 </html>

@@ -36,6 +36,7 @@
               <a title="Your <%= capitalise(cookies.system_term) %>'s wants, needs, and wishes" href="/wish">Wishlist</a>
               <% if (session.worksheets_enabled == true){ %><a title="Worksheets for trauma (WIP)" href="/worksheets">Worksheets</a><% }%>
               <a title="Crash course on using Lighthouse" href="/tutorial">Tutorial</a>
+              <a title="Combine <%= pluralize(cookies.alter_term) %>" href="/combine/alts">Combine <%= capitalise(pluralize(cookies.alter_term)) %></a>
             </div>
             <p><sub id="sysCount" style="display: none;"></sub></p>
             <div id="WaitSys"></div>

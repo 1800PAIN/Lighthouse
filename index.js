@@ -4,17 +4,12 @@ var cookieParser = require('cookie-parser');
 const session = require('cookie-session');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
-const { Pool, Client,pg, Query } = require('pg');
-const bcrypt = require("bcrypt");
 const CryptoJS = require("crypto-js");
-const request = require('request');
-const PKAPI = require("pkapi.js");
 const fs = require('fs');
 var pdf = require("html-pdf");
 const nodemailer = require('nodemailer');
 const ejs = require('ejs');
 var pluralize = require('pluralize');
-var compromise= require("compromise");
 var pjson = require('./package.json');
 var flash = require('express-flash');
 console.log( `Lighthouse v${pjson.version}`);
@@ -23,6 +18,9 @@ const fileUpload = require('express-fileupload');
 const tuning= require('./js/genVars.js');
 const strings= require("./lang/en.json");
 const langVar= require("./js/languages.js");
+const db= require("./db");
+const client = db.client;
+
 const { start } = require('repl');
 
 require('dotenv').config();
@@ -145,6 +143,15 @@ function isLoggedIn(req){
   }
 }
 /**
+ * Generates a token.
+ * @param {number} n Length of token
+ * @returns {string} token
+ */
+function generateToken(n) {
+	const token = crypto.randomBytes(n).toString('hex');
+	return token;
+  }
+/**
  * ** CURRENTLY UNUSED** Determines if the cookies and session user IDs match.
  * @param {object} req 
  * @returns {boolean} true or false
@@ -187,6 +194,17 @@ function apiEyesOnly(req) {
 	}
   }
 
+  /**
+   * Turns an array into a list styled like the following: Item 1, Item 2, and Item 3
+   * @param {array} arr 
+   * @returns {string} string
+   */
+  function makeString(arr) {
+	if (arr.length === 1) return arr[0];
+	const firsts = arr.slice(0, arr.length - 1);
+	const last = arr[arr.length - 1];
+	return firsts.join(', ') + ' and ' + last;
+	}
   /**
    * Cuts off a string at a specified length and appends "..." to the end to indicate more information.
    * @param {string} str String to truncate
@@ -270,55 +288,9 @@ function forbidUser(res, req){
 	return res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });
 }
 
-  // DATABASE
-if (process.env['environment']== "dev"){
-	console.log("Starting Lighthouse in SANDBOX mode.");
-	var client = new Client({
-		user: "postgres",
-		host: "localhost",
-		database: "Sandbox",
-		password: "",
-		port: 5432
-	  });
-} else {
-	console.log("Starting Lighthouse in PRODUCTION mode.");
-	var client = new Client({
-		user: process.env.DB_USER,
-		host: process.env.DB_HOST,
-		database: process.env.DB_NAME,
-		password: process.env.DB_PASS,
-		port: process.env.DB_PORT,
-		ssl: { rejectUnauthorized: false }
-	  });
-	
-}
 
-// Database functions now that all that is declared.
-/**
- * Run a database query. Renders a 400 error if nothing works. Use with "await".
- * @param {object} client The database client credentials. Differs between production and dev.
- * @param {string} customQuery The string query with $1, $2, etc.
- * @param {array} customValues array of values for $1, $2, etc.
- * @param {object} res The ExpressJS API response
- * @param {object} req The ExpressJS API request
- * @returns {array} Array of matching rows to query.
- */
-async function query(client, customQuery, customValues, res, req) {
-	try{
-		const result= await client.query({ text: customQuery, values: customValues });
-	// console.log(result.rows)
-	return result.rows;
-	} catch(e){
-	res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-
-	}
-	
-  }
   
-  
-
-client.connect();
-
+  const apiRouter = require('./api');
 var app = express();
   app.use('/', express.static(__dirname + '/public'))
   app.use(session({
@@ -341,6 +313,8 @@ app.use(bodyParser.json()).use(bodyParser.urlencoded({extended: true}));
 	});
 	app.use(express.static(path.join(__dirname, "node_modules/tabulator-tables/dist/css")));
 	app.use(express.static(path.join(__dirname, "node_modules/tabulator-tables/dist/js")));
+	// Mount API routes
+app.use('/api', apiRouter);
 let monthNames=["January","February","March","April","May","June","July",
 "August","September","October","November","December"];
 // App Local Variables
@@ -371,6 +345,7 @@ app.locals.paginate = paginate;
 app.locals.capitalise= capitalise;
 app.locals.pluralize= pluralize;
 app.locals.boil= stripHTML;
+app.locals.generateToken= generateToken;
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs');
 
@@ -379,7 +354,7 @@ app.all('*', async function (req, res){
 	// Loads before all other routes.
 	if (isLoggedIn(req)){
 		// Let's only grab the database if we need to.
-			const userData= await query(client, "SELECT * FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+			const userData= await db.query(client, "SELECT * FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 			let results= userData[0];
 			try{
 				req.session.u_id= results.id;
@@ -429,14 +404,14 @@ app.all('*', async function (req, res){
 // Refactored!
   app.get('/', async function (req, res){
 	// client, customQuery, customValues, res, req
-	const count= await query(client, "SELECT COUNT(id) FROM users;", [], res, req);
-	const donators= await query(client,"SELECT * FROM donators;", [], res, req);
+	const count= await db.query(client, "SELECT COUNT(id) FROM users;", [], res, req);
+	const donators= await db.query(client,"SELECT * FROM donators;", [], res, req);
 	res.render(`pages/index`, { session: req.session, splash:splash, userCount:count[0].count, cookies:req.cookies, donators:donators });
   });
 
   // Refactored!
   app.get('/verify/:id', async function (req, res){
-		const userData= await query(client, "SELECT * FROM users WHERE id=$1;", [req.params.id], res,req);
+		const userData= await db.query(client, "SELECT * FROM users WHERE id=$1;", [req.params.id], res,req);
 		req.session.alter_term= userData[0].alter_term;
 		req.session.system_term= userData[0].system_term;
 		req.session.subsystem_term= userData[0].subsystem_term;
@@ -472,7 +447,7 @@ app.all('*', async function (req, res){
   app.get('/safety-plan', async function(req, res){
 	if (isLoggedIn(req)){
 		if(apiEyesOnly(req)){
-			const safetyPlan= await query(client, "SELECT * FROM safetyplans WHERE u_id=$1", [getCookies(req)['u_id']], res, req);
+			const safetyPlan= await db.query(client, "SELECT * FROM safetyplans WHERE u_id=$1", [getCookies(req)['u_id']], res, req);
 			var user={
 						id: safetyPlan[0].user,
 						name: getCookies(req)['username'],
@@ -512,13 +487,13 @@ app.all('*', async function (req, res){
 		} else {
 			if (!req.session.worksheets_enabled){
 				// Make sure they have worksheets enabled.
-				const wsEn= await query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+				const wsEn= await db.query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 				req.session.worksheets_enabled= wsEn[0].worksheets_enabled;
 				if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
 			}
 				var plans;
 
-				const safetyPlan= await query(client, "SELECT * FROM safetyplans WHERE u_id=$1", [getCookies(req)['u_id']], res, req);
+				const safetyPlan= await db.query(client, "SELECT * FROM safetyplans WHERE u_id=$1", [getCookies(req)['u_id']], res, req);
 				if (safetyPlan.length != 0){
 					// Plan found
 					try{
@@ -535,7 +510,7 @@ app.all('*', async function (req, res){
 					}
 				} else {
 					// No plan. Make a plan.
-					const planMake= await query(client, "INSERT INTO safetyplans (u_id) VALUES ($1);", [getCookies(req)['u_id']], res, req);
+					const planMake= await db.query(client, "INSERT INTO safetyplans (u_id) VALUES ($1);", [getCookies(req)['u_id']], res, req);
 					plans=null;
 				}
 				res.render(`pages/safetyplan`, { session: req.session, splash:splash, cookies:req.cookies, safetyplan: plans});
@@ -549,14 +524,14 @@ app.get('/safety-plan/edit', async function (req, res){
 	if (isLoggedIn(req)){
 		let plans;
 		// Grab their safety plan
-		const safetyPlan= await query(client, "SELECT * FROM safetyplans WHERE u_id=$1;", [getCookies(req)['u_id']], res, req);
+		const safetyPlan= await db.query(client, "SELECT * FROM safetyplans WHERE u_id=$1;", [getCookies(req)['u_id']], res, req);
 		
 		if (safetyPlan.length ==0){
 			// No plan. Make plan.
-			const makePlan= await query(client, "INSERT INTO safetyplans (u_id) VALUES($1);", [getCookies(req)['u_id']], res, req);
+			const makePlan= await db.query(client, "INSERT INTO safetyplans (u_id) VALUES($1);", [getCookies(req)['u_id']], res, req);
 
 			// Now grab the new one. This will execute AFTER the insert statement.
-			const newPlan= await query(client, "SELECT * FROM safetyplans WHERE u_id=$1;", [getCookies(req)['u_id']], res, req);
+			const newPlan= await db.query(client, "SELECT * FROM safetyplans WHERE u_id=$1;", [getCookies(req)['u_id']], res, req);
 			// Generate the new plan.
 			plans= {
 				symptoms: decryptWithAES(newPlan[0].symptoms),
@@ -599,7 +574,7 @@ app.get('/safety-plan/edit', async function (req, res){
 	if (isLoggedIn(req)){
 	if (!req.session.worksheets_enabled){
 		// Make sure they have worksheets enabled.
-		const wsEn= await query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+		const wsEn= await db.query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 		req.session.worksheets_enabled = wsEn[0].worksheets_enabled;
 		if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
 	}
@@ -613,7 +588,7 @@ app.get('/coaxing', async function (req, res){
 	if (isLoggedIn(req)){
 		if (!req.session.worksheets_enabled){
 		// Make sure they have worksheets enabled.
-		const wsEn= await query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+		const wsEn= await db.query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 		req.session.worksheets_enabled = wsEn[0].worksheets_enabled;
 		if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
 	}
@@ -627,7 +602,7 @@ app.get('/bottle-letters',async function (req, res){
 	if (isLoggedIn(req)){
 		if (!req.session.worksheets_enabled){
 		// Make sure they have worksheets enabled.
-		const wsEn= await query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+		const wsEn= await db.query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 		req.session.worksheets_enabled = wsEn[0].worksheets_enabled;
 		if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
 	}
@@ -653,6 +628,7 @@ app.get('/combine/:item', (req, res) => {
 		let page;
 		switch (req.params.item){
 			case "alt":
+			case "alts":
 				page= "alts"
 				break;
 			default:
@@ -669,7 +645,7 @@ app.get('/worksheets', async function (req, res){
 		if (isLoggedIn(req)){
 			if (!req.session.worksheets_enabled){
 			// Make sure they have worksheets enabled.
-			const wsEn= await query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+			const wsEn= await db.query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 			req.session.worksheets_enabled = wsEn[0].worksheets_enabled;
 			if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
 		}
@@ -682,7 +658,7 @@ app.get('/worksheets', async function (req, res){
   // Refactored!
   app.get('/forum/:id/new', async function(req, res){
 	if (isLoggedIn(req)){
-		const forumData= await query(client, "SELECT * FROM forums WHERE u_id=$1;", [getCookies(req)['u_id']], res, req);
+		const forumData= await db.query(client, "SELECT * FROM forums WHERE u_id=$1;", [getCookies(req)['u_id']], res, req);
 		let forumList= new Array();
 		forumData.forEach(element=>{
 			forumList.push({
@@ -982,7 +958,7 @@ app.get('/worksheets', async function (req, res){
 	if (isLoggedIn(req)){
 		if (apiEyesOnly(req)){
 			try{
-				const bdaPlans= await query(client, "SELECT * FROM bda_plans WHERE u_id=$1;", [getCookies(req)['u_id']], res, req);
+				const bdaPlans= await db.query(client, "SELECT * FROM bda_plans WHERE u_id=$1;", [getCookies(req)['u_id']], res, req);
 				const planArr= new Array();
 				bdaPlans.forEach(element=>{
 					planArr.push({id: element.id, before: decryptWithAES(element.before), during: decryptWithAES(element.during), after: decryptWithAES(element.after), is_active:element.is_active, alias: decryptWithAES(element.alias), timestamp: element.timestamp});
@@ -995,7 +971,7 @@ app.get('/worksheets', async function (req, res){
 		} else {
 			if (!req.session.worksheets_enabled){
 					// Make sure they have worksheets enabled.
-					const wsEn= await query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+					const wsEn= await db.query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 					req.session.worksheets_enabled = wsEn[0].worksheets_enabled;
 					if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
 				}
@@ -1092,13 +1068,7 @@ app.get('/privacypolicy', (req, res) => {
       splash=null;
   });
   app.get('/signup', (req, res, next) => {
-	if (!isLoggedIn(req)){
 	res.render(`pages/signup`, { session: req.session, splash:splash,cookies:req.cookies });
-	} else {
-		splash= req.flash("flash", "You are already signed in.")
-		res.status(403).redirect("/"); 
-	}
-      
   });
 
   app.get('/login', (req, res) => {
@@ -1409,7 +1379,6 @@ app.get('/wish-d/:id', (req, res) => {
 				  } else {
 					var resArr= new Array();
 					for (i in result.rows){
-
 						resArr.push({
 							alt_id: result.rows[i].alt_id, 
 							sys_id: result.rows[i].sys_id, 
@@ -1435,7 +1404,9 @@ app.get('/wish-d/:id', (req, res) => {
 							relationships: (result.rows[i].relationships != null ? Buffer.from(result.rows[i].relationships,"base64").toString() : null),
 							notes: (result.rows[i].notes != null ? Buffer.from(result.rows[i].notes,"base64").toString() : null),
 							safe_place: (result.rows[i].safe_place != null ? Buffer.from(result.rows[i].safe_place,"base64").toString() : null),
-							is_archived: result.rows[i].is_archived
+							is_archived: result.rows[i].is_archived,
+							img_blob: result.rows[i].img_blob,
+							blob_mimetype: result.rows[i].blob_mimetype
 						});
 					}
 					res.status(200).json({code: 200, search: resArr});
@@ -1518,7 +1489,7 @@ app.get('/wish-d/:id', (req, res) => {
 // Refactored!
   app.get('/system', async function(req, res) {
     if (isLoggedIn(req)){
-		const innerWorlds= await query(client, "SELECT inner_worlds from USERS WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+		const innerWorlds= await db.query(client, "SELECT inner_worlds from USERS WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 		req.session.innerworld = innerWorlds[0].inner_worlds || false;
 		res.status(200).render('pages/system',{ session: req.session, splash:splash,cookies:req.cookies});
     } else {
@@ -1532,18 +1503,18 @@ app.get('/wish-d/:id', (req, res) => {
     if (isLoggedIn(req)){
 		if (!req.session.worksheets_enabled){
 			// Quick, add that.
-			const wsEn= await query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+			const wsEn= await db.query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 			req.session.worksheets_enabled= wsEn[0].worksheets_enabled;
 		}
-		const sysMap= await query(client, "SELECT systems.sys_id, systems.subsys_id, systems.user_id, systems.sys_alias, alters.alt_id, systems.icon FROM systems LEFT JOIN alters ON systems.sys_id = alters.sys_id WHERE systems.sys_id=$1 ORDER BY alters.name ASC", [`${req.params.id}`], res, req);
+		const sysMap= await db.query(client, "SELECT systems.sys_id, systems.subsys_id, systems.user_id, systems.sys_alias, alters.alt_id, systems.icon FROM systems LEFT JOIN alters ON systems.sys_id = alters.sys_id WHERE systems.sys_id=$1 ORDER BY alters.name ASC", [`${req.params.id}`], res, req);
 		req.session.chosenSys= sysMap[0];
 		if (req.session.chosenSys.subsys_id != null){
 			// There's a subsystem.
-			const subsysInf= await query(client, "SELECT sys_alias FROM systems WHERE sys_id=$1", [`${req.session.chosenSys.subsys_id}`], res, req);
+			const subsysInf= await db.query(client, "SELECT sys_alias FROM systems WHERE sys_id=$1", [`${req.session.chosenSys.subsys_id}`], res, req);
 			req.session.chosenSys.subsys_alias= subsysInf[0].sys_alias;
 		}
 
-			const alters = await query(client, "SELECT alters.alt_id, alters.img_url, alters.sys_id, alters.name, alters.pronouns, alter_moods.mood, alters.is_archived, alters.img_blob, alters.blob_mimetype, alters.colour FROM alters LEFT JOIN alter_moods ON alters.alt_id = alter_moods.alt_id WHERE alters.sys_id=$1;", [`${req.params.id}`], res, req);
+			const alters = await db.query(client, "SELECT alters.alt_id, alters.img_url, alters.sys_id, alters.name, alters.pronouns, alter_moods.mood, alters.is_archived, alters.img_blob, alters.blob_mimetype, alters.colour FROM alters LEFT JOIN alter_moods ON alters.alt_id = alter_moods.alt_id WHERE alters.sys_id=$1;", [`${req.params.id}`], res, req);
 			req.session.alters=[]
 			alters.forEach((alter) =>{
 				req.session.alters.push({
@@ -1574,7 +1545,7 @@ app.get('/wish-d/:id', (req, res) => {
   app.get("/alter/:id", async function(req, res, next){
 	 if (isLoggedIn(req)){
 		// Get Alter.
-		const altInfo= await query(client, "SELECT alter_moods.*, alters.*, systems.sys_alias, systems.user_id FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id LEFT JOIN alter_moods ON alters.alt_id = alter_moods.alt_id WHERE alters.alt_id=$1", [`${req.params.id}`], res, req);
+		const altInfo= await db.query(client, "SELECT alter_moods.*, alters.*, systems.sys_alias, systems.user_id FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id LEFT JOIN alter_moods ON alters.alt_id = alter_moods.alt_id WHERE alters.alt_id=$1", [`${req.params.id}`], res, req);
 		var selectedAlt= altInfo[0];
 		// If they have a mood reason, decrypt that now.
 		try{
@@ -1585,7 +1556,7 @@ app.get('/wish-d/:id', (req, res) => {
 			// No mood.
 		}
 		// Grab journal info.
-		const journQuer= await query(client, "SELECT * FROM journals WHERE alt_id=$1;", [`${req.params.id}`], res, req);
+		const journQuer= await db.query(client, "SELECT * FROM journals WHERE alt_id=$1;", [`${req.params.id}`], res, req);
 		var altJournal= journQuer[0];
 		// If we have none, make a placeholder.
 		let skin;
@@ -1601,14 +1572,14 @@ app.get('/wish-d/:id', (req, res) => {
 
 			}
 		// Grab all systems.
-		req.session.sysList= await query(client, "SELECT * FROM systems WHERE user_id=$1;", [`${getCookies(req)['u_id']}`], res, req);
+		req.session.sysList= await db.query(client, "SELECT * FROM systems WHERE user_id=$1;", [`${getCookies(req)['u_id']}`], res, req);
 
 		if (selectedAlt.is_archived==true){
 			// This alter is archived.
 			var archivedPosts= new Array();
 			try{
 				// This is in the try/catch because altJournal.j_id won't always exist.
-				const postQuer= await query(client, "SELECT * FROM posts WHERE j_id=$1 ORDER BY created_on DESC;", [`${altJournal.j_id}`], res, req);
+				const postQuer= await db.query(client, "SELECT * FROM posts WHERE j_id=$1 ORDER BY created_on DESC;", [`${altJournal.j_id}`], res, req);
 				postQuer.forEach(post=>{
 				archivedPosts.push({
 					id: post.p_id,
@@ -1618,10 +1589,8 @@ app.get('/wish-d/:id', (req, res) => {
 				})
 			})
 			} catch(e){
-				console.error(e)
 				// Keep archivedPosts empty.
 			}
-			console.log(archivedPosts)
 			res.render(`pages/archived-alter`, { session: req.session, splash:splash,cookies:req.cookies, alterTypes:alterTypes, alterInfo:selectedAlt, altJournal:altJournal, archivedPosts:archivedPosts });
 		} else {
 			// Just render alter ejs.
@@ -1948,8 +1917,13 @@ app.get('/wish-d/:id', (req, res) => {
 		} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 
 	});
+	app.get("/profile/tokens", async function (req, res){
+		if (isLoggedIn(req)){
+			let tokens= await db.query(client, "SELECT * FROM tokens WHERE u_id=$1 ORDER BY name ASC;", [getCookies(req)['u_id']], res, req);
+			res.render(`pages/tokens`, { session: req.session, cookies:req.cookies, tokens: tokens });
+		} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
+	});
 	
-
 
 	/*
 
@@ -2654,7 +2628,7 @@ app.get('/wish-d/:id', (req, res) => {
 									res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 								} else {
 									splash=req.flash("flash",`${getCookies(req)['alter_term']} deleted.`);
-									res.redirect(`/system`);
+									res.redirect(`/system/${req.body.sysid}`);
 								}
 							});
 						}
@@ -3508,56 +3482,7 @@ app.get('/wish-d/:id', (req, res) => {
 	
 });
 
- app.post('/login', function(req, res) {
-	// Bookmark: login page post
-     var query = {
-       text: "SELECT * FROM users WHERE email=$1 AND pass=$2;",
-       values: [`'${Buffer.from((req.body.email).toLowerCase()).toString('base64')}'`, `'${CryptoJS.SHA3(req.body.password)}'`]
-     }
-     client.query(query, (err, result) => {
-         if (err) {
-           console.log(err.stack);
-           res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
-       } else {
-		   if (result.rows.length == 0){
-				req.flash("flash", "Your email or password is incorrect.");
-				  res.render(`pages/login`, { session: req.session, splash:splash,cookies:req.cookies });
-		   } /* else if (result.rows[0].verified== false){
-				req.flash("flash", strings.account.notVerified);
-				   res.render(`pages/login`, { session: req.session, splash:splash,cookies:req.cookies });
-				
-		   } */ else {
-				req.session.alter_term= result.rows[0].alter_term;
-				req.session.system_term= result.rows[0].system_term;
-				req.session.subsystem_term= result.rows[0].subsystem_term;
-				req.session.innerworld_term= result.rows[0].innerworld_term;
-				req.session.plural_term= result.rows[0].plural_term;
-				req.session.loggedin = true;
-				req.session.u_id= result.rows[0].id;
-				req.session.username = Buffer.from(result.rows[0].username, 'base64').toString();
-				req.session.is_legacy= result.rows[0].is_legacy;
-				req.session.textsize= result.rows[0].textsize;
-				req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
 
-				 // Add to cookies
-				 res
-				.cookie('loggedin', true, { maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('username',  Buffer.from(result.rows[0].username, 'base64').toString(),{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('u_id', result.rows[0].id,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('alter_term', result.rows[0].alter_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('system_term', result.rows[0].system_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('is_legacy', result.rows[0].is_legacy,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('skin', result.rows[0].skin,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('subsystem_term', result.rows[0].subsystem_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('innerworld_term', result.rows[0].innerworld_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('plural_term', result.rows[0].plural_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('textsize', result.rows[0].textsize,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-				.cookie('worksheets_enabled', result.rows[0].worksheets_enabled,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true });
-				res.redirect(302, '/');
-		   }
-       }
-   });
- });
 
  /*
 
@@ -3691,30 +3616,18 @@ app.put("/forum-data", (req,res) => {
 		}
 	});
 
-	app.put('/system-data', (req, res)=>{
+	app.put('/system-data', async function(req, res){
 		if (isLoggedIn(req)){
 			if (apiEyesOnly(req)){
 				let editMode= req.body.edit;
 				if (editMode=="pin"){
 					let postID= req.body.postID;
-					client.query({text: "UPDATE comm_posts SET is_pinned = NOT is_pinned WHERE id=$1;",values: [postID]}, (err, result) => {
-						if (err) {
-							console.log(err.stack);
-							res.status(400).json({code: 400, message: err.stack});
-						} else {
-						 res.status(200).json({code:200});
-						}
-						});
+					await db.query(client, "UPDATE comm_posts SET is_pinned = NOT is_pinned WHERE id=$1;", [postID], res, req);
+					return res.status(200).json({code: 200});
 				} else if (editMode== "journalPin"){
 					let postID= req.body.postID;
-					client.query({text: "UPDATE posts SET is_pinned = NOT is_pinned WHERE p_id=$1;",values: [postID]}, (err, result) => {
-						if (err) {
-							console.log(err.stack);
-							res.status(400).json({code: 400, message: err.stack});
-						} else {
-						 res.status(200).json({code:200});
-						}
-						});					
+					await db.query(client, "UPDATE posts SET is_pinned = NOT is_pinned WHERE p_id=$1;", [postID], res, req);
+					return res.status(200).json({code: 200});				
 				} else if (editMode=="pluralkit-system"){
 					// Create a new system if user requests in Pluralkit import
 					var newSys= "Imported from Pluralkit";
@@ -3837,6 +3750,122 @@ app.put("/forum-data", (req,res) => {
 						}
 					
 					});
+				} else if(editMode=="add-comb-alter"){
+					// Place fused alter into database.
+					/*
+					"sys_id": $("#sysLoc").val(),
+                    "name": $("#newname").val(),
+                    "pronouns": $("#newpro").val() == "" ? "" : $("#newpro").val(),
+                    "type": $("#newtype").val() == "" ? "" : $("#newtype").val(),
+                    "alts": aArr,
+                    "method": method,
+                    "names": fusedNames
+					*/
+					var listOfAlts= `Data combined from ${req.body.names}.`;
+					const altId= await db.query(client, 'SELECT uuid_generate_v4() AS "newid"', [], res, req);
+					const sysId= req.body.sys_id;
+					const newId= altId[0].newid;
+					const newAlt = await db.query(client, "INSERT INTO alters (alt_id, name, sys_id, pronouns, type, notes) VALUES ($1, $2, $3, $4, $5, $6)", [
+						newId,
+						`'${Buffer.from(req.body.name).toString('base64')}'`,
+						sysId,
+						`'${Buffer.from(req.body.pronouns).toString('base64')}'`,
+						req.body.type,
+						`'${Buffer.from(listOfAlts).toString('base64')}'`
+					], res, req)
+					
+					// Now what did the user want us to do with the other alts?
+					for (i in req.body.alts){
+						if (req.body.method== "archive"){
+							// Archive the alter.
+							await db.query(client, "UPDATE alters SET is_archived=true WHERE alt_id=$1", [req.body.alts[i]], res, req);
+
+						} else if (req.body.method== "delete"){
+							// Delete the alter.
+							await db.query(client, "DELETE FROM alters WHERE alt_id=$1", [req.body.alts[i]], res, req);
+
+						} else if (req.body.method== "combine-del"){
+							// Combine and delete the alters.
+
+							try{
+								// Get the old alt's id
+								var oldJournQ = await db.query(client, "SELECT j_id FROM journals WHERE alt_id=$1", [req.body.alts[i]], res, req);
+								var oldJourn = oldJournQ[0].j_id;
+
+								// Make this new alt a journal.
+								await db.query(client, "INSERT INTO journals(alt_id, skin, sys_id) VALUES($1, $2, $3)", [
+									newId,
+									'1',
+									sysId
+								], res, req);
+								var newJourn = await db.query(client, "SELECT j_id FROM journals WHERE alt_id=$1;", [newId], res, req);
+								var journId= newJourn[0].j_id;
+
+								
+								await db.query(client, "UPDATE posts SET j_id=$1 WHERE j_id=$2;", [journId,oldJourn], res, req);
+							} catch (e){
+								// console.log(e)
+							}
+							// Let's set data to the new alter.
+							await db.query(client, "UPDATE threads SET alt_id=$1 WHERE alt_id=$2;", [newId, req.body.alts[i]], res, req);
+							await db.query(client, "UPDATE thread_posts SET alt_id=$1 WHERE alt_id=$2;", [newId, req.body.alts[i]], res, req);
+							// Now delete the alter.
+							await db.query(client, "DELETE FROM alters WHERE alt_id=$1", [req.body.alts[i]], res, req);
+
+						} else if (req.body.method== "combine-arch"){
+							// Combine and archive.
+							try{
+								// Get the old alt's id
+								var oldJournQ = await db.query(client, "SELECT j_id FROM journals WHERE alt_id=$1", [req.body.alts[i]], res, req);
+								var oldJourn = oldJournQ[0].j_id;
+
+								// Make this new alt a journal.
+								await db.query(client, "INSERT INTO journals(alt_id, skin, sys_id) VALUES($1, $2, $3)", [
+									newId,
+									'1',
+									sysId
+								], res, req);
+								var newJourn = await db.query(client, "SELECT j_id FROM journals WHERE alt_id=$1", [newId], res, req);
+								var journId= newJourn[0].j_id;
+								await db.query(client, "UPDATE posts SET j_id=$1 WHERE j_id=$2;", [journId, oldJourn], res, req);
+							} catch (e){
+								// console.log(e)
+							}
+							// Let's set data to the new alter.
+							await db.query(client, "UPDATE threads SET alt_id=$1 WHERE alt_id=$2;", [newId, req.body.alts[i]], res, req);
+							await db.query(client, "UPDATE thread_posts SET alt_id=$1 WHERE alt_id=$2;", [newId, req.body.alts[i]], res, req);
+
+							// Now archive the alter.
+							await db.query(client, "UPDATE alters SET is_archived=true WHERE alt_id=$1", [req.body.alts[i]], res, req);
+
+						} else if(req.body.method== "combine-noth"){
+							// Combine only, nothing else.
+							try{
+								// Get the old alt's id
+								var oldJournQ = await db.query(client, "SELECT j_id FROM journals WHERE alt_id=$1", [req.body.alts[i]], res, req);
+								var oldJourn = oldJournQ[0].j_id;
+
+								// Make this new alt a journal.
+								await db.query(client, "INSERT INTO journals(alt_id, skin, sys_id) VALUES($1, $2, $3)", [
+									newId,
+									'1',
+									sysId
+								], res, req);
+								var newJourn = await db.query(client, "SELECT j_id FROM journals WHERE alt_id=$1", [newId], res, req);
+								var journId= newJourn[0].j_id;
+								await db.query(client, "UPDATE posts SET j_id=$1 WHERE j_id=$2;", [journId, oldJourn], res, req);
+							} catch (e){
+								// console.log(e)
+							}
+							// Let's set data to the new alter.
+							await db.query(client, "UPDATE threads SET alt_id=$1 WHERE alt_id=$2;", [newId, req.body.alts[i]], res, req);
+							await db.query(client, "UPDATE thread_posts SET alt_id=$1 WHERE alt_id=$2;", [newId, req.body.alts[i]], res, req);
+
+						} else {
+							// Do nothing
+						}
+					}
+					return res.status(200).json({code: 200})
 				}
 
 			} else {
@@ -3936,12 +3965,8 @@ Sitemap: www.writelighthouse.com/sitemap.xml
 			res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
 	});
   // End pages.
-  app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
-
-
-    client.query('SELECT NOW()', (err, res) => {
-    // console.log(err, res)
-    console.log(`App started on ${(res.rows[0].now).toLocaleString()}`);
-    // client.end()
-;
+  app.listen(PORT, async function(res, req){
+	let rn= await db.query(client, "SELECT NOW();", [], res, req);
+	console.log(`Listening on ${ PORT } at ${rn[0].now}`)
 });
+
