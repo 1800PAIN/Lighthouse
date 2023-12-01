@@ -44,7 +44,9 @@
                 }
             });
             let resBod = await response.text();
-            alert(resBod)
+            // alert(resBod)
+            $("#output").empty();
+            $("#output").text(resBod);
         });
     </script>
     </body>

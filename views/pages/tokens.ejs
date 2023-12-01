@@ -76,6 +76,22 @@
             .slider.round:before {
             border-radius: 50%;
             }
+            #uid{
+                background: var(--input);
+                border: 1px solid var(--col1);
+                color: var(--col1);
+                padding: 3px;
+            }
+            #copyNotification, #copyToken{
+                z-index: 5;
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                width: 30%;
+                padding: 1em;
+                background: var(--col2);
+                display: none;
+            }
         </style>
     </head>
     <body>
@@ -84,6 +100,8 @@
             <% if (locals.messages.flash) { %>
                 <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
+            <div id="copyNotification">Copied User ID!</div>
+            <div id="copyToken">Copied token. <strong>Do not share this token with anyone.</strong></div>
             <section>
                 <ul class="breadcrumb">
                     <li><a href="/profile" title="Settings">Settings</a></li>
@@ -91,6 +109,8 @@
                 </ul>
                 <h1>Tokens</h1>
                 <p>Tokens allow you to create your own scripts and interact with Lighthouse's database. See below for documentation. They're like a password that programs can use. You can create tokens that have specific permissions set to them. <strong>Do not share your tokens with anyone, as they will grant access to your account's information.</strong> If your token is leaked, you can delete it here and it will no longer work.</p>
+                <p>Click/Tap your ID to copy it.</p>
+                <p>Your User ID: <span id="uid"><%= cookies.u_id %></span></p>
                 <h2>Your Tokens</h2>
                 <button id="generateTok" style="margin-bottom: 1em;">Create a Token</button>
                 <div id="tokendiv">
@@ -109,7 +129,7 @@
                         <tbody id="toks">
                             <% tokens.forEach((token)=>{ %>
                                 <tr>
-                                    <td><%= decrypt(token.name) %></td>
+                                    <td><span class="copy" id="<%= decrypt(token.name) %>"><i class="fa fa-clone" aria-hidden="true"></i></span> <%= decrypt(token.name) %></td>
 
                                     <td><label class="switch"><input type="checkbox" <% if (token.read== true){ %>checked<% } %> id="read-<%= decrypt(token.name) %>"><span class="slider round"></span></label> <span id="readen-<%= decrypt(token.name) %>"><%= token.read %></span></td>
 
@@ -121,7 +141,7 @@
 
                                     <td><label class="switch"><input type="checkbox" <% if (token.journals== true){ %>checked<% } %> id="journals-<%= decrypt(token.name) %>"><span class="slider round"></span></label> <span id="journalsen-<%= decrypt(token.name) %>"><%= token.journals %></span></td>
 
-                                    <td><i class="fa fa-trash textless" aria-hidden="true"></i></td>
+                                    <td><i class="fa fa-trash textless" aria-hidden="true" id="<%= decrypt(token.name) %>-del"></i></td>
                                 </tr>
                                 <% }) %>
                         </tbody>
@@ -165,20 +185,33 @@
 				body: JSON.stringify({id: '<%= cookies.u_id %>'})
             });
             let resBod = await response.text();
-			if (response.ok){
-                let theTok= JSON.parse(resBod);
-                $("#toks").append(`
-                <td>${theTok.name}</td>
-                <td><label class="switch"><input type="checkbox" id="read-${theTok.name}" checked><span class="slider round"></span></label> <span id="readen-${theTok.name}">${theTok.read}</span></td>
-                <td><label class="switch"><input type="checkbox" id="write-${theTok.name}"><span class="slider round"></span></label> <span id="writeen-${theTok.name}">${theTok.read}</span></td>
-                <td><label class="switch"><input type="checkbox" id="alters-${theTok.name}"><span class="slider round"></span></label> <span id="altersen-${theTok.name}">${theTok.alters}</span></td>
-                <td><label class="switch"><input type="checkbox" id="system-${theTok.name}"><span class="slider round"></span></label> <span id="systemen-${theTok.name}">${theTok.systems}</span></td>
-                <td><label class="switch"><input type="checkbox" id="journals-${theTok.name}"><span class="slider round"></span></label> <span id="journalsen-${theTok.name}">${theTok.journals}</span></td>
-                <td><i class="fa fa-trash textless" aria-hidden="true"></i></td>
-                `).hide().slideDown("slow");
-            }
+            if (response.ok) location.reload();
         
 		});
+
+        $(".fa-trash").click(async function(){
+            // alert($(this).attr('id'));
+            let delTok= ($(this).attr('id')).split("-")[0];
+            let response = await fetch(`/api/tokens`, { 
+                method: "DELETE",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json',
+                  "tok": delTok
+                }
+            });
+            let resBod = await response.text();
+            if (response.ok) location.reload()
+        });
+
+        $("#uid").click(function(){
+            navigator.clipboard.writeText($("#uid").text());
+            $("#copyNotification").show().delay(3000).fadeOut("slow");
+        });
+        $(".copy").click(function(){
+            navigator.clipboard.writeText($(this).attr('id'))
+            $("#copyToken").show().delay(3000).fadeOut("slow");
+        })
     </script>
     <%- include ("../partials/footer.ejs") %>
     </body>

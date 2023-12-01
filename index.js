@@ -152,12 +152,14 @@ function generateToken(n) {
 	return token;
   }
 /**
- * ** CURRENTLY UNUSED** Determines if the cookies and session user IDs match.
- * @param {object} req 
+ * Determines if the cookies' user ID matches whatevever string of text.
+ * @param {object} req ExpressJS API's HTTP request object, in order to grab the user ID.
+ * @param {string} arg The information that should match the user ID
  * @returns {boolean} true or false
  */
-function idCheck(req){
-	return getCookies(req)['u_id']== req.session.u_id;
+function idCheck(req, arg){
+	return getCookies(req)['u_id'] == arg;
+	// return getCookies(req)['u_id']== req.session.u_id;
 }
 var splash;
 /**
@@ -842,75 +844,67 @@ app.get('/worksheets', async function (req, res){
 	
   });
 
-  app.get('/reply/:id', (req, res) => {
+  app.get('/reply/:id', async function (req, res){
 	if (isLoggedIn(req)){
-		client.query({text: "SELECT * FROM thread_posts WHERE id=$1;",values: [`${req.params.id}`]}, (err, result) => {
-			if (err) {
-			  console.log(err.stack);
-			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-		  } else {
-			res.render(`pages/edit_reply`, { session: req.session, splash:splash, cookies:req.cookies, chosenReply: {id: result.rows[0].id, body: decryptWithAES(result.rows[0].body), alt_id: result.rows[0].alt_id, thread_id: result.rows[0].thread_id}});	
-		  }
-		});
+		let threadInfo = await db.query(client, "SELECT thread_posts.*, threads.u_id FROM thread_posts INNER JOIN threads ON thread_posts.thread_id = threads.id WHERE thread_posts.id=$1", [`${req.params.id}`], res, req);
+		if (!idCheck(req, threadInfo[0].u_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
+		res.render(`pages/edit_reply`, { session: req.session, splash:splash, cookies:req.cookies, chosenReply: {id: threadInfo[0].id, body: decryptWithAES(threadInfo[0].body), alt_id: threadInfo[0].alt_id, thread_id: threadInfo[0].thread_id}});
+		
 		
 	} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 	
   });
   
-  app.get('/forum/:id/:pg?', (req, res) => {
+  app.get('/forum/:id/:pg?', async function (req, res) {
 	if (isLoggedIn(req)){
-		// Get Forum Name
-		client.query({text: "SELECT * FROM forums WHERE u_id=$1 AND id=$2;",values: [getCookies(req)['u_id'], req.params.id]}, (err, aresult) => {
-			if (err) {
-			  console.log(err.stack);
-			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-		  } else { 
-			// Grab Topics.
-			client.query({text: `SELECT threads.*, alters.name AS "alt_name" FROM threads INNER JOIN alters ON alters.alt_id = threads.alt_id WHERE threads.u_id=$1 AND topic_id=$2  ORDER BY created_on DESC;`,values: [getCookies(req)['u_id'], req.params.id]}, (err, result) => {
-				if (err) {
-				  console.log(err.stack);
-				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-			  } else {
-				let topics= new Array();
-				for (i in result.rows){
-					topics.push({name: decryptWithAES(result.rows[i].title), preview: decryptWithAES(result.rows[i].body), alt_id: result.rows[i].alt_id, is_sticky: result.rows[i].is_sticky, is_locked: result.rows[i].is_locked, is_popular: result.rows[i].is_popular, created_on: result.rows[i].created_on, id: result.rows[i].id, alter: Buffer.from(result.rows[i].alt_name, "base64").toString()});
-				}
-				client.query({text: `SELECT * from threads WHERE u_id=$1 AND alt_id is null ORDER BY created_on DESC;`,values: [getCookies(req)['u_id']]}, (err, hresult) => {
-					if (err) {
-					  console.log(err.stack);
-					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-				  } else {
-					for (i in hresult.rows){
-						topics.push({name: decryptWithAES(hresult.rows[i].title), preview: decryptWithAES(hresult.rows[i].body), alt_id: null, is_sticky: hresult.rows[i].is_sticky, is_locked: hresult.rows[i].is_locked, is_popular: hresult.rows[i].is_popular, created_on: hresult.rows[i].created_on, id: hresult.rows[i].id, alter: "Blurry"});
-					}
-					topics.sort(sortFunction).reverse();
-					let topicArr= paginate(topics, 25);
-					client.query({text: `SELECT * FROM categories WHERE u_id=$1;`,values: [getCookies(req)['u_id']]}, (err, bresult) => {
-					if (err) {
-					  console.log(err.stack);
-					  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-				  } 
-				//   else if( result.rows.length==0){
-				// 	// Deleted forum.
-				// 	  res.status(410).render('pages/410',{ session: req.session, code:"Gone", splash:splash, cookies:req.cookies });
-				//   } 
-				  else {
-					let catArr= new Array();
-					for (i in bresult.rows){
-						catArr.push({id: bresult.rows[i].id, name: decryptWithAES(bresult.rows[i].name)})
-					}
-				res.render(`pages/topics`, { session: req.session, splash:splash, cookies:req.cookies, topics:topicArr[req.params.pg -1 || 0], forumName: decryptWithAES(aresult.rows[0].topic), forumDesc: decryptWithAES(aresult.rows[0].description), forumid: aresult.rows[0].id, catArr: catArr, topicPages: topicArr.length, currPage: req.params.pg || 1, forum: req.params.id });
-				  }
-				});
-				  }
-				});
-				
-				
-			  }
-			});
-		  }
+		try{
+			// Get Forum Name
+		let forumInfo = await db.query(client, "SELECT * FROM forums WHERE u_id=$1 AND id=$2;", [getCookies(req)['u_id'], req.params.id], res, req);
+		let topicInfo= await db.query(client, 'SELECT threads.*, alters.name AS "alt_name" FROM threads INNER JOIN alters ON alters.alt_id = threads.alt_id WHERE threads.u_id=$1 AND topic_id=$2  ORDER BY created_on DESC;', [getCookies(req)['u_id'], req.params.id], res, req);
+		let topics= new Array();
+		topicInfo.forEach((topic)=>{
+			topics.push({
+				name: decryptWithAES(topic.title), 
+				preview: decryptWithAES(topic.body), 
+				alt_id: topic.alt_id, 
+				is_sticky: topic.is_sticky, 
+				is_locked: topic.is_locked, 
+				is_popular: topic.is_popular, 
+				created_on: topic.created_on, 
+				id: topic.id, 
+				alter: Buffer.from(topic.alt_name, "base64").toString(),
+				topic_id: topic.topic_id
+			})
 		});
-		
+		let blurryThreads= await db.query(client, "SELECT * from threads WHERE u_id=$1 AND alt_id is null ORDER BY created_on DESC;", [getCookies(req)['u_id']], res, req);
+		blurryThreads.forEach((topic)=>{
+			topics.push({
+				name: decryptWithAES(topic.title), 
+				preview: decryptWithAES(topic.body), 
+				alt_id: null, 
+				is_sticky: topic.is_sticky, 
+				is_locked: topic.is_locked, 
+				is_popular: topic.is_popular, 
+				created_on: topic.created_on, 
+				id: topic.id, 
+				alter: "Blurry",
+				topic_id: topic.topic_id
+			})
+		});
+		topics.sort(sortFunction).reverse();
+		let topicArr= paginate(topics, 25);
+		let categoryInfo = await db.query(client, "SELECT * FROM categories WHERE u_id=$1", [getCookies(req)['u_id']], res, req);
+		let catArr= new Array();
+		categoryInfo.forEach((cat)=>{
+			catArr.push({
+				id: cat.id,
+				name: decryptWithAES(cat.name)
+			})
+		});
+		res.render(`pages/topics`, { session: req.session, cookies:req.cookies, topics:topicArr[req.params.pg -1 || 0], forumName: decryptWithAES(forumInfo[0].topic), forumDesc: decryptWithAES(forumInfo[0].description), forumid: forumInfo[0].id, catArr: catArr, topicPages: topicArr.length, currPage: req.params.pg || 1, forum: req.params.id });
+		} catch (e){
+			res.status(404).render('pages/404',{ session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
+		}
 		
 	} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 	
@@ -1507,6 +1501,7 @@ app.get('/wish-d/:id', (req, res) => {
 			req.session.worksheets_enabled= wsEn[0].worksheets_enabled;
 		}
 		const sysMap= await db.query(client, "SELECT systems.sys_id, systems.subsys_id, systems.user_id, systems.sys_alias, alters.alt_id, systems.icon FROM systems LEFT JOIN alters ON systems.sys_id = alters.sys_id WHERE systems.sys_id=$1 ORDER BY alters.name ASC", [`${req.params.id}`], res, req);
+		if (!idCheck(req, sysMap[0].user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
 		req.session.chosenSys= sysMap[0];
 		if (req.session.chosenSys.subsys_id != null){
 			// There's a subsystem.
@@ -1547,6 +1542,8 @@ app.get('/wish-d/:id', (req, res) => {
 		// Get Alter.
 		const altInfo= await db.query(client, "SELECT alter_moods.*, alters.*, systems.sys_alias, systems.user_id FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id LEFT JOIN alter_moods ON alters.alt_id = alter_moods.alt_id WHERE alters.alt_id=$1", [`${req.params.id}`], res, req);
 		var selectedAlt= altInfo[0];
+		// Before going any further-- Check that the alter's user ID and the actual requester's user ID matches.
+		if (!idCheck(req, selectedAlt.user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
 		// If they have a mood reason, decrypt that now.
 		try{
 			if (selectedAlt.reason){
@@ -1770,12 +1767,13 @@ app.get('/wish-d/:id', (req, res) => {
 
 	app.get('/alter/:id/delete', (req, res)=>{
 		if (isLoggedIn(req)){
-			client.query({text: "SELECT * FROM alters WHERE alt_id=$1;",values: [`${req.params.id}`]}, (err, result) => {
+			client.query({text: "SELECT alters.*, systems.sys_id, systems.user_id FROM alters INNER JOIN systems on alters.sys_id=systems.sys_id WHERE alters.alt_id=$1;",values: [`${req.params.id}`]}, (err, result) => {
 				 if (err) {
 					console.log(err.stack);
 					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 				} else {
 					let chosenAlter= result.rows[0];
+					if (!idCheck(req, chosenAlter.user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
 					// No alter?
 					if (!result.rows[0]) return res.status(400).render('pages/400',{ session: req.session, code:"Database Error", splash:splash,cookies:req.cookies });
 					res.render(`pages/delete_alter`, { session: req.session, splash:splash, cookies:req.cookies,chosenAlter: chosenAlter});
@@ -2610,8 +2608,12 @@ app.get('/wish-d/:id', (req, res) => {
 		}
 	});
 
-	app.post('/alter/:id/delete', (req, res)=>{
+	app.post('/alter/:id/delete', async function (req, res){
 		if (isLoggedIn(req)){
+			// if (!idCheck(req, chosenAlter.user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
+			let chosenAlt= await db.query(client, "SELECT alters.*, systems.sys_id, systems.user_id FROM alters INNER JOIN systems on alters.sys_id=systems.sys_id WHERE alters.alt_id=$1", [req.params.id], res, req);
+			if (!idCheck(req, chosenAlt[0].user_id)) return res.status(404).send("Not found");
+
 			client.query({text: "DELETE FROM posts WHERE p_id=$1; ",values: [`${req.params.id}`]}, (err, result) => {
 				 if (err) {
 					console.log(err.stack);
@@ -2774,9 +2776,12 @@ app.get('/wish-d/:id', (req, res) => {
 		}
 	});
 
-	app.post("/alter/:id", function(req, res){
+	app.post("/alter/:id", async function(req, res){
 			let pass= req.body.jPass || null;
 			if (isLoggedIn(req)){
+				let chosenAlt= await db.query(client, "SELECT alters.*, systems.sys_id, systems.user_id FROM alters INNER JOIN systems on alters.sys_id=systems.sys_id WHERE alters.alt_id=$1", [req.params.id], res, req);
+				if (!idCheck(req, chosenAlt[0].user_id)) return res.status(404).send("Not found");
+
 				if (req.body.create){
 					// Create
 					client.query({text: "INSERT INTO journals (alt_id, password, is_private, skin, sys_id) VALUES ($1, $2, $3, $4, $5)",values: [`${req.params.id}`, `'${CryptoJS.SHA3(req.body.jPass)}'`, `${req.body.priv}`, `'${req.body.journ}'`, `${req.body.sys_id}`]}, (err, result) => {

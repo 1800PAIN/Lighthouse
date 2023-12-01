@@ -76,16 +76,18 @@ router.get("/test", async function(req, res){
   } else {
     return res.status(404).render('pages/404',{ session: req.session, code:"Not Found", cookies:req.cookies });
   }
-})
+});
 // Grab user's members by user ID and token. If the token is not provided, reject them. The token should not be in the URL
 router.get('/members/:id', async function (req, res){
     if (apiEyesOnly(req)){
-      let userCheck= await db.query(client, "SELECT users.id, tokens.name FROM users INNER JOIN tokens ON users.id= tokens.u_id WHERE users.id=$1;", [req.params.id], res, req);
+      let userCheck= await db.query(client, "SELECT users.id, tokens.* FROM users INNER JOIN tokens ON users.id= tokens.u_id WHERE users.id=$1;", [req.params.id], res, req);
       let matched= false;
       // Using a for loop bc I can easily break out of it.
       for (i in userCheck){
         let compareTok= decryptWithAES(userCheck[i].name);
         if (compareTok == req.headers.usertoken){
+          // Matches. Read and Alter perms?
+          if (userCheck[i].read == false || userCheck[i].alters == false) return res.status(401).send("Not Authorised")
           matched= true;
           break;
         }
@@ -228,6 +230,17 @@ router.put("/tokens", async function (req, res){
  |____/ \___|_|\___|\__\___| |_| \_\___|\__, |\__,_|\___||___/\__|___/
                                            |_|                        
 */
+
+router.delete("/tokens", async function(req, res){
+  if (apiEyesOnly(req)){
+    let userToks= await db.query(client, "SELECT * FROM tokens WHERE u_id=$1;", [getCookies(req)['u_id']], res, req);
+    const selectedTok = (userToks.filter(result => decryptWithAES(result.name) === req.headers.tok))[0];
+    await db.query(client, "DELETE FROM tokens WHERE name=$1 AND u_id=$2;", [selectedTok.name, getCookies(req)['u_id']], res, req);
+    return res.status(200).send("!")
+  } else {
+    res.status(404).render('pages/404',{ session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
+  }
+})
 
 /*
   ____           _     ____                            _       
