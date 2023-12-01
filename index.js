@@ -1615,19 +1615,15 @@ app.get('/wish-d/:id', (req, res) => {
 	}
  });
 
-  app.get("/edit-alter/:id", (req, res, next)=>{
+  app.get("/edit-alter/:id", async function (req, res, next){
 
 	if (isLoggedIn(req)){
-		client.query({text: "SELECT alters.*, systems.sys_alias FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alters.alt_id=$1",values: [`${req.params.id}`]}, (err, result) => {
-			if (err) {
-			  console.log(err.stack);
-			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
-		  } else {
-			  let chosenAlter = result.rows[0];
-			  req.flash("flash", "Heads up: Discord plans to change how images are stored. Please use the image upload tool, or use image hosts listed at the bottom of the page.")
-			  res.render(`pages/edit_alter`, { session: req.session, splash:splash,cookies:req.cookies, alterTypes:alterTypes,chosenAlter:chosenAlter });
-		  }
-		});
+		let altInfo= await db.query(client, "SELECT alters.*, systems.sys_alias, systems.user_id FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alters.alt_id=$1", [`${req.params.id}`], res, req);
+		let chosenAlter= altInfo[0];
+		if (!idCheck(req, chosenAlter.user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
+		req.flash("flash", "Heads up: Discord plans to change how images are stored. Please use the image upload tool, or use image hosts listed at the bottom of the page.")
+		res.render(`pages/edit_alter`, { session: req.session, splash:splash,cookies:req.cookies, alterTypes:alterTypes,chosenAlter:chosenAlter });
+
 	} else {
 		res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });
 	}
