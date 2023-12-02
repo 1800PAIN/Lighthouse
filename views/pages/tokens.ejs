@@ -182,13 +182,21 @@ getMembers();
                         <p>GET <code>/members/{User ID}</code></p>
                         <p>Returns an object of <%= pluralize(cookies.alter_term) %>.</p>
                     </div>
+                </section>
+                <section>
+                    <h3><%= capitalise(pluralize(cookies.system_term)) %></h3>
                     <div class="endpoint">
-                        <p>PUT <code>/members/{<%= capitalise(cookies.alter_term) %> ID}</code></p>
-                        <p>Edits an <%= cookies.alter_term %>.</p>
+                        <p>GET <code>/systems/{User ID}</code></p>
+                        <p>Returns an object of <%= pluralize(cookies.system_term) %>.</p>
                     </div>
                 </section>
-                
-                
+                <section>
+                    <h3>Journals</h3>
+                    <div class="endpoint">
+                        <p>GET <code>/journals/{User ID}</code></p>
+                        <p>Returns an object of journal posts.</p>
+                    </div>
+                </section>
             </section>
     </div>
     <script>
