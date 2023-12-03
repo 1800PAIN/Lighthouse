@@ -1239,7 +1239,7 @@ app.get('/wish-d/:id', (req, res) => {
 
 	app.get('/rules', (req, res, next) => {
 		if (isLoggedIn(req)){
-			client.query({text: "SELECT * FROM sys_rules WHERE u_id=$1;", values:[getCookies(req)['u_id']]}, (err, result)=>{
+			client.query({text: "SELECT * FROM sys_rules WHERE u_id=$1 ORDER BY created DESC;", values:[getCookies(req)['u_id']]}, (err, result)=>{
 				if (err){
 					console.log(err.stack);
 					res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
@@ -2585,7 +2585,7 @@ app.get('/wish-d/:id', (req, res) => {
 		});
 	});
 
-	app.post('/rules', (req, res)=>{
+	app.post('/rules', async function (req, res){
 		if (isLoggedIn(req)){
 			if (req.body.create){
 				// Create rule.
@@ -2595,6 +2595,8 @@ app.get('/wish-d/:id', (req, res) => {
 						res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
 					}
 				});
+			} else if(req.body.edit){
+				await db.query(client, "UPDATE sys_rules SET rule=$1 WHERE id=$2 AND u_id=$3", [`'${Buffer.from(req.body.edit).toString('base64')}'`, req.body.ruleid, getCookies(req)['u_id']], res, req);
 			} else {
 				// Delete Rule
 				client.query({text:`DELETE FROM sys_rules WHERE id=$1;`, values:[getKeyByValue(req.body,"Remove")]}, (err, result)=>{
