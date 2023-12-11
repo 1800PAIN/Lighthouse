@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" style="visibility: hidden;">
     <head>
-      <!-- <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7"> -->
         <%- include ("../partials/header.ejs") %>
         <style>
           .modpanel{
@@ -292,12 +291,12 @@
           $("#myModal").fadeOut("fast");
         }
 
-        window.onclick = function(event) {
-          if (event.target == modal) {
-            // modal.style.display = "none";
-            $("#myModal").fadeOut("fast");
-          }
-        }
+        // window.onclick = function(event) {
+        //   if (event.target == modal) {
+        //     // modal.style.display = "none";
+        //     $("#myModal").fadeOut("fast");
+        //   }
+        // }
 
         async function deleteTopic(name, id){
           if (confirm(`Do you actually want to delete ${name}? All replies under this thread will also be deleted.`)){

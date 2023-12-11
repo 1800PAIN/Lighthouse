@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" >
     <head>
-      <!-- <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7"> -->
         <%- include ("../partials/header.ejs") %>
         <style>
             .textless{
@@ -30,7 +29,7 @@
             
             <h2 id="sysHeader"></h2>
             <div class="grid-sm padLinks" style="margin: auto;text-align:center;line-height: 1;">
-              <a title= "<%= capitalise(cookies.alter_term) %>Search" href="/search"><%= capitalise(cookies.alter_term) %> Search</a>
+              <a title= "<%= capitalise(cookies.alter_term) %> Search" href="/search"><%= capitalise(cookies.alter_term) %> Search</a>
               <a title= "<%= capitalise(cookies.system_term) %> Rules" href="/rules"><%= capitalise(cookies.system_term) %> Rules</a>
               <% if (session.innerworld == true) { %> <a title="Your <%= capitalise(session.innerworld_term) %>" href="/inner-world"><%= capitalise(session.innerworld_term) %></a> <%}%>
               <a title="Your <%= capitalise(cookies.system_term) %>'s wants, needs, and wishes" href="/wish">Wishlist</a>
@@ -132,13 +131,6 @@
           span.onclick = function() {
             // modal.style.display = "none";
             $("#myModal").fadeOut("fast");
-          }
-          // When the user clicks anywhere outside of the modal, close it
-          window.onclick = function(event) {
-            if (event.target == modal) {
-              // modal.style.display = "none";
-              $("#myModal").fadeOut("fast");
-            }
           }
           </script>
         <script>

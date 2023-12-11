@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const { Pool, Client,pg, Query } = require('pg');
   if (process.env['environment']== "dev"){
-	console.log("Starting Lighthouse in SANDBOX mode.");
+	console.log("⚒ Starting Lighthouse in SANDBOX mode. You are using an offline database.");
 	var client = new Client({
 		user: "postgres",
 		host: "localhost",
@@ -12,7 +12,7 @@ const { Pool, Client,pg, Query } = require('pg');
 		port: 5432
 	  });
 } else {
-	console.log("Starting Lighthouse in PRODUCTION mode.");
+	console.log("📷 Starting Lighthouse in PRODUCTION mode. ⚠ You are using the live site's database. ⚠");
 	var client = new Client({
 		user: process.env.DB_USER,
 		host: process.env.DB_HOST,

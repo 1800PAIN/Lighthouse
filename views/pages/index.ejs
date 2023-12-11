@@ -2,7 +2,6 @@
 <html lang="en" dir="ltr" style="visibility: hidden;">
     <head>
         <%- include ("../partials/header.ejs") %>
-        <!-- <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7"> -->
         <style>
             #features > div{
                 margin-bottom: 3em;
@@ -53,7 +52,7 @@
     <body>
         <script>0</script>
         <%- include ("../partials/nav.ejs") %>
-        <div id="wrapper">  
+        <div id="wrapper">
             <div style="text-align:center;">
                 <% if ((new Date().getMonth()+1)==6) { %>
                     <img src="/img/svg/ptsd-support.svg" class="vtinyimg" alt="An anchor with an awareness ribbon around it.">June is PTSD awareness month. <a href="/glossary#ptsd">Read here.</a>
@@ -71,6 +70,7 @@
                         <div id="loggedIn" class="splash" style="display:none">Hi, <span id="greeting">friend</span>! You are now logged in. Redirecting you now...</div>
                 <div id="wrongpass" class="splash" style="display:none">Incorrect email and/or password. <a href="/forgot-password">Need to reset your password?</a></div>
             </div>
+            
             <!-- <h1 style="font-family: 'Berkshire Swash','Lobster Two', cursive;font-size:3em;margin-bottom:-.5em">Lighthouse</h1> -->
             <% if (messages.flash){ %> <p class="splash"><%- messages.flash %></p><% } %>
             <%  if (!cookies.loggedin){ %>
@@ -198,18 +198,13 @@
             // Good. Proceed to log in.
             let userInfo = JSON.parse(resBod);
             $("#wrongpass").hide();
-            $("#loggedIn").slideDown();
-            // $("#fgglow").removeClass("glow");
-            $("#greeting").text(userInfo.name)
+            $.iaoAlert({ msg: `Hello, ${userInfo.name}! You are now logged in.`, type: "success", mode: "dark", autoHide: false })
             setTimeout(async function(){
                 window.location.replace("/system");
             }, 3000);
         } else {
-            $("#login").show();
             $("#Wait").hide();
-            $("#wrongpass").slideDown();
-            $("#loggedIn").hide();
-            // $("#fgglow").addClass("glow");
+            $.iaoAlert({ msg: `Wrong Email or Password. <a href="/forgot-password">Need to reset your password?</a>`, type: "error", mode: "dark", autoHide: false})
         }
         })
     </script>

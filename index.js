@@ -12,7 +12,18 @@ const ejs = require('ejs');
 var pluralize = require('pluralize');
 var pjson = require('./package.json');
 var flash = require('express-flash');
-console.log( `Lighthouse v${pjson.version}`);
+console.log( `${"-".repeat(10)}\n
+ _^_
+ |@|
+=====
+ #::
+ #::
+ #::
+╦  ┬┌─┐┬ ┬┌┬┐┬ ┬┌─┐┬ ┬┌─┐┌─┐
+║  ││ ┬├─┤ │ ├─┤│ ││ │└─┐├┤ 
+╩═╝┴└─┘┴ ┴ ┴ ┴ ┴└─┘└─┘└─┘└─┘ v${pjson.version}\n${"-".repeat(10)}
+𝑀𝒶𝒹𝑒 𝒷𝓎 𝒯𝒽𝑒 𝐿𝒾𝑔𝒽𝓉𝒽𝑜𝓊𝓈𝑒 𝒮𝓎𝓈𝓉𝑒𝓂
+`);
 const fileUpload = require('express-fileupload');
 
 const tuning= require('./js/genVars.js');
@@ -348,6 +359,7 @@ app.locals.capitalise= capitalise;
 app.locals.pluralize= pluralize;
 app.locals.boil= stripHTML;
 app.locals.generateToken= generateToken;
+
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs');
 
@@ -876,7 +888,7 @@ app.get('/worksheets', async function (req, res){
 				topic_id: topic.topic_id
 			})
 		});
-		let blurryThreads= await db.query(client, "SELECT * from threads WHERE u_id=$1 AND alt_id is null ORDER BY created_on DESC;", [getCookies(req)['u_id']], res, req);
+		let blurryThreads= await db.query(client, "SELECT * from threads WHERE u_id=$1 AND alt_id is null AND topic_id=$2 ORDER BY created_on DESC;", [getCookies(req)['u_id'], req.params.id], res, req);
 		blurryThreads.forEach((topic)=>{
 			topics.push({
 				name: decryptWithAES(topic.title), 
@@ -1626,7 +1638,6 @@ app.get('/wish-d/:id', (req, res) => {
 		let altInfo= await db.query(client, "SELECT alters.*, systems.sys_alias, systems.user_id FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alters.alt_id=$1", [`${req.params.id}`], res, req);
 		let chosenAlter= altInfo[0];
 		if (!idCheck(req, chosenAlter.user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
-		req.flash("flash", "Heads up: Discord plans to change how images are stored. Please use the image upload tool, or use image hosts listed at the bottom of the page.")
 		res.render(`pages/edit_alter`, { session: req.session, splash:splash,cookies:req.cookies, alterTypes:alterTypes,chosenAlter:chosenAlter });
 
 	} else {
@@ -2001,7 +2012,7 @@ app.get('/wish-d/:id', (req, res) => {
 
 	app.post('/reply/:id', (req, res) => {
 		if (isLoggedIn(req)){
-			let postAuth= req.body.replyauthor== "blur" ? null : req.body.author;
+			let postAuth= req.body.replyauthor== "blur" ? null : req.body.replyauthor;
 			client.query({text: "UPDATE thread_posts SET body=$2, alt_id=$3 WHERE id=$1;",values: [`${req.params.id}`, `${encryptWithAES(req.body.editor3)}`, postAuth]}, (err, result) => {
 				if (err) {
 				  console.log(err.stack);
@@ -3281,7 +3292,7 @@ app.get('/wish-d/:id', (req, res) => {
             } else {
                 // Write to the db
                 var query = {
-                  text: "INSERT INTO users (email, username, pass, email_link, worksheets_enabled, system_term, alter_term) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                  text: "INSERT INTO users (email, username, pass, email_link, worksheets_enabled, system_term, alter_term, email_pin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
                   values: [
 					`'${Buffer.from(email).toString('base64')}'`, 
 					`'${Buffer.from(req.body.username).toString('base64')}'`, 
@@ -3289,7 +3300,8 @@ app.get('/wish-d/:id', (req, res) => {
 					`'${Math.random().toString(36).substr(2, 16)}'`,
 					req.body.ws || true,
 					req.body.system_term || "system",
-					req.body.alter_term || "alter"
+					req.body.alter_term || "alter",
+					getRandomInt(1111,9999)
 				]}
                 client.query(query, (err, aresult) => {
                     if (err) {
@@ -3977,6 +3989,6 @@ Sitemap: www.writelighthouse.com/sitemap.xml
   // End pages.
   app.listen(PORT, async function(res, req){
 	let rn= await db.query(client, "SELECT NOW();", [], res, req);
-	console.log(`Listening on ${ PORT } at ${rn[0].now}`)
+	console.log(`⚓ Docked at Port ${ PORT }. The time is ${(rn[0].now).toLocaleString('en-GB', { timeZone: 'EST' })}`)
 });
 

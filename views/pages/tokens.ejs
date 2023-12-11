@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" style="visibility: hidden;">
     <head>
-        <!-- <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7"> -->
         <%- include ("../partials/header.ejs") %>
         <style>
             table{
@@ -107,8 +106,6 @@
             <% if (locals.messages.flash) { %>
                 <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
-            <div id="copyNotification">Copied User ID!</div>
-            <div id="copyToken">Copied token. <strong>Do not share this token with anyone.</strong></div>
             <section>
                 <ul class="breadcrumb">
                     <li><a href="/profile" title="Settings">Settings</a></li>
@@ -163,17 +160,18 @@
                 <pre class="language-javascript"><code class="language-javascript">
 async function getMembers() {
     const call = await fetch(`https://www.writelighthouse.com/api/members/USER-ID`, {
-        method: "GET",
+        method: "GET", 
         headers: {
         'Content-Type': 'application/json',
-        'usertoken': 'TOKEN-HERE'
+        'usertoken': 'TOKEN-HERE' // Never share this with anyone
         }
     });
-    const reply = await call.text();
+    const reply = await call.json(); // Returns JSON of the information you requested.
     console.log(reply)
     }
     getMembers();
                 </code></pre>
+                We do not reccommend hard-coding tokens into your scripts, as they could easily be accessed. The above code is only an example, and the way the token is shown should not be used in any production environment.
 </p>
 
                 <hr>
@@ -241,25 +239,29 @@ async function getMembers() {
         $(".fa-trash").click(async function(){
             // alert($(this).attr('id'));
             let delTok= ($(this).attr('id')).split("-")[0];
+            if (confirm(`Do you really want to delete token ${delTok}?`)){
             let response = await fetch(`/api/tokens`, { 
-                method: "DELETE",
-                headers: { 
-                  "api-lh-call": "api-lh-call",
-                  'Content-Type': 'application/json',
-                  "tok": delTok
-                }
-            });
-            let resBod = await response.text();
-            if (response.ok) location.reload()
+                            method: "DELETE",
+                            headers: { 
+                            "api-lh-call": "api-lh-call",
+                            'Content-Type': 'application/json',
+                            "tok": delTok
+                            }
+                        });
+                        let resBod = await response.text();
+                        if (response.ok) location.reload()
+            }
+            
+            
         });
 
         $("#uid").click(function(){
             navigator.clipboard.writeText($("#uid").text());
-            $("#copyNotification").show().delay(3000).fadeOut("slow");
+            $.iaoAlert({ msg: "Copied User ID!", type: "success", mode: "dark" });
         });
         $(".copy").click(function(){
-            navigator.clipboard.writeText($(this).attr('id'))
-            $("#copyToken").show().delay(3000).fadeOut("slow");
+            navigator.clipboard.writeText($(this).attr('id'));
+            $.iaoAlert({ msg: "Copied token. <strong>Do not share this token with anyone.</strong>", type: "success", mode: "dark" });
         })
     </script>
     <%- include ("../partials/footer.ejs") %>

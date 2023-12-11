@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" style="visibility: hidden;">
     <head>
-      <!-- <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7"> -->
         <%- include ("../partials/header.ejs") %>
         <style>
           table{
@@ -212,11 +211,11 @@
           $("#forumModal").fadeOut("fast");
         }
         // When the user clicks anywhere outside of the modal, close it
-        $(window).click(function(event) {
-          if (event.target == forumModal) {
-            $("#forumModal").fadeOut("fast");
-          }
-        });
+        // $(window).click(function(event) {
+        //   if (event.target == forumModal) {
+        //     $("#forumModal").fadeOut("fast");
+        //   }
+        // });
 
 
 
@@ -232,11 +231,11 @@ var catModal = document.getElementById("editCat");
           $("#editCat").fadeOut("fast");
         }
                   // When the user clicks anywhere outside of the modal, close it
-          $(window).click(function(event) {
-          if (event.target == catModal) {
-            $("#editCat").fadeOut("fast");
-          }
-        });
+        //   $(window).click(function(event) {
+        //   if (event.target == catModal) {
+        //     $("#editCat").fadeOut("fast");
+        //   }
+        // });
 
         async function confirmDelete(name, id){
           if (confirm(`Do you actually want to delete ${name}? All forums under this category will also be deleted.`)){

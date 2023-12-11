@@ -28,7 +28,7 @@
     --col4: #973c80;
     --col5: #fc98a0;
 	--col6: #8d1c75;
-    --col7: #d1327a;
+    --col7: #570c2e;
     --col8: #d4218a;
     --forum-shade: rgba(209, 33, 33, 0.05);
     --input: rgba(236, 160, 198, 0.2); 
@@ -42,6 +42,7 @@
     --grad1: rgba(245, 43, 167, 0);
     --grad2: rgb(129, 4, 67);
     --nav-txt: #f87c7c;
+    --button: rgb(253, 87, 87);
     /* CKEditor */
     --ck-color-base-border: #bd6f96 !important;
     --ck-color-toolbar-background: #ad626e !important;

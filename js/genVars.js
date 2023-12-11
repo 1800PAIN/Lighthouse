@@ -163,4 +163,4 @@ var editorColours=[
 exports.journals= journals;
 exports.moods= moods;
 exports.editorColours= editorColours;
-console.log("Ee")
+console.log("➬ General Vars loaded.")

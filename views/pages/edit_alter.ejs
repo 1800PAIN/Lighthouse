@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" style="visibility: hidden;">
     <head>
-        <!-- <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7"> -->
         <%- include ("../partials/header.ejs") %>
         <style>
             .fail{
@@ -54,6 +53,7 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <div class="alert alert-info">Heads up: Discord plans to change how images are stored. Please use the image upload tool, or use image hosts listed at the bottom of the page.</div>
             <ul class="breadcrumb">
                 <li><a href="/system" title=""><%= capitalise(cookies.system_term) %></a></li>
                 <li><a href="/system/<%= chosenAlter.sys_id %>" title="Back to <%= Buffer.from(chosenAlter.sys_alias, "base64").toString() %>"><%= Buffer.from(chosenAlter.sys_alias, "base64").toString() %></a></li>

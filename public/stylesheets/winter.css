@@ -2,11 +2,11 @@
 [data-theme="light"]{
     --col1: #0a7f8f;
     --col2: #94d6fc;
-    --col3: #2cd4c6;
+    --col3: #11c4b5;
     --col4: #13705c;
     --col5: #2ba1be;
 	--col6: #166ea8;
-    --col7: #c3faf7;
+    --col7: #e2fcfa;
     --col8: #09193d;
     --forum-shade: rgba(1, 149, 175, 0.05);
     --input: rgba(158, 160, 255, 0.2); 
@@ -26,8 +26,8 @@
 [data-theme="dark"]{
     --col1: #77ddeb;
     --col2: #1d638b;
-    --col3: #0a645d;
-    --col4: #359782;
+    --col3: #0dc5b6;
+    --col4: #1e816c;
     --col5: #84e2fa;
 	--col6: #0a3653;
     --col7: #050050;

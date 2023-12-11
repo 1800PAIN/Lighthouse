@@ -22,5 +22,5 @@
     src: url('../fonts/comicz.ttf');
   }
   *{
-    font-family: 'Comic Sans', cursive;
+    font-family: 'Comic Sans', cursive !important;
 }

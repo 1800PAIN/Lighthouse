@@ -43,6 +43,7 @@
     --grad1: rgba(12, 66, 167, 0);
     --grad2: rgb(15, 6, 65);
     --nav-txt: #ffe9c8;
+    --button: var(--col1);
 }
 
 

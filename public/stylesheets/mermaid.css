@@ -1,8 +1,8 @@
 /* Mermaid Theme Colours */
 [data-theme="light"]{
     --col1: #04385a;
-    --col2: #c051c4;
-    --col3: #6adcff;
+    --col2: #c08ec2;
+    --col3: #2cbeeb;
     --col4: #1955af;
     --col5: #5827b3;
 	--col6: #266457;
@@ -23,12 +23,12 @@
     --nav-txt: #e6f4f8;
 }
 [data-theme="dark"]{
-    --col1: #6bbdf3;
-    --col2: #4b706e;
-    --col3: #1a6a83;
-    --col4: #6896db;
+    --col1: #a9ddff;
+    --col2: #324645;
+    --col3: #3670c7;
+    --col4: #85f3c9;
     --col5: #9f7ce0;
-	--col6: #0b4639;
+	--col6: #0ea887;
     --col7: #081b46;
     --col8: #778af3;
     --forum-shade: rgba(33, 209, 33, 0.05);
@@ -53,6 +53,6 @@ hr{
 .greeting{
     color: gainsboro;
 }
-a:visited, #tbutton,.linkbutton>*{
-    color: gainsboro !important;
+.dropdown-content a {
+    color: var(--nav-txt);
 }

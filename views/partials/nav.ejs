@@ -18,7 +18,7 @@
   </style>
   </head>
   <div id="menubg"></div>
-  <div id="logo"><a href="/"><img style="margin-right: 10px; float: left;" src="/img/logo.png" width="64px" alt="<%= siteLanguage[session.language || "en"].title %> logo"><span id="logoname" style="line-height:30px;"><%= siteLanguage[session.language || "en"].title %></span> <span class="version">Beta v<%- version %></span><br/>
+  <div id="logo"><a href="/"><img style="margin-right: 10px; float: left;" src="/img/logo.png" width="64px" alt="<%= siteLanguage[session.language || "en"].title %> logo"><span id="logoname" style="line-height:30px;"><%= siteLanguage[session.language || "en"].title %></span><br/>
     <% if (isLoggedIn(cookies)) { %>
       <span class="greeting"><%= (siteLanguage[session.language || "en"].greeting).replace("[[USER]]",cookies.username ? cookies.username : "friend") %></span>
     <% } else { %>
@@ -48,7 +48,7 @@
         <a href="/mod">Mod Panel</a>
         <% } %>
       <div class="dropdown">
-      <button class="dropbtn" onclick='$("#drop").toggle()'><%= siteLanguage[session.language || "en"].info %> ⮛
+      <button class="dropbtn" onclick='$("#drop").slideToggle()'><%= siteLanguage[session.language || "en"].info %> ⮛
       </button>
       <div class="dropdown-content" id="drop">
         <a href="/about"><%= siteLanguage[session.language || "en"].about %></a>
@@ -76,11 +76,9 @@
   if (localStorage.lighthouse_mode){
       if (localStorage.lighthouse_mode == "dark") {
         $('[name="mode"]').text(`dark_mode`);
-        // $('head').append('<link type="text/css" rel="stylesheet" media="all" href="/stylesheets/dark.css">');
         $("html").data('theme','dark'); 
       } else {
         $('[name="mode"]').text(`light_mode`);
-        // $('head').append('<link type="text/css" rel="stylesheet" media="all" href="/stylesheets/lighthouse.css">');
         $("html").data('theme','light'); 
       }
 
@@ -89,10 +87,10 @@
 
     }
   $( "#hamburger" ).on( "click", function() {
-   $("#mobilenav").toggle("fast");
+   $("#mobilenav").slideToggle("fast");
 } );
 $( ".infowindow" ).on( "click", function() {
-   $(".infodd").toggle("fast");
+   $(".infodd").slideToggle("fast");
 } );
 
 function toggleMobile() {

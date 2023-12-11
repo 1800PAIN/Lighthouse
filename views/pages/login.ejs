@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" style="visibility: hidden;">
     <head>
-        <!-- <link rel="stylesheet" href="/stylesheets/<%- session.font %>.css?v=1.0.7"> -->
         <%- include ("../partials/header.ejs") %>
         <style>
                         #signup{
@@ -49,18 +48,15 @@
             if (response.ok){
                 // Good. Proceed to log in.
                 let userInfo = JSON.parse(resBod);
-                $("#wrongpass").hide();
-                $("#loggedIn").slideDown();
                 $("#fgglow").removeClass("glow");
-                $("#greeting").text(userInfo.name)
+                $.iaoAlert({ msg: `Hello, ${userInfo.name}! You are now logged in.`, type: "success", mode: "dark", autoHide: false })
                 setTimeout(async function(){
                     window.location.replace("/system");
                 }, 3000);
             } else {
                 $("#login").show();
                 $("#Wait").hide();
-                $("#wrongpass").slideDown();
-                $("#loggedIn").hide();
+                $.iaoAlert({ msg: `Wrong Email or Password.`, type: "error", mode: "dark", autoHide: false})
                 $("#fgglow").addClass("glow");
             }
             })

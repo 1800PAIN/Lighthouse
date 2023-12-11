@@ -23,14 +23,14 @@
     --nav-txt: #f8e6eb;
 }
 [data-theme="dark"]{
-    --col1: #fc5773;
-    --col2: #854905;
+    --col1: #f7c3cc;
+    --col2: #815523;
     --col3: #ff893b;
     --col4: #a70476;
     --col5: #f33426;
 	--col6: #4b0212;
     --col7: #460437;
-    --col8: #f3219c;
+    --col8: #ff7cc8;
     --forum-shade: rgba(116, 0, 71, 0.05);
     --input: rgba(126, 126, 126, 0.2); 
     --bg-img: url("../img/coral.png"), var(--col7);

@@ -19,6 +19,7 @@
     --lighthouse: rgb(99, 232, 241);
     --grad1: rgba(32, 95, 189,0);
     --grad2: rgba(5, 54, 100,1);
+    --button: rgb(74, 234, 255);
   }
   
   [data-theme="dark"] {
@@ -42,6 +43,7 @@
     --lighthouse: rgb(26, 152, 255);
     --grad1: rgba(13, 108, 146, 0);
     --grad2: rgb(0, 24, 44);
+    --button: rgb(12, 177, 199);
 
     /* CKEditor */
     --ck-color-base-border: #746fbd !important;
