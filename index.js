@@ -1,3 +1,4 @@
+
 const express = require('express');
 var bodyParser=require("body-parser");
 var cookieParser = require('cookie-parser');
@@ -411,6 +412,8 @@ app.all('*', async function (req, res){
 });
 	
  }
+
+
   // PAGES- GET REQUEST
 
 
@@ -2886,7 +2889,7 @@ app.get('/wish-d/:id', (req, res) => {
 	});
 	app.post("/edit-alter/:id", (req, res, next)=>{
 		if (isLoggedIn(req)){
-			// return console.log(`'${Buffer.from(req.body.pronouns).toString('base64')}'`);
+
 			if (req.files){
 				// They've uploaded a thing.
 				// console.log("Caught an upload.")
@@ -3982,6 +3985,12 @@ Crawl-delay: 10
 Sitemap: www.writelighthouse.com/sitemap.xml
 		`);
 	 });
+// DEV MODE PAGES
+if (process.env["environment"]== "dev"){
+	app.get("/dev-test", function (req, res){
+		res.send("Congrats! You found a dev-only page.")
+	})
+}
   // ERROR ROUTES. DO NOT PUT NEW PAGES BENEATH THESE.
 	app.use(function(req,res){
 			res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });

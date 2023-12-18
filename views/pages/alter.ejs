@@ -118,7 +118,7 @@ td{
                         <% if (alterInfo.agetext) { %>
                              <% if (distill(alterInfo.agetext)) { %>
                                 <tr><td>Perceived Age:</td>
-                                <td><%= Buffer.from(alterInfo.agetext, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                                <td><%- Buffer.from(alterInfo.agetext, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                             <% } %>
                             <% } %>
                        
@@ -128,7 +128,7 @@ td{
                         <% if (alterInfo.appearance) { %>
                              <% if (distill(alterInfo.appearance)) { %>
                                 <tr><td>Internal Appearance:</td>
-                                <td><%= Buffer.from(alterInfo.appearance, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                                <td><%- Buffer.from(alterInfo.appearance, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                             <% } %>
                             <% } %>
                        
@@ -137,7 +137,7 @@ td{
                         <% if (alterInfo.birthday) { %>
                         <% if (distill(alterInfo.birthday)) { %>
                                                     <tr><td>Perceived Birthday:</td>
-                                                    <td><%= Buffer.from(alterInfo.birthday, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                                                    <td><%- Buffer.from(alterInfo.birthday, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                                                 <% } %>
                             <% } %>
                         
@@ -146,7 +146,7 @@ td{
                         <% if (alterInfo.gender) { %>
                         <% if (distill(alterInfo.gender)) { %>
                                                     <tr><td>Gender:</td>
-                                                    <td name="gender"><%= Buffer.from(alterInfo.gender, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                                                    <td name="gender"><%- Buffer.from(alterInfo.gender, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                                                 <% } %>
                             <% } %>
                         
@@ -155,7 +155,7 @@ td{
                         <% if (alterInfo.sexuality) { %>
                         <% if (distill(alterInfo.sexuality)) { %>
                                                     <tr><td>Romantic/Sexual Orientation:</td>
-                                                    <td name="sexuality"><%= Buffer.from(alterInfo.sexuality, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                                                    <td name="sexuality"><%- Buffer.from(alterInfo.sexuality, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                                                 <% } %>
                             <% } %>
                         
@@ -164,7 +164,7 @@ td{
                         <% if (alterInfo.first_noted) { %>
                             <% if (distill(alterInfo.first_noted)) { %>
                                                         <tr><td>First Noted:</td>
-                                                        <td><%= Buffer.from(alterInfo.first_noted, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                                                        <td><%- Buffer.from(alterInfo.first_noted, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                                                     <% } %>
                             <% } %>
                         
@@ -174,7 +174,7 @@ td{
                         <% if (alterInfo.type) { %>
                         <% if (distill(alterInfo.type)) { %>
                            <tr> <td>Type:</td>
-                            <td><%= (alterInfo.type).replace(/\n/g, "<br>") %></td></tr>
+                            <td><%- (alterInfo.type).replace(/\n/g, "<br>") %></td></tr>
                         <% } %>
                             <% } %>
                         
@@ -184,7 +184,7 @@ td{
                         <% if (alterInfo.source) { %>
                         <% if (distill(alterInfo.source)) { %>
                             <tr><td>Source:</td>
-                            <td><%= Buffer.from(alterInfo.source, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                            <td><%- Buffer.from(alterInfo.source, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                         <% } %>
                             <% } %>
                         
@@ -194,7 +194,7 @@ td{
                         <% if (alterInfo.triggers_pos) { %>
                         <% if (distill(alterInfo.triggers_pos)) { %>
                             <tr><td>Positive Triggers:</td>
-                            <td><%= Buffer.from(alterInfo.triggers_pos, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                            <td><%- Buffer.from(alterInfo.triggers_pos, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                         <% } %>
                             <% } %>
     
@@ -203,7 +203,7 @@ td{
                         <% if (alterInfo.triggers_neg) { %>
                         <% if (distill(alterInfo.triggers_neg)) { %>
                             <tr><td>Negative Triggers:</td>
-                            <td><%= Buffer.from(alterInfo.triggers_neg, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                            <td><%- Buffer.from(alterInfo.triggers_neg, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                         <% } %>
                             <% } %>
     
@@ -212,7 +212,7 @@ td{
                         <% if (alterInfo.likes) { %>
                         <% if (distill(alterInfo.likes)) { %>
                             <tr><td>Likes:</td>
-                            <td><%= Buffer.from(alterInfo.likes, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                            <td><%- Buffer.from(alterInfo.likes, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                         <% } %>
                             <% } %>
     
@@ -221,28 +221,28 @@ td{
                         <% if (alterInfo.dislikes) { %>
                         <% if (distill(alterInfo.dislikes)) { %>
                             <tr><td>Dislikes:</td>
-                            <td><%= Buffer.from(alterInfo.dislikes, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                            <td><%-  Buffer.from(alterInfo.dislikes, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                         <% } %>
                             <% } %>
     
                         <% if (alterInfo.hobbies) { %>
                         <% if (distill(alterInfo.hobbies)) { %>
                             <tr><td>Hobbies:</td>
-                            <td><%= Buffer.from(alterInfo.hobbies, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                            <td><%- Buffer.from(alterInfo.hobbies, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                         <% } %>
                             <% } %>
     
                         <% if (alterInfo.job) { %>
                         <% if (distill(alterInfo.job)) { %>
                             <tr><td>Internal Job:</td>
-                            <td><%= Buffer.from(alterInfo.job, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                            <td><%-  Buffer.from(alterInfo.job, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                         <% } %>
                             <% } %>
     
                         <% if (alterInfo.safe_place) { %>
                         <% if (distill(alterInfo.safe_place)) { %>
                             <tr><td>Feels safest when:</td>
-                            <td><%= Buffer.from(alterInfo.safe_place, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                            <td><%- Buffer.from(alterInfo.safe_place, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                         <% } %>
                             <% } %>
     
@@ -252,7 +252,7 @@ td{
                         <% if (alterInfo.wants) { %>
                         <% if (distill(alterInfo.wants)) { %>
                             <tr><td>Wants/Wishes:</td>
-                            <td><%= Buffer.from(alterInfo.wants, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                            <td><%- Buffer.from(alterInfo.wants, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                         <% } %>
                             <% } %>
     
@@ -261,7 +261,7 @@ td{
                         <% if (alterInfo.acc) { %>
                         <% if (distill(alterInfo.acc)) { %>
                             <tr><td>Needs accommodated for:</td>
-                            <td><%= Buffer.from(alterInfo.acc, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
+                            <td><%- Buffer.from(alterInfo.acc, 'base64').toString().replace(/\n/g, "<br>") %></td></tr>
                         <% } %>
                             <% } %>
     
