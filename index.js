@@ -587,6 +587,20 @@ app.get('/safety-plan/edit', async function (req, res){
 });
 
 // Refactored!
+app.get('/then-and-now', async function (req, res){
+	if (isLoggedIn(req)){
+	if (!req.session.worksheets_enabled){
+		// Make sure they have worksheets enabled.
+		const wsEn= await db.query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+		req.session.worksheets_enabled = wsEn[0].worksheets_enabled;
+		if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
+	}
+	res.render(`pages/thenandnow`, { session: req.session, splash:splash, cookies:req.cookies});
+	} else {forbidUser(res, req)}
+	
+});
+
+// Refactored!
   app.get('/DES', async function (req, res){
 	if (isLoggedIn(req)){
 	if (!req.session.worksheets_enabled){

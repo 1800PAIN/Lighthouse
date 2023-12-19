@@ -261,6 +261,23 @@ input[type=checkbox]{
     color: var(--col4);
   }
 
+  .tchart{
+    width: 90%;
+    height: 40em;
+    /* background: powderblue; */
+    display: flex;
+    justify-content: space-between;
+}
+.section{
+  border-top: 1px solid var(--col1);
+    width: 50%;
+    text-align: center;
+}
+.tchart > div:first-child{
+  border-bottom:0;
+  border-right:1px solid var(--col1);
+}
+
   
   @media screen and (max-width: 800px) {
     .topnav a:not(:first-child), .dropdown .dropbtn {
@@ -270,6 +287,17 @@ input[type=checkbox]{
       float: right;
       display: block;
     }
+    .tchart{
+      display: block;
+  }
+  .section{
+    border-top: 0;
+      width: 100%;
+  }
+  .tchart > div:first-child{
+    border-right: 0;
+    border-bottom:1px solid var(--col1);
+  }
   }
   
   @media screen and (max-width: 800px) {

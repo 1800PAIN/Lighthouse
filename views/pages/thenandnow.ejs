@@ -11,9 +11,42 @@
             <% } %>
             <section>
                 <h2>Then and Now</h2>
-                <p></p>
+                <p>Using the chart below, separate your traumatic memories and how those situations have changed now.</p>
+            </section>
+            <section>
+                <div class="tchart">
+                    <div class="section">
+                        <h2 style="margin-bottom:0">Then</h2>
+                        <small>Your experiences from a memory</small>
+                        <br>
+                        <textarea id="then" style="width:70%;height:30vh;"></textarea>
+                    </div>
+                    <div class="section">
+                        <h2 style="margin-bottom:0">Now</h2>
+                        <small>Your present experience</small>
+                        <br>
+                        <textarea id="now" style="width:70%;height:30vh;"></textarea>
+                    </div>
+                </div>
+                <button id="save">Save</button>
             </section>
     </div>
     <%- include ("../partials/footer.ejs") %>
+    <script>
+        $("#save").click(function(){
+            const blob = new Blob([`${'-'.repeat(10)} Then and Now ${'-'.repeat(10)}\nThen:\n${$('#then').val()}\n\nNow:\n${$('#now').val()}`], {type: 'text/csv'});
+    if(window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveBlob(blob, `Then and Now- ${new Date().getMonth()+1}-${new Date().getDate()}-${new Date().getFullYear()}.rtf`);
+    }
+    else{
+        const elem = window.document.createElement('a');
+        elem.href = window.URL.createObjectURL(blob);
+        elem.download = `Then and Now- ${new Date().getMonth()+1}-${new Date().getDate()}-${new Date().getFullYear()}.rtf`;        
+        document.body.appendChild(elem);
+        elem.click();        
+        document.body.removeChild(elem);
+    }
+        })
+    </script>
     </body>
 </html>
