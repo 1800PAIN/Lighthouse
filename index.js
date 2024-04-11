@@ -3096,7 +3096,8 @@ app.get('/wish-d/:id', (req, res) => {
 	});
 	app.post("/edit-alter/:id", async (req, res, next)=>{
 		if (isLoggedIn(req)){
-
+			let pkId= req.body.pkid ? `${encryptWithAES(req.body.pkid)}` : null;
+			let spId= req.body.spid ? `${encryptWithAES(req.body.spid)}` : null;
 			if (req.files){
 				// They've uploaded a thing.
 				await db.query(client, "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24, img_blob=$25, blob_mimetype=$26, colour=$27, nickname=$28, species=$29, pk_id= $30, sp_id=$31 WHERE alt_id=$1", [`${req.params.id}`,
@@ -3128,8 +3129,8 @@ app.get('/wish-d/:id', (req, res) => {
 					req.body.colour,
 					`'${Buffer.from(req.body.nickname).toString('base64')}'`,
 					`'${Buffer.from(req.body.species).toString("base64")}'`,
-					`${encryptWithAES(req.body.pkid)}`,
-					`${encryptWithAES(req.body.spid)}`,], res, req);
+					pkId,
+					spId,], res, req);
 
 			} else {
 				// No upload was made.
@@ -3162,15 +3163,16 @@ app.get('/wish-d/:id', (req, res) => {
 					req.body.colour,
 					`'${Buffer.from(req.body.nickname).toString('base64')}'`,
 					`'${Buffer.from(req.body.species).toString("base64")}'`,
-					`${encryptWithAES(req.body.pkid)}`,
-					`${encryptWithAES(req.body.spid)}`,
+					pkId,
+					spId,
 				], res, req);
 				if (req.body.clear){
 					await db.query(client, "UPDATE alters SET  img_blob=null, blob_mimetype=null WHERE alt_id=$1", [`${req.params.id}`], res, req);
 				}
 			}
 
-			let otherSystems;
+			if (req.body.othersys){
+				let otherSystems;
 			if (typeof req.body.othersys == "string"){
 				// Make an array
 				otherSystems = new Array(req.body.othersys);
@@ -3188,6 +3190,8 @@ app.get('/wish-d/:id', (req, res) => {
 				}
 				
 			}
+			}
+			
 			
 			req.flash("flash","Page updated!");
 			res.redirect(`/alter/${req.params.id}`);
