@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" style="visibility: hidden;">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+
+            <section>
+                <ul class="breadcrumb">
+                    <li><a href="/system" title="Your <%= capitalise(session.system_term) %>"><%= capitalise(session.system_term) %></a></li>
+                    <li><a href="/worksheets" title="Worksheets">Worksheets</a></li>
+                    <li>5-4-3-2-1</li>
+                </ul>
+            </section>
+            <section>
+                <h1>Grounding: 5-4-3-2-1</h1>
+                <p>The <strong>5-4-3-2-1</strong> method helps to ground yourself in the present. This method will use your senses (where applicable) to help you feel more present in your surroundings.</p>
+                <p>If you have an impaired sense such as hearing or vision loss, or are in a place where a sense may not apply such as taste, then feel free to skip it.</p>
+                <p>This worksheet is best suited for when you are in a safe, comfortable environment.</p>
+            </section>
+            <hr>
+            <section>
+                <ol reversed>
+                    <li><img src="/img/svg/see.svg" class="vtinyimg" style="margin-left: .5em; margin-right: .5em">Five Things I can <strong>see</strong> are: <input type="text"></li>
+                    <li><img src="/img/svg/feel.svg" class="vtinyimg" style="margin-left: .5em; margin-right: .5em">Four Things I can <strong>touch</strong> are: <input type="text"></li>
+                    <li><img src="/img/svg/hear.svg" class="vtinyimg" style="margin-left: .5em; margin-right: .5em">Three Things I can <strong>hear</strong> are: <input type="text"></li>
+                    <li><img src="/img/svg/smell.svg" class="vtinyimg" style="margin-left: .5em; margin-right: .5em">Two Things I can <strong>smell</strong> are: <input type="text"></li>
+                    <li><img src="/img/svg/taste.svg" class="vtinyimg" style="margin-left: .5em; margin-right: .5em">One Thing I can <strong>taste</strong> is: <input type="text"></li>
+                </ol>
+            </section>
+            <hr>
+            <section>
+                <h2>Need help finding things to focus  on?</h2>
+                <p>Sometimes, it may be overwhelming to try to parse this much information from your surroundings. Use the button below to prompt you.</p>
+                <button id="prompt">Prompt</button>
+                <p id="p-prompt"></p>
+            </section>
+    </div>
+    <%- include ("../partials/footer.ejs") %>
+    <script src="./fe-vars.js"></script>
+    <script>
+        document.querySelector("#prompt").addEventListener("click",function(){
+            // prompts[random]
+            let count=Math.floor(Math.random() * 5) + 1;
+            let finalPrompt=(prompts[Math.floor(Math.random() * prompts.length)])
+                            .replace("[[COLOUR]]", colours[Math.floor(Math.random() * colours.length)])
+                            .replace("[[TEMP]]", temps[Math.floor(Math.random() * temps.length)])
+                            .replace("[[TEXTURE]]", texts[Math.floor(Math.random() * texts.length)])
+                            .replace("[[WEIGHT]]", weights[Math.floor(Math.random() * weights.length)])
+                            .replace("[[SHAPE]]", shapes[Math.floor(Math.random() * shapes.length)])
+
+
+            document.querySelector("#p-prompt").innerHTML=`In your immediate surroundings, identify ${count}${count > 1 ? " or fewer" : ""} thing${count == 1 ? "": "s"} that ${count == 1 ? "is": "are"} ${finalPrompt}.`;
+        })
+    </script>
+    </body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="./style.css">
+        <title>2D or Not 2D</title>
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#084e87" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="./main.js"></script>
+        <script src="./tf.js"></script>
+    </head>
+    <body>
+        <div id="bgpanel">
+            <div>
+               <h2>2D or Not 2D</h2>
+               <div style="display: grid; grid-template-columns: auto auto;line-height: 1.5;text-align:justify;">
+                    <div><input type="radio" id="positive" name="connot" value="Positive" checked>
+                    <label for="positive">Happy</label></div>
+
+                    <div><input type="radio" id="negative" name="connot" value="Negative">
+                    <label for="negative">Sad</label></div>
+
+                    <div><input type="radio" id="neutral" name="connot" value="Neutral">
+                    <label for="neutral">Neutral</label></div>
+
+                    <div><input type="radio" id="scary" name="connot" value="Scary">
+                    <label for="scary">Scary</label></div>
+
+                    <div><input type="radio" id="neutral" name="connot" value="Spicy">
+                    <label for="spicy">Sexy</label></div>
+               </div>
+               
+                 
+
+               <button id="start">Press the button to begin.</button>
+               <hr/>
+               <h3 id="tfTitle"></h3>
+               <p id="tfDesc"></p>
+            </div>
+            <div>
+               <img id="2DShot" src="https://em-content.zobj.net/thumbs/160/twitter/53/sparkles_2728.png"> 
+            </div>
+        </div>  
+    </body>
+    <script src="./main.js"></script>
+    <script src="./tf.js"></script>
+    <script>
+        
+        $("#start").click(function(){
+            // Pick a phase.
+            var phase= getRandomInt(1,7);
+            // Set the image
+            $("#2DShot").hide().attr("src", stuartPot[phase-1].img).fadeIn(500);
+            // Pick a Scenario.
+            var connot= $('input[name="connot"]:checked').val();
+            var adverb, trigger, mod, modchance,effects;
+            switch (connot){
+                case "Positive":
+                    connot= randomise(posAdv);
+                    trigger=randomise(positiveScenarios[phase-1]);
+                    mod= randomise(positiveModifier);
+                    modchance= .1; // Low chance of a modifier.
+                    effects= happySE;
+                    break;
+                case "Negative":
+                    connot= randomise(negAdv);
+                    trigger=randomise(negativeScenarios[phase-1]);
+                    mod= randomise(negativeModifier);
+                    modchance= .75; // Extremely high chance for a modifier.
+                    effects= sadSE;
+                    break;
+                case "Scary":
+                connot= randomise(negAdv);
+                    trigger=randomise(scaryScenarios[phase-1]);
+                    mod= randomise(scaryModifier);
+                    modchance= .75; // Extremely high chance for a modifier.
+                    effects= scarySE;
+                    break;
+                case "Spicy": 
+                    connot= randomise(spicyAdv);
+                    trigger=randomise(spicyScenarios[phase-1]);
+                    mod= randomise(spicyModifier);
+                    modchance= 1; // 100% guarantee for a modifier.
+                    effects= spicySE;
+                    break;
+                default:
+                    // Go this is neutral.
+                    connot= randomise(neuAdv);
+                    trigger=randomise(neutralScenarios[phase-1]);
+                    mod= randomise(neutralModifier);
+                    modchance= .5; // Half and half chance for a modifier.
+                    effects= neuSE;
+            }
+
+            // Build the TF.
+            var randomGend= randomise([{pro1: "She", pro2: "she", pro3: "her"},{pro1: "He", pro2: "he", pro3: "him"},{pro1: "Xe", pro2: "xe", pro3: "xem"}]);
+            tfStr= `you ${connot} ${randomise(["turn", "transform", "morph", "metamorphose"])} into 2D`;
+            if(probability(modchance)){
+                tfStr+= ", but " + mod;
+            }
+            tfStr+= ".";
+           const mapObj={
+            Friend1: randomise(aNames), // "Ace"
+            Friend2: randomise(nNames), // "Noodle"
+            Friend3: randomise(rNames), // "Russel"
+            Friend4: randomise(mNames), // "Murdoc"
+            RandPro1: randomGend.pro1, // Singular
+            RandPro2: randomGend.pro2, // Singular
+            RandPro3: randomGend.pro3, // Singular
+            FriendMod: randomise(spicyP2Modifier),
+            TFSEQUENCE: tfStr,
+           }
+            var tfStr;
+            // tfStr = trigger.story + " you " + connot + " turn into 2D";
+            tfStr = `${(trigger.story).replace(/\b(?:n|Friend1|Friend2|Friend3|Friend4|RandPro1|RandPro2|RandPro3|FriendMod|TFSEQUENCE)\b/g, matched => mapObj[matched])}`
+            
+            
+            $("#tfDesc").html(`<p>${tfStr}</p>`);
+
+            // Eventually add side effects.
+            var effArr= new Array(); // Effect Array
+            var durString= trigger.perm == true ? "The transformation is permanent." : "You eventually turn back.";
+            for (var i=1;i<=3; i++) {  // Only 3 effects.
+                if (probability(.5)){
+                  effArr.push(randomise(effects))  
+                } else {
+                  effArr.push(randomise(trigger.se));
+                }
+                 if (i == 1){
+                    if (trigger.perm== true){
+                     effArr.push(randomise(permSE));
+                    }
+                    else {
+                    // EYECOLOURHERE
+                    effArr.push(randomise(revertSE).replace("EYECOLOURHERE", stuartPot[phase-1].eyes)); 
+                 }
+                    
+                 } 
+            }
+            effArr = removeDups(effArr)
+            $("#tfDesc").append(`<p>${durString} ${shuffle(effArr).join(" ")}</p>`)
+        });
+             
+    </script>
+</html>

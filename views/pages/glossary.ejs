@@ -30,36 +30,18 @@
     <body>
         <div id="copyNotification">Copied Link!</div>
         <div id="wrapper">
-            
-            <% if (locals.messages.flash) { %>
-                <div class="splash"><%- locals.messages.flash %></div>
-            <% } %>
-            <h2>Glossary</h2>
-            <p>The terms used in plural spaces are not usually ones known to the layman. Here are a list of terms you might see being used.</p>
-            <p><strong>This page isn't fully complete.</strong> Terms are still being added. Terms that are deemed important are in different colour text. Click on a term to copy a link to this term. Feel free to share this page!</p>
-            <section>
-            <h3>Important Terms</h3>
-            <p>It's best to understand these terms first before reading further.</p>
-            <dl id="important">
-                <% for (i in important) { %> 
-                    <div id="<%- important[i].linkalias %>" style="scroll-margin-top: 10em;">
-                    <dt onclick="copyLink('<%- important[i].linkalias %>')" class="importantterm"><%- important[i].term %> <small><em>(<%- important[i].type %>)</em></small></dt>
-                    <dd><%- important[i].definition %></dd>  
-                    </div>
-                <% } %>
-            </dl>
-        </section>
+            <h1>Glossary</h1>
+            <p class="dyn">This page serves as a guide for those who may be new to receiving a DID/OSDD diagnosis, or for people who have a loved one recently diagnosed. It is not meant to define every term in the community; <a href="https://pluralpedia.org/w/Main_Page">We recommend browsing Pluralpedia for that</a>. This glossary is focused on trauma-based terminology. <% if (isLoggedIn(cookies)){ %><strong>Your custom terms will not show on this page.</strong><% } %></p>
+            <p>Click or tap on a term to copy a shareable link to your clipboard.</p>
         <hr>
         <section>
-            <h3>All Terms</h3>
+            <div style="display:flex; justify-content: space-around;">
             <% var abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""); 
                var termsLetters= new Array();
                for (t in terms) { 
                 termsLetters.push(terms[t].start_letter);
                } 
-               %>
-            <div style="display:flex; justify-content: space-around;">
-                <% for (i in abc){ 
+               for (i in abc){ 
                     var count = termsLetters.filter(x => x == abc[i]).length;
                     if (count > 0) {
                     %>
@@ -78,11 +60,7 @@
                         
                         if (terms[i].start_letter == abc[n]){ %>
                             <div id="<%- terms[i].linkalias %>" style="scroll-margin-top: 10em;">
-                    <% if (terms[i].essential== true) { %> 
-                        <dt class="importantterm" onclick="copyLink('<%- terms[i].linkalias %>')"><%- terms[i].term %> <small><em>(<%- terms[i].type %>)</em></small></dt>
-                    <% } else { %>
-                        <dt onclick="copyLink('<%- terms[i].linkalias %>')"><%- terms[i].term %> <small><em>(<%- terms[i].type %>)</em></small></dt>
-                    <% } %>
+                                <dt onclick="copyLink('<%- terms[i].linkalias %>')"><%- terms[i].term %> <small><em>(<%- terms[i].type %>)</em></small></dt>
                     <dd><%- terms[i].definition %></dd>  
                     </div>
                         <% } %>
@@ -95,12 +73,11 @@
     </div>
     <%- include ("../partials/footer.ejs") %>
     <script>
-        // console.log(window.location.hash)
         if (window.location.hash){
-            // console.log("Found hash")
             $(`${window.location.hash}`).css("background-color", "rgba(255, 255, 0, .2)")
         }
         function copyLink(url) {
+            console.log(url)
             navigator.clipboard.writeText(`https://www.writelighthouse.com/glossary/#${url}`);
             $("#copyNotification").show().delay(3000).fadeOut("slow");
             } 

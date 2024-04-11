@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" style="visibility: hidden;">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
+            <section>
+                <h2>New Message</h2>
+                <form autocomplete=off  method="post" id="newTop">
+                    <label for="recipient"><%= decode(alter.name) %> wants to send a message to... </label>
+                    <select name="recipient" class="selectize" id="recipient">
+                      <option value="" disabled selected>Pick One...</option>
+                    </select>
+                    <br><br>
+                    <label for="fTitle">Message Title </label>
+                    <input type="text" name="fTitle" id="fTitle" required minlength="3"><br>
+                    <label for="editor">Message Body </label><br>
+                    <div id="editor"></div>
+                    <textarea name="msgBody" id="hidden-text"></textarea><br/>
+                      <input type="submit" name="newtop" value="Send Message">
+                  </form>
+            </section>
+    </div>
+    <%- include ("../partials/quill.ejs") %>
+    <%- include ("../partials/footer.ejs") %>
+    <script>
+                async function getAlters(){
+          let response = await fetch(`/system-data`, { 
+    method: "GET",
+                headers: { 
+                  "api-lh-call": "api-lh-call",
+                  'Content-Type': 'application/json',
+                  "grab": "alters"
+                } 
+            });
+            let body = await response.text();
+            let sysInfo = JSON.parse(body);
+            if (!response.ok) return $("#newTop").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
+            $("#recipient").append(`<option value="blur">Blurry</option>`);
+            for (i in sysInfo.search){
+              if (!sysInfo.search[i].is_archived && !(sysInfo.search[i].alt_id == '<%= alter.alt_id %>')){
+                $("#recipient").append(`<option value="${sysInfo.search[i].alt_id}">${sysInfo.search[i].name} (<%- capitalise(cookies.system_term) %>: ${sysInfo.search[i].sys_alias})</option>`);
+              }
+            }
+            
+            $("#recipient").selectize({ 
+              // sortField: 'text' 
+            });
+        }
+        getAlters();
+    </script>
+    </body>
+</html>

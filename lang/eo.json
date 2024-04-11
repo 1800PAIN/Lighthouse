@@ -1,23 +1,84 @@
 {
     "test": "Saluton mondo",
     "alter": {
-        "created": "Persono aldonita sukcese!",
-        "updated": "Persono ĝisdatigita sukcese!",
-        "deleted": "Persona forviŝita sukcese."
+        "created": "[[ALTERNAME]] kreita!",
+        "updated": "[[ALTERNAME]] redaktita!",
+        "deleted": "[[ALTERNAME]] forigita.",
+        "delete": "Forigi [[ALTERNAME]]",
+        "archive": "Archive [[ALTERNAME]]"
     },
     "mood":{
         "updated": "Updated mood!",
         "deleted": "Cleared mood."
     },
     "system": {
-        "created": "System created!",
-        "updated": "System updated!",
-        "deleted": "Deleted system.",
-        "imported": "Imported from Pluralkit successfully."
+        "addSystem": "Add a [[SYSTEM]]",
+        "created": "[[SYSTEMCAP]] created!",
+        "updated": "[[SYSTEMCAP]] updated!",
+        "deleted": "Deleted [[SYSTEM]].",
+        "links":{
+            "search": "[[ALTERCAP]] Search",
+            "rules": "[[SYSTEMCAP]] Rules",
+            "wishlist": "Wishlist",
+            "worksheets": "Worksheets",
+            "tutorial": "Tutorial",
+            "combine": "Combine [[ALTERS]]"
+        }
     },
     "account":{
-        "created": "Thank you for signing up to Lighthouse! You are now logged in.",
+        "created": "Thank you for signing up to Lighthouse!",
         "updated": "Settings updated!",
-        "deleted": "So sorry to see you go. You can sign up again at any time."
+        "deleted": "So sorry to see you go. You can sign up again at any time.",
+        "alreadyExists": "<strong>Uh oh!</strong> That username or email is already in use. <a href='/login'>Do you need to log in instead?</a>",
+        "incorrect": "Your email or password is incorrect. <a href='/forgot-password'>Do you need to reset your password?</a>",
+        "loggedout": "You're now logged out.",
+        "loggedin": "Hi, [[USERNAME]]! You're now logged in!",
+        "sessionExpired": "Your session might have expired. Please log in again.",
+        "skin": "Website skin changed successfully!",
+        "notVerified": "Your account isn't verified yet! Please check your email and verify your account.",
+        "alreadyVerified": "Your account is already verified."
+    },
+    "wish":{
+        "created": "Wish created!",
+        "granted": "Wish granted!",
+        "deleted": "Wish deleted."
+    },
+    "import":{
+        "PK":{
+          "success": "Import from Pluralkit successful!",
+          "failure":{
+            "noCheck": "No [[ALTERS]] were selected to import.",
+            "notExists": "That [[SYSTEM]] doesn't seem to exist.",
+            "unavailable": "Pluralkit is currently unreachable."
+          }
+        },
+        "SP":{
+            "success": "Import from Simply Plural successful!",
+            "failure":{
+                "noCheck": "No [[ALTERS]] were selected to import.",
+                "notExists": "That [[SYSTEM]] doesn't seem to exist.",
+                "unavailable": "Simply Plural is currently unreachable."
+              }
+          }
+        
+    },
+    "posts":{
+        "moved": "Journal entry moved successfully.",
+        "deleted": "Deleted Journal entry."
+    },
+    "journals":{
+        "updateSkin": "Update Journal Skin"
+    },
+    "actions":{
+        "rename": "Rename",
+        "delete": "Delete",
+        "startOver": "Start Over",
+        "setIcon": "Set Icon",
+        "editAlter": "Edit [[ALTERNAME]]",
+        "update": "Update",
+        "lock": "Lock",
+        "unlock": "Unlock",
+        "setMood": "Update Mood",
+        "clearMood": "Clear Mood"
     }
 }

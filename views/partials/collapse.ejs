@@ -1,0 +1,44 @@
+<!-- For collapsible elements. -->
+<style>
+    .collapsible {
+      background-color: var(--col6);
+      color: white;
+      cursor: pointer;
+      padding: 1em;
+      width: 100%;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 15px;
+    }
+    
+    .active, .collapsible:hover {
+      filter: brightness(.8)
+    }
+    
+    .collapse-content {
+      padding: 0 18px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.2s ease-out;
+      background-color: transparent;
+    }
+    </style>
+
+<script>
+    console.log("Loaded.")
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight){
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+        } 
+      });
+    }
+</script>

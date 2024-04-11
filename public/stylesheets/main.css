@@ -12,80 +12,25 @@
   font-family: "Lexend";
   src: url("../fonts/Lexend.ttf");
 }
-[data-theme="light"] {
-    --col1: #123859;
-    --col2: #9CD9D3;
-    --nav-txt: #9aedf3;
-    --col3: #D9B23D;
-    --col4: #D93425;
-    --col5: #911111;
-	--col6: #52565c;
-    --col7: #def1f0;
-    --col8: #065966;
-    --polar: ghostwhite; 
-    --input: rgba(160, 193, 236, .2); 
-    --forum-shade: rgba(0,0,0,.05);
-    --bg-img: url("../img/lighthouse-photo-bw.png"), var(--col7);
-    --menu-bg: url("/img/day-beach.png"), var(--col2);
-    --wrapper: rgba(255,255,255,.4);
-    --text: black;
-    --archivedtxt: grey;
-    --archivedbg: silver;
-    --lighthouse: rgb(99, 232, 241);
-    --grad1: rgba(32, 95, 189,0);
-    --grad2: rgba(5, 54, 100,1);
-    --button: yellow;
-  }
-  
-  [data-theme="dark"] {
-    --col1: #aad1f1;
-    --col2: #2c4c77;
-    --nav-txt: #2ebdc7;
-    --col3: #f09b1d;
-    --col4: #b81e10;
-    --col5: #aa7ecc;
-	--col6: #000f25;
-    --col7: #37363a;
-    --col8: #33c8df;
-    --input: rgb(56, 29, 68); 
-    --bg-img: url("../img/night-lighthouse.png"), rgb(30,30,30);
-    --menu-bg: url("../img/night.png"), var(--col5);
-    --wrapper: rgba(52, 24, 75, 0.4);
-    --text: rgb(204, 195, 211);
-    --polar: rgb(74, 78, 82);
-    --archivedtxt: rgb(56, 53, 53);
-    --archivedbg: rgb(170, 153, 153);
-    --lighthouse: rgb(255, 183, 74);
-    --grad1: rgb(18, 34, 58,0);
-    --grad2: rgb(1, 7, 12,1);
-    --button: rgb(182, 97, 185);
 
-    /* CKEditor */
-    --ck-color-base-border: #746fbd !important;
-    --ck-color-toolbar-background: #6762ad !important;
-    --ck-color-base-background: #33273d !important;
-    --ck-color-tooltip-background: var(--col3) !important;
-    --ck-color-split-button-hover-background: var(--col2) !important;
-    --ck-color-button-default-hover-background: var(--col2) !important;
-    --ck-color-button-default-active-background: var(--col2) !important;
-    --ck-color-button-on-hover-background: var(--col2) !important;
-    --ck-color-base-text: var(--col1) !important;
-  }
+[data-theme="light"] {
+  --mode: "light";
+  --polar: ghostwhite;
+}
+[data-theme="dark"] {
+  --mode: "dark";
+  --polar: rgb(105, 105, 105);
+}
   
 *{
   font-family:'Lexend','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    /* scroll-margin-top: 10em; */
-    color: var(--text);
-    word-wrap: break-word;
+  padding:0;
+  color: var(--text);
+  
 }
-.ql-toolbar{
-  filter: drop-shadow(-0.25px 0 0 var(--col3))
-          drop-shadow(0.25px 0 0 var(--col3))
-          drop-shadow(0 -0.25px 0 var(--col3))
-          drop-shadow(0 0.25px 0 var(--col3));
-}
-.ql-picker-label, .ql-picker-item{
-  color: var(--col1);
+
+.ql-editor[data-theme="dark"] {
+  background-color: grey;
 }
 hr {
     display:block;
@@ -98,33 +43,35 @@ hr {
 html{
     overflow-y: scroll;
     overflow-x: hidden;
-    background: var(--bg-img);
-    background-size: cover;
-    background-repeat: no-repeat;
+    background: var(--bg-img), var(--page);
     background-attachment: fixed;
-    height: 100%;
-    
+    background-repeat: repeat;
+    /* background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed; */
+    height: 100%; 
+    color-scheme: var(--mode);
 }
 .language-javascript>*, .token .string{
   font-family: 'Courier New', Courier, monospace !important;
   font-weight: 600;
 }
 
-body{
-    padding-top:1em;
-    overflow-x: hidden;
-    /* background:var(--col7); */
+
+body {
+  margin:0;
+  min-height: 95vh;
+  overflow-x: hidden;
 }
+
 td {
     vertical-align: baseline;
   }
 a{
     color: var(--col1);
-    transition: 0.7s;
+    cursor: pointer !important;
 } 
-a:not(.child):hover{
-    color: var(--col6);
-}
+
 
 small{
     font-weight: 300;
@@ -159,21 +106,6 @@ form{
     display:none;
   }
 
-nav {
-    width: 100%;
-    text-align: left;
-    background: var(--col6);
-    padding: 1em;
-    position: fixed;
-    color: white;
-    top:0;
-    left: 0;
-    filter: drop-shadow(0 3px 3px rgba(0,0,0, .2));
-    z-index: 5;
-    height: 6em;
-    max-height: 6em;
-}
-
 .required::before{
   content: "*";
   color: red
@@ -190,32 +122,6 @@ article:last-child{
 input[type=checkbox]{
     width: 1em;
 }
-.topnav {
-    background-color: var(--col6);
-    position: absolute;
-    left: 0;
-    top: 100px;
-    width: 100%;
-    z-index:200;
-    color: var(--nav-txt);
-    transition: .5s;
-  }
-  .topnav > *{
-    color: var(--col7);
-  }
-  
-  .topnav a {
-    float: left;
-    display: block;
-    color: var(--nav-txt);
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 17px;
-  }
-  .topnav .icon {
-    display: none;
-  }
   
   .dropdown {
     float: left;
@@ -251,9 +157,8 @@ input[type=checkbox]{
     text-align: left;
   }
   
-  .topnav a:hover, .dropdown:hover .dropbtn {
-    background-color: var(--col3);
-    color: var(--col4);
+  .topnav a:hover, .dropdown:hover .dropbtn, button:hover, .linkbutton:hover, input[type=reset]:hover, input[type=submit]:hover {
+    filter:brightness(1.2) !important;
   }
   
   .dropdown-content a:hover {
@@ -327,7 +232,6 @@ input[type=checkbox]{
     display: inline-block;
     margin: auto calc(1em);
     text-decoration: none;
-    transition: 1s;
     vertical-align: middle;
     background: var(--col2);
     padding: calc(.5em);
@@ -342,6 +246,7 @@ input[type=checkbox]{
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
+     width: max-content;
 }
 input[type=submit], input[type=reset], .linkbutton {
     margin-top: 1em;
@@ -356,7 +261,6 @@ button:disabled, input[type=submit]:disabled{
     background: var(--col3);
     /* border-radius: 20px; */
     text-decoration: none;
-    transition: .3s;
 }
 .navel:visited{
     color: var(--col1);
@@ -412,9 +316,9 @@ footer{
     height: 100%;
     min-height: 10vh;
     padding: calc(2em);
-    margin: 9vh auto auto auto;
+    margin: 0 auto;
     background: var(--wrapper);
-    color: var(--text)
+    color: var(--text);
 }
 #wrapper > *{
     color: var(--text);
@@ -479,6 +383,7 @@ h4{
     font-size: 1em;
 }
 
+
 #hamburger > span{
     vertical-align: middle;
 }
@@ -499,7 +404,6 @@ h4{
     padding: calc(1em);
     text-transform: uppercase;
     font-weight: bold;
-    transition: .25s;
 }
 .warningbutton:hover{
     background: red;
@@ -525,35 +429,35 @@ ul.breadcrumb {
 
 
 
-.grid{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 1em;
-    width: 100%;
-    /* max-width: calc(50vw); */
-    flex-wrap: wrap;
-}
-.grid > *{
-    margin-top: .5em;
-}
-
 .parent {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
-  }
-.child {
-    flex: 1 0 21%;
-    margin: calc(.5em);
-    height: 5em;
-    min-height: 5em;
-    /* max-height: 5em; */
-    max-width:7em;
-    padding: 1em;
-    justify-items: center;
+    justify-content: space-between;
   }
 
+.grid > *{
+    margin-top: .5em;
+}
+.grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 1em;
+  width: 70%; /* Adjust width as needed */
+  flex-wrap: wrap;
+  margin: auto;
+}
+
+.child {
+  margin: calc(.5em);
+  height: 5em;
+  min-height: 5em;
+  /* max-height: 5em; */
+  max-width: 7em;
+  padding: 1em;
+  justify-items: center;
+}
  .alterbutton, .editbtn, .deletebtn{
     /* padding: 1em; */
     display: inline-block;
@@ -563,10 +467,7 @@ ul.breadcrumb {
     color: var(--col1);
     flex: 2 0 50%;
     flex-grow: 0;
-    /* border-radius: 15px; */
-    transition: .2s;
     background: var(--col2);
-    max-width: 5em;
     /* width: calc(100% * (1/4) - 5px - 1px); */
     padding: calc(.5em);
  }
@@ -595,8 +496,6 @@ ul.breadcrumb {
     color: var(--col1);
     flex: 1 0 50%;
     flex-grow: 0;
-    /* border-radius: 15px; */
-    transition: .2s;
     background: var(--col2);
     max-width: 7em;
     /* width: calc(100% * (1/4) - 5px - 1px); */
@@ -618,7 +517,7 @@ ul.breadcrumb {
     justify-items: center;
     text-decoration: none;
     scroll-margin-top: 0;
-    transition: .5s;
+    transition: .25s;
     font-size: .85em;
     line-height: .9;
     display:table-cell;
@@ -626,12 +525,9 @@ ul.breadcrumb {
 }
 
 .polaroid:hover{
-    transform: rotate(.01turn);
-    -webkit-filter: drop-shadow(0 5px 5px var(--col6));
-    filter: drop-shadow(0 5px 5px var(--col6));
-}
-.spoiler{
-    
+    /* transform: rotate(.01turn);
+    -webkit-filter: drop-shadow(0 5px 5px black); */
+    filter: drop-shadow(0 5px 5px black);
 }
 .vvtinyimg{
     width: calc(1em);
@@ -699,30 +595,29 @@ ul.breadcrumb {
 
 .editbtn {
     background: rgb(78, 161, 78);
-    transition: .5s;
 }
 
 .deletebtn {
     background: rgb(151, 51, 51);
-    transition: .5s;
 }
 
 .editbtn:hover{
-    background: rgb(123, 177, 24);
+    /* background: rgb(123, 177, 24); */
+    filter:brightness(1.2);
 }
 .deletebtn:hover {
-    background: rgb(207, 5, 5);
-    transition: .5s;
+    filter:brightness(1.2);
 }
 .fa-trash-alt, .fa-pencil{
   color: grey;
-  transition: .5s;
 }
 .fa-trash-alt:hover{
-  color: red;
+  /* color: red; */
+  filter:brightness(1.2);
 }
 .fa-pencil:hover{
-  color: green;
+  /* color: green; */
+  filter:brightness(1.2);
 }
 form > label{
 text-align: center;
@@ -832,9 +727,9 @@ button[disabled=disabled]{
       overflow-wrap: break-word;
 	  width: 85vw;
   }
-  #logoname{
+  /* #logoname{
       display: none;
-  }
+  } */
   #logo img{
       width:7em;
 	  margin-bottom: 1vh;
@@ -922,10 +817,7 @@ button[disabled=disabled]{
 a> .polaroid{
     text-decoration: none;
 }
-.grid{
-    max-width: none;
-    padding:0;
-}
+
 /* End Mobile */
 }
 
@@ -1171,4 +1063,23 @@ img.emoji {
 
 #hidden-text{
   display:none;
+}
+
+blockquote {
+  background: var(--wrapper);
+  border-left: 10px solid var(--col4);
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+blockquote:before {
+  color: var(--col1);
+  content: open-quote;
+  font-size: 4em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+blockquote p {
+  display: inline;
 }

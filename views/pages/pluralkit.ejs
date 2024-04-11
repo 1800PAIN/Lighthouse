@@ -36,8 +36,7 @@
             <img src="https://avatars.githubusercontent.com/u/94687283?s=200&v=4" class="tinyimg" style="float:left;" alt="Pluralkit icon"><h1>Import from Pluralkit</h1>
             <p>Use Pluralkit? We can fetch your <%- pluralize(cookies.alter_term) %> and add them to your account. Importing will create a new <%- cookies.system_term %> that can be renamed on the <a href="/system">My <%- capitalise(cookies.system_term) %></a> page</a>.</p>
             <p><em>Don't know your system ID?</em> Direct message "pk;s" to Pluralkit, or type "pk;s" in a channel that Pluralkit can view.</p>
-            <p>Adding your Pluralkit token is completely optional. Adding your token allows Lighthouse to fetch your private <%- pluralize(cookies.alter_term) %> as well. We do not store this token, or your <%= cookies.system_term %>'s ID. <strong>Do not share your token with anyone you do not trust.</strong></p>
-            <p><strong>Moving things over from Pluralkit can take some time.</strong> The more alters you select, the longer this process will take. We apologise in advance!</p>
+            <p>Adding your Pluralkit token is completely optional. Adding your token allows Lighthouse to fetch your private <%- pluralize(cookies.alter_term) %> as well. We do not store this token, or your <%= cookies.system_term %>'s ID. <strong>Do not share your token with anyone you do not trust.</strong> We cannot fetch your Lighthouse account using your Pluralkit system ID.</p>
             <form>
                 <label for="pid">Pluralkit system ID</label>
                 
@@ -49,17 +48,17 @@
             <span id="Wait"></span>
 
             <div id="submitAlt" style="display:none;">
-                <ul id="roster">
-
-                </ul>
-                <span class="linkbutton" id="checkall">Select All</span><br>
+                
+                <span class="linkbutton" id="selectAllAlters">Select All</span><br>
                 <label for="sysLoc">These <%- pluralize(cookies.alter_term) %> will be imported into: </label>
                 <select name="sysLoc" id="sysLoc">
                     <option value="new" selected>Create New <%- capitalise(cookies.system_term) %></option>
                 </select>
-                
                 <button onclick="allAboard()" id="import">Import <%= capitalise(cookies.system_term) %></button>
                 <p class="splash">"Create New <%- capitalise(cookies.system_term) %>" will create a new <%- cookies.system_term %> called "Imported from Pluralkit". If you already have a <%- cookies.system_term %> named that, 3 random numbers will be appended to the end to prevent confusion. Press "rename" next to these <%- pluralize(cookies.system_term) %>' names on the "My <%- capitalise(cookies.system_term) %>" page to rename them to whatever you like.</p>
+                <ul id="roster">
+
+                </ul>
                 
             </div>
         </section>
@@ -70,7 +69,7 @@
             <img src="/img/svg/bubbles.svg" class="medimg">
             <p><strong>Moving things over from Pluralkit can take some time.</strong> If you have a large <%= cookies.system_term %>, this may take a bit.</p>
             <p id="systemcreate" style="display: none;" class="loading">Creating the <%= cookies.system_term %></p>
-            <p id="importalter" style="display: none;"><span class="loading">Importing <%= pluralize(cookies.alter_term) %> to <span id="systemDrop">SYS</span></span></p>
+            <p id="importalter" style="display: none;"><span class="loading">Importing <span id="altname"><%= pluralize(cookies.alter_term) %></span> to <span id="systemDrop">SYS</span></span></p>
             <div id="loadcontainer">
                 <div id="loadbar"></div>
             </div>
@@ -85,18 +84,18 @@
         }
         // var checkedCount= $('input:checkbox:checked').length;
         $(document).ready(function(){
-            $("#checkall").click(function() {
+            $("#selectAllAlters").click(function() {
                     // var cblist = $("input[name=alterChoice]");
-                    if ($("#checkall").text()== "Select All"){
-                       $('input:checkbox').each(function(){
+                    if ($("#selectAllAlters").text()== "Select All"){
+                       $('input:checkbox.alterChoice').each(function(){
                             $(this).prop('checked',true);
                     }) 
-                    $("#checkall").text("Unselect All");
+                    $("#selectAllAlters").text("Unselect All");
                     } else {
-                        $('input:checkbox').each(function(){
+                        $('input:checkbox.alterChoice').each(function(){
                             $(this).prop('checked',false);
                     }) 
-                    $("#checkall").text("Select All");
+                    $("#selectAllAlters").text("Select All");
                     }
                        
                 }); 
@@ -221,32 +220,45 @@
         $("#systemcreate").hide()
         $("#systemDrop").text(systemName);
         $("#importalter").show();
-        var callno= "";
+        var callno= 0;
         let altJSON= JSON.parse($("#jsonPlop").text());
         let altQue= altJSON.filter((alter)=>newAlts.includes(alter.id));
-        altQue.forEach(async function(alter){
-            
-            const lhresponse = await fetch(`/system-data`, { 
-                method: "PUT",
-                headers: { 
-                  "api-lh-call": "api-lh-call",
-                  'Content-Type': 'application/json',
-                }, 
-                body: JSON.stringify({
-                  "edit": "pluralkit-alter",
-                  "sysId": `${chosenSystem}`,
-                  "name": alter.display_name == null ? alter.name : alter.display_name,
-                  "pronouns": alter.pronouns,
-                  "avatar": alter.avatar_url,
-                  "birthday": alter.birthday
-                })
-            });
-            callno++;
-            $("#loadbar").animate({width: (callno/($('.alterChoice:checkbox:checked').length) * 100) + "%"}, 200 );
-        });
-        setTimeout(function(){
-                    window.location.replace(`/system/${chosenSystem}`);
-                }, 2000);
+
+        while (callno < altQue.length) {
+            var alter = altQue[callno];
+                const lhresponse = await fetch(`/system-data`, { 
+                    method: "PUT",
+                    headers: { 
+                    "api-lh-call": "api-lh-call",
+                    'Content-Type': 'application/json',
+                    }, 
+                    body: JSON.stringify({
+                    "edit": "pluralkit-alter",
+                    "sysId": `${chosenSystem}`,
+                    "name": alter.display_name == null ? alter.name : alter.display_name,
+                    "pronouns": alter.pronouns,
+                    "avatar": alter.avatar_url,
+                    "birthday": alter.birthday
+                    })
+                });
+                
+                $("#altname").text(alter.name)
+                $("#loadbar").animate({width: ((callno+1)/($('.alterChoice:checkbox:checked').length) * 100) + "%"}, 200 );
+
+                if (callno == altQue.length -1){
+                    // Last iteration.
+                    $("#modal-content").html(`<h2>All aboard!</h2><p>All of your <%= pluralize(cookies.alter_term) %> have been imported to ${systemName}.</p>`)
+                    $.iaoAlert({ msg: `Everyone has been imported! Taking you to your imported <%= session.system_term %> page now...`, type: "success", mode: "dark", autoHide: false })
+                    setTimeout(function(){
+                        window.location.replace(`/system/${chosenSystem}`);
+                    }, 2000);
+                }
+                if (lhresponse.ok){
+                    callno++;  
+                } else {
+                    $.iaoAlert({ msg: `We hit a snag trying to import ${alter.name}. Trying to import this <%= cookies.alter_term %> again...`, type: "error", mode: "dark", autoHide: false })
+                }
+        }
     }
 
     </script>

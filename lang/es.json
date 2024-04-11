@@ -1,23 +1,84 @@
 {
     "test": "Hola Mundo",
     "alter": {
-        "created": "¡Personalidad añadida con éxito!",
-        "updated": "¡Personalidad actualizada con éxito!",
-        "deleted": "Personalidad eliminada con éxito."
+        "created": "¡[[ALTERNAME]] añadida con éxito!",
+        "updated": "¡[[ALTERNAME]] actualizada con éxito!",
+        "deleted": "[[ALTERNAME]] eliminada con éxito.",
+        "delete": "Eliminar [[ALTERNAME]]",
+        "archive": "Archivo [[ALTERNAME]]"
     },
     "mood":{
         "updated": "¡Estado de ánimo actualizado!",
-        "deleted": "Estado de ánimo despejado."
+        "deleted": "Estado de ánimo eliminado."
     },
     "system": {
-        "created": "System created!",
-        "updated": "System updated!",
-        "deleted": "Deleted system.",
-        "imported": "Imported from Pluralkit successfully."
+        "addSystem": "Agregar un [[SYSTEM]]",
+        "created": "¡[[SYSTEMCAP]] creado!",
+        "updated": "[[SYSTEMCAP]] updated!",
+        "deleted": "[[SYSTEM]] eliminado.",
+        "links":{
+            "search": "Búsqueda de [[ALTER]]",
+            "rules": "Reglas del [[SYSTEMCAP]]",
+            "wishlist": "Deseos",
+            "worksheets": "Actividades",
+            "tutorial": "Tutorial",
+            "combine": "Combinar [[ALTERS]]"
+        }
     },
     "account":{
-        "created": "Thank you for signing up to Lighthouse! You are now logged in.",
-        "updated": "Settings updated!",
-        "deleted": "So sorry to see you go. You can sign up again at any time."
+        "created": "¡Gracias por registrarte en Lighthouse!",
+        "updated": "¡Ajustes actualizan!",
+        "deleted": "Hasta luego. Puedes registrarte nuevamente en cualquier momento.",
+        "alreadyExists": "<strong>¡Oh, no!</strong> Ese nombre de usuario o correo electrónico ya está en uso. <a href='/login'>¿Necesitas iniciar sesión en su lugar?</a>",
+        "incorrect": "Su correo electrónico o la contraseña es incorrecta. <a href='/forgot-password'>¿Necesitas restablecer tu contraseña?</a>",
+        "loggedout": "Desconectado.",
+        "loggedin": "¡Hola, [[USERNAME]]! ¡Has iniciado sesión!",
+        "sessionExpired": "Sesión expirada. Por favor inicia sesión nuevamente.",
+        "skin": "¡El tema del sitio web cambió exitosamente!",
+        "notVerified": "¡Tu cuenta aún no está verificada! Por favor revise su correo electrónico y verifique su cuenta.",
+        "alreadyVerified": "Tu cuenta ya es verificada."
+    },
+    "wish":{
+        "created": "¡Deseo creado!",
+        "granted": "¡Deseo concedido!",
+        "deleted": "Deseo eliminado."
+    },
+    "import":{
+        "PK":{
+          "success": "Importación de Pluralkit exitosa!",
+          "failure":{
+            "noCheck": "No se seleccionaron [[ALTERS]] para importar.",
+            "notExists": "Ese [[SYSTEM]] no parece existir.",
+            "unavailable": "Pluralkit es actualmente inaccesible."
+          }
+        },
+        "SP":{
+            "success": "Importación de Simply Plural exitosa!",
+            "failure":{
+                "noCheck": "No se seleccionaron [[ALTERS]] para importar.",
+                "notExists": "Ese [[SYSTEM]] no parece existir.",
+                "unavailable": "Simply Plural es actualmente inaccesible."
+              }
+          }
+        
+    },
+    "posts":{
+        "moved": "Entrada del diario se movió correctamente.",
+        "deleted": "Entrada de diario eliminada."
+    },
+    "journals":{
+        "updateSkin": "Actualizar el Tema del Diario"
+    },
+    "actions":{
+        "rename": "Rebautizar",
+        "delete": "Borrar",
+        "startOver": "Reanudar",
+        "setIcon": "Establecer Icono",
+        "editAlter": "Editar [[ALTERNAME]]",
+        "update": "Actualizar",
+        "lock": "Cerrar",
+        "unlock": "Desbloque",
+        "setMood": "Actualizar ánimo",
+        "clearMood": "Eliminar ánimo"
     }
 }

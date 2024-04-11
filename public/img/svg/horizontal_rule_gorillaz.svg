@@ -5,14 +5,14 @@
 <style type="text/css">
 	.st0{display:none;}
 	.st1{opacity:0.85;}
-	.st2{fill:#D8D8D8;}
-	.st3{fill:#F2F2F2;}
-	.st4{fill:#C0C0C0;}
-	.st5{fill:#797979;}
-	.st6{fill:#5E5E5E;}
-	.st7{fill:#A8A8A8;}
-	.st8{fill:#929292;}
-	.st9{fill:#424242;}
+	.st2{fill:rgba(0,0,0,0.25);}
+	.st3{fill:rgba(0,0,0,0.45);}
+	.st4{fill:rgba(0,0,0,0.45);}
+	.st5{fill:rgba(0,0,0,0.65);}
+	.st6{fill:rgba(0,0,0,0.75);}
+	.st7{fill:rgba(0,0,0,0.35);}
+	.st8{fill:rgba(0,0,0,0.45);}
+	.st9{fill:rgba(0,0,0,0.75);}
 </style>
 <g id="Guides" class="st0">
 </g>

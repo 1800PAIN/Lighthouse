@@ -5,9 +5,10 @@
         <%- include ("../partials/header.ejs") %>
         <style>
             .fail{
-                background: red !important;
+                padding:0.5em;
+                background: rgb(173, 0, 0) !important;
                 color: white !important;
-                transition: .5s;
+                /* transition: .5s; */
             }
             label{
                 margin-top:calc(1em);
@@ -45,7 +46,7 @@
 }
 #discordwarning{
     font-size: .75em;
-    color: var(--col4);
+    /* color: var(--col4); */
 }
 
         </style>
@@ -53,22 +54,24 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
-            <div class="alert alert-info">Heads up: Discord plans to change how images are stored. Please use the image upload tool, or use image hosts listed at the bottom of the page.</div>
+            <div class="alert alert-info">Heads up: Discord has changed how images are stored. Please use the image upload tool, or use image hosts listed at the bottom of the page.</div>
             <ul class="breadcrumb">
                 <li><a href="/system" title=""><%= capitalise(cookies.system_term) %></a></li>
-                <li><a href="/system/<%= chosenAlter.sys_id %>" title="Back to <%= Buffer.from(chosenAlter.sys_alias, "base64").toString() %>"><%= Buffer.from(chosenAlter.sys_alias, "base64").toString() %></a></li>
-                <li><a href="/alter/<%= chosenAlter.alt_id %>"><%= Buffer.from(chosenAlter.name, 'base64').toString() %></a></li>
+                <li><a href="/system/<%= chosenAlter.sys_id %>" title="Back to <%= decode(chosenAlter.sys_alias, "base64") %>"><%= decode(chosenAlter.sys_alias, "base64") %></a></li>
+                <li><a href="/alter/<%= chosenAlter.alt_id %>"><%= decode(chosenAlter.name) %></a></li>
                 <li>Edit</li>
               </ul> 
             <% if (locals.messages.flash) { %>
                 <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
-            <h2>Edit <%= Buffer.from(chosenAlter.name, 'base64').toString() %></h2>
-            <p>The only required response is <%= Buffer.from(chosenAlter.name, 'base64').toString() %>'s name. Feel free to leave any other questions blank.</p>
+            <h2>Edit <%= decode(chosenAlter.name) %></h2>
+            <p>The only required response is <%= decode(chosenAlter.name) %>'s name. Feel free to leave any other questions blank. <strong><a href="https://www.markdownguide.org/cheat-sheet/" target="_blank">Markdown</a> and HTML are both supported in this section.</strong> (You can even use a mix of both!)</p>
             <form method="post" enctype="multipart/form-data" autocomplete="off" id="editAlt">
                 <div class="column">
                 <label for="name" >Name</label>
                 <input type="text" name="name" required <% if (chosenAlter.name){ %> value="<%= Buffer.from(chosenAlter.name, "base64").toString() %>" <% } %>>
+                <label for="nickname" >Nickname</label>
+                <input type="text" name="nickname" <% if (chosenAlter.nickname){ %> value="<%= Buffer.from(chosenAlter.nickname, "base64").toString() %>" <% } %>>
                 <label for="pronouns" >Pronouns</label>
                 <input type="text" name="pronouns" <% if (chosenAlter.pronouns){ %> value="<%= Buffer.from(chosenAlter.pronouns, "base64").toString() %>" <% } %>>
                 <label for="gender" >Gender</label>
@@ -88,9 +91,9 @@
                 <textarea name="postr"><% if (chosenAlter.triggers_pos !== null) { %><%- Buffer.from(chosenAlter.triggers_pos, 'base64').toString() %><% } %></textarea>    
                 <label for="negtr">Negative Triggers</label>       
                 <textarea name="negtr"><% if (chosenAlter.triggers_neg !== null) { %><%- Buffer.from(chosenAlter.triggers_neg, 'base64').toString() %><% } %></textarea>      
-                <label for="likes">Things that <%= Buffer.from(chosenAlter.name, 'base64').toString() %> likes</label>       
+                <label for="likes">Things that <%= decode(chosenAlter.name) %> likes</label>       
                 <textarea name="likes"><% if (chosenAlter.likes !== null) { %><%- Buffer.from(chosenAlter.likes, 'base64').toString() %><% } %></textarea>   
-                <label for="dislikes">Things that <%= Buffer.from(chosenAlter.name, 'base64').toString() %> dislikes</label>       
+                <label for="dislikes">Things that <%= decode(chosenAlter.name) %> dislikes</label>       
                 <textarea name="dislikes"><% if (chosenAlter.dislikes !== null) { %><%- Buffer.from(chosenAlter.dislikes, 'base64').toString() %><% } %></textarea>
                 <label for="hobbies">Hobbies</label>
                 <textarea name="hobbies"><% if (chosenAlter.hobbies !== null) { %><%- Buffer.from(chosenAlter.hobbies, 'base64').toString() %><% } %></textarea>
@@ -98,19 +101,19 @@
                 <div class="column">
                 <label for="birthday">Perceived Birthday:</label>
                 <input type="text" name="birthday" value="<% if (chosenAlter.birthday !== null) { %><%- Buffer.from(chosenAlter.birthday, 'base64').toString() %><% } %>">
-                <label for="firstnoted">General date of when <%= Buffer.from(chosenAlter.name, 'base64').toString() %> might've come about:</label>
+                <label for="firstnoted">General date of when <%= decode(chosenAlter.name) %> might've come about:</label>
                 <input type="text" name="firstnoted" value="<% if (chosenAlter.first_noted !== null) { %><%- Buffer.from(chosenAlter.first_noted, 'base64').toString() %><% } %>">
                 <label for="internalJob">Job: (e.g.: Hosting, Self Care, etc)</label>
                 <input type="text" name="internalJob" value="<% if (chosenAlter.job !== null) { %><%- Buffer.from(chosenAlter.job, 'base64').toString() %><% } %>">
-                <label for="fronttells">What helps to figure out when <%= Buffer.from(chosenAlter.name, 'base64').toString() %> is fronting or conscious?</label>       
+                <label for="fronttells">What helps to figure out when <%= decode(chosenAlter.name) %> is fronting or conscious?</label>       
                 <textarea name="fronttells"><% if (chosenAlter.fronttells !== null) { %><%- Buffer.from(chosenAlter.fronttells, 'base64').toString() %><% } %></textarea>
-                <label for="safety"><%= Buffer.from(chosenAlter.name, 'base64').toString() %> feels safest when...</label>       
+                <label for="safety"><%= decode(chosenAlter.name) %> feels safest when...</label>       
                 <textarea name="safety"><% if (chosenAlter.safe_place !== null) { %><%- Buffer.from(chosenAlter.safe_place, 'base64').toString() %><% } %></textarea>
-                <label for="acc"><%= Buffer.from(chosenAlter.name, 'base64').toString() %> would like accommodation from the <%= cookies.system_term %> for... (e.g.: Emotional regulation, memory loss)</label>       
+                <label for="acc"><%= decode(chosenAlter.name) %> would like accommodation from the <%= cookies.system_term %> for... (e.g.: Emotional regulation, memory loss)</label>       
                 <textarea name="acc"><% if (chosenAlter.acc !== null) { %><%- Buffer.from(chosenAlter.acc, 'base64').toString() %><% } %></textarea>
-                <label for="wish">A few things <%= Buffer.from(chosenAlter.name, 'base64').toString() %> wishes for (e.g. "to feel safer internally", "to communicate with other <%= pluralize(cookies.alter_term) %>")</label>       
+                <label for="wish">A few things <%= decode(chosenAlter.name) %> wishes for (e.g. "to feel safer internally", "to communicate with other <%= pluralize(cookies.alter_term) %>")</label>       
                 <textarea name="wish"><% if (chosenAlter.wants !== null) { %><%- Buffer.from(chosenAlter.wants, 'base64').toString() %><% } %></textarea>
-                <label for="relationships">What are <%= Buffer.from(chosenAlter.name, 'base64').toString() %>'s relationships to other <%- pluralize(cookies.alter_term) %>?</label>       
+                <label for="relationships">What are <%= decode(chosenAlter.name) %>'s relationships to other <%- pluralize(cookies.alter_term) %>?</label>       
                 <textarea name="relationships"><% if (chosenAlter.relationships !== null) { %><%- Buffer.from(chosenAlter.relationships, 'base64').toString() %><% } %></textarea>
                 <label for="notes">Other notes</label>       
                 <textarea name="notes"><% if (chosenAlter.notes !== null) { %><%- Buffer.from(chosenAlter.notes, 'base64').toString() %><% } %></textarea>
@@ -128,14 +131,14 @@
             </div>
             <p>Uploaded images take priority over Image URLs.</p>
             <!-- onclick="return verifyUp()"  -->
-                <input type="submit" value="Update <%= Buffer.from(chosenAlter.name, 'base64').toString() %>" id="submit"><input type="reset" value="Start Over">
+                <input type="submit" value="Update <%= decode(chosenAlter.name) %>" id="submit"><input type="reset" value="Start Over">
             </form>
         </section>
         <!-- Info about image hosts -->
         <hr/>
         <section>
             <h2>Image Hosts</h2>
-            <p>Though there's been no date or official announcement posted yet, Discord plans to change how images are hosted on their servers, making the link require specific parameters and becoming unavailable after a couple hours. This will affect services like AO3, Pluralkit, Tupperbox, and Lighthouse. Below is a list of image hosting websites you can use in Discord's stead. <strong>If this <%= cookies.alter_term %> has their icon pointing to cdn.discordapp.com, then we advise you to upload their icon to one of the websites below:</strong></p>
+            <p>Discord has officially changed how images are hosted on their servers, making the link require specific parameters and becoming unavailable after 24 hours. This will affect services like AO3, Pluralkit, Tupperbox, and Lighthouse. Below is a list of image hosting websites you can use in Discord's stead. <strong>If this <%= cookies.alter_term %> has their icon pointing to <u>cdn.discordapp.com</u>, then we advise you to upload their icon to one of the websites below:</strong></p>
             <ul>
                 <li><a href="https://tumblr.com/" title="Tumblr">Tumblr (you can make a photo post, save it as a draft and grab the link that way)</a></li>
                 <li><a href="https://imgbb.com/" target="_blank" title="ImgBB">ImgBB</a></li>
@@ -153,9 +156,9 @@
         function checkURL(){
            if ($("#imgurl").val().match(/cdn.discordapp.com/g)){
             // They have a discord icon.
-            $("#discordwarning").text("🛑 We have detected that this <%= cookies.alter_term %> has an icon pointing to Discord. Please read below for more information.")
+            $("#discordwarning").addClass("fail").text("We have detected that this <%= cookies.alter_term %> has an icon pointing to Discord. Please read below for more information.")
         } else {
-            $("#discordwarning").empty();
+            $("#discordwarning").removeClass("fail").empty();
         }
         }
         checkURL()

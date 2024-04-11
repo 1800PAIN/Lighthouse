@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" style="visibility: hidden;">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+            <% if (locals.messages.flash) { %>
+                <div class="splash"><%- locals.messages.flash %></div>
+            <% } %>
+            <section>
+                <h1>The glossary is disabled on this account.</h1>
+                <p>You may opt-in to see the glossary if you'd like. Check your <a href="/profile">settings</a>.</p>
+            </section>
+    </div>
+    <%- include ("../partials/footer.ejs") %>
+    </body>
+</html>

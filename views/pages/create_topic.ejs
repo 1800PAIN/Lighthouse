@@ -13,9 +13,10 @@
                 <h2>New Topic</h2>
                 <form autocomplete=off  method="post" id="newTop">
                     <label for="author">Topic Author </label>
-                    <select name="author" id="author" required>
+                    <select name="author" class="selectize" id="author">
                       <option value="" disabled selected>Pick One...</option>
-                    </select><br><br>
+                    </select>
+                    <br><br>
                     <label for="fTitle">Topic Title </label>
                     <input type="text" name="fTitle" id="fTitle" required minlength="3"><br>
                     <label for="editor">Topic Body </label><br>
@@ -40,13 +41,16 @@
             let body = await response.text();
             let sysInfo = JSON.parse(body);
             if (!response.ok) return $("#newTop").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
+            $("#author").append(`<option value="blur">Blurry</option>`);
             for (i in sysInfo.search){
               if (!sysInfo.search[i].is_archived){
                 $("#author").append(`<option value="${sysInfo.search[i].alt_id}">${sysInfo.search[i].name} (<%- capitalise(cookies.system_term) %>: ${sysInfo.search[i].sys_alias})</option>`);
               }
-              
             }
-            $("#author").append(`<option value="blur">Blurry</option>`);
+            
+            $("#author").selectize({ 
+              // sortField: 'text' 
+            });
         }
         getAlters();
     </script>

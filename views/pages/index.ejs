@@ -204,6 +204,7 @@
             }, 3000);
         } else {
             $("#Wait").hide();
+            $("#login").show();
             $.iaoAlert({ msg: `Wrong Email or Password. <a href="/forgot-password">Need to reset your password?</a>`, type: "error", mode: "dark", autoHide: false})
         }
         })

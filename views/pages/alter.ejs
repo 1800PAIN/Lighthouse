@@ -17,7 +17,8 @@
 }
 
 .radio-toolbar input[type="radio"]:checked ~ * { 
-    background:#9CD9D3 !important;
+    background:rgba(0,0,0,.5);
+    color: var(--nav-txt)
 }
 
 
@@ -40,6 +41,7 @@ td{
     color: <%= alterInfo.colour == "#000000" ? "inherit" : alterInfo.colour %>!important;
 }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
@@ -70,15 +72,22 @@ td{
             });
     </script>
     <div id="wrapper">
-        <% if (locals.messages.flash) { %>
-            <div class="splash"><%- locals.messages.flash %></div>
-        <% } %>
-        <section>            <ul class="breadcrumb">
+        <% if (alterInfo.parentsys) { 
+            var parentSys;
+            for (i in session.sysList){
+                if (session.sysList[i].sys_id==alterInfo.parentsys){
+                    parentSys= Buffer.from(session.sysList[i].sys_alias, "base64").toString()
+                }
+            }
+         } %>
+        <section><ul class="breadcrumb">
                 <li><a href="/system" title=""><%= capitalise(cookies.system_term) %></a></li>
+                <% if (alterInfo.parentsys){ %><li><a href="/system/<%= alterInfo.subsys_id %>" title="Back to <%= parentSys %>"><%= parentSys %></a></li><% } %>
                 <li><a href="/system/<%= alterInfo.sys_id %>" title="Back to <%= capitalise(Buffer.from(alterInfo.sys_alias, "base64").toString()) %>"><%= capitalise(Buffer.from(alterInfo.sys_alias, "base64").toString()) %></a></li>
                 <li><%= Buffer.from(alterInfo.name, 'base64').toString() %></li>
               </ul> 
-            <h2 class="alt"><%= Buffer.from(alterInfo.name, 'base64').toString() %>'s page</h2>
+            <!-- <h2 class="alt"><%= Buffer.from(alterInfo.name, 'base64').toString() %>'s page</h2> -->
+            <h2 class="alt"><%= Buffer.from(alterInfo.name, 'base64').toString() %> <% if (alterInfo.nickname){ %><% if (distill(alterInfo.nickname)){ %> - Aka <%- Buffer.from(alterInfo.nickname, "base64").toString() %> <% } %> <% } %> <% if (alterInfo.pronouns){ %><% if (distill(alterInfo.pronouns)){ %> (<%- Buffer.from(alterInfo.pronouns, "base64").toString() %>) <% } %> <% } %></h2>
 
 
             <dt>
@@ -88,8 +97,8 @@ td{
             </dt>
         <dd><small><% if (alterInfo.mood) { %>
             Reason: <%- alterInfo.reason %>
-        <% } %><a href="/mood/<%=alterInfo.alt_id %>">Set mood</a><% if (alterInfo.mood) { %>
-            | <a href="/del-mood/<%=alterInfo.alt_id %>">Clear mood</a>
+        <% } %><a href="/mood/<%=alterInfo.alt_id %>"><%= strings.actions.setMood %></a><% if (alterInfo.mood) { %>
+            | <a href="/del-mood/<%=alterInfo.alt_id %>"><%= strings.actions.clearMood %></a>
         <% } %></small></dd>
             
             <form method="post" autocomplete="off">
@@ -105,14 +114,20 @@ td{
             </form>
             <section class="clearfix">
                 <!-- For adding alter info. -->
-                <h2 class="alt">About <%= Buffer.from(alterInfo.name, 'base64').toString() %> <% if (alterInfo.pronouns){ %><% if (distill(alterInfo.pronouns)){ %> (<%- Buffer.from(alterInfo.pronouns, "base64").toString() %>) <% } %> <% } %></h2>
-                <a title="Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %>" href="/edit-alter/<%= alterInfo.alt_id %>" class="editbtn" style="width:auto;margin-bottom: calc(.5em);display:block;">Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %></a>
+                <div style="display:block;">
+                   <a title="Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %>" href="/edit-alter/<%= alterInfo.alt_id %>" class="editbtn" style="width: fit-content;margin-bottom: calc(.5em);display:inline-block;">Edit <%= Buffer.from(alterInfo.name, 'base64').toString() %></a>
+
+                <a title="Inbox" href="/inbox/<%= alterInfo.alt_id %>" class="editbtn" style="width: fit-content;margin-bottom: calc(.5em);display:inline-block;">Inbox</a> 
+                </div>
+                
+
+
                 <% if (alterInfo.img_blob){ %> <img class="medimg" style="float:left; margin-right:calc(1em);" src="data:<%= alterInfo.blob_mimetype %>;base64,<%= Buffer.from(alterInfo.img_blob).toString("base64") %>"> <% } else if (distill(alterInfo.img_url)) { %>
                 <img src="<%= Buffer.from(alterInfo.img_url, 'base64').toString() %>" class="medimg" style="float:left; margin-right:calc(1em);">
                 <% } else { %> 
                     <img src="https://i.ibb.co/vkwmWjF/avatar-default.jpg" class="medimg" style="float:left; margin-right:calc(1em);" alt="<%= Buffer.from(alterInfo.name, 'base64').toString() %>'s icon">
                 <% } %>
-                <table>
+                <table id="alterInfo">
                     <tbody>
                       
                         <% if (alterInfo.agetext) { %>
@@ -473,6 +488,29 @@ td{
         });
 
         });
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const tableElement = document.getElementById("alterInfo");
+    if (tableElement && tableElement.children.length > 0) {  // Check for existence and children
+
+        const tableRows = Array.from(tableElement.children[0].children);
+        tableRows.forEach((row)=>{
+            let rowCells = Array.from(row.children);
+            rowCells.forEach((cell)=>{
+                const existingText = cell.innerHTML; // Get existing text content
+                const parsedHtml = marked.parse(existingText).replace("“", "").replace("”", "");  // Parse with Marked
+                cell.innerHTML = parsedHtml;  // Update with parsed HTML
+            })
+        })
+    }
+    
+});
+
+
+        
+
+
     </script>
 </body>
 

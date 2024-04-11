@@ -10,8 +10,7 @@
     --col8: #504116;
     --forum-shade: rgba(10, 13, 153, 0.05);
     --input: rgba(236, 194, 160, 0.2); 
-    --bg-img: url("../img/sand.png"), var(--col7);
-    --menu-bg: url("../img/sand2.jpg");
+    --bg-img: url("../img/sand-tile.png");
     --wrapper: rgba(255, 246, 241, 0.527);
     --text: black;
     --archivedtxt: grey;
@@ -20,6 +19,7 @@
     --grad1: rgba(167, 94, 12, 0);
     --grad2: rgb(65, 23, 6);
     --nav-txt: #ffe9c8;
+    --page: rgb(252, 221, 186);
 }
 [data-theme="dark"]{
     --col1: #c5b085;
@@ -32,9 +32,8 @@
     --col8: #d3c08b;
     --forum-shade: rgba(153, 10, 10, 0.05);
     --input: rgba(61, 30, 2, 0.2); 
-    --bg-img: url("../img/sand.png"), var(--col7);
-    --menu-bg: url("../img/sand2.jpg");
-    --wrapper: rgba(39, 18, 1, 0.26);
+    --bg-img: url("../img/sand-night.png");
+    --wrapper: rgba(24, 11, 0, 0.452);
     --polar: #554839;
     --text: rgb(250, 234, 224);
     --archivedtxt: rgb(95, 93, 93);
@@ -44,15 +43,7 @@
     --grad2: rgb(59, 23, 9);
     --nav-txt: #c7b5a6;
     --button: var(--nav-txt);
-    /* CKEditor */
-    --ck-color-base-border: #bd9b6f !important;
-    --ck-color-toolbar-background: #836243 !important;
-    --ck-color-base-background: #3d2d27 !important;
-    --ck-color-tooltip-background: var(--col3) !important;
-    --ck-color-split-button-hover-background: var(--col2) !important;
-    --ck-color-button-default-hover-background: var(--col2) !important;
-    --ck-color-button-default-active-background: var(--col2) !important;
-    --ck-color-button-on-hover-background: var(--col2) !important;
+    --page:rgb(80, 47, 16);
 }
 
 hr{

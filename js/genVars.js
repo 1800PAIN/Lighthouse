@@ -1,8 +1,6 @@
 // See you soon, ...
 var undefinedUser = ['friend.', 'buddy.', "okay?", "now. Don't be a stranger."]
 
-// For mood tracking. Labelling negative & positive bc that can help with negative emotions
-
 // (Alter) is feeling...
 var moods=[
     // Positive
@@ -160,7 +158,22 @@ var editorColours=[
 	{color: 'black', label: 'Black'}, 
 	{color: 'white', label: "White"}
 ]
+
+const options = {
+	weekday: 'short',
+	year: 'numeric',
+	month: 'short',
+	day: 'numeric',
+  };
+  const timeOptions={
+	hour: '2-digit', 
+	minute:'2-digit'
+  }
+
+exports.tuning= tuning;
 exports.journals= journals;
 exports.moods= moods;
 exports.editorColours= editorColours;
+exports.options= options;
+exports.timeOptions=timeOptions;
 console.log("➬ General Vars loaded.")

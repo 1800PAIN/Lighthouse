@@ -13,6 +13,7 @@ const ejs = require('ejs');
 var pluralize = require('pluralize');
 var pjson = require('./package.json');
 var flash = require('express-flash');
+
 console.log( `${"-".repeat(10)}\n
  _^_
  |@|
@@ -28,7 +29,7 @@ console.log( `${"-".repeat(10)}\n
 const fileUpload = require('express-fileupload');
 
 const tuning= require('./js/genVars.js');
-const strings= require("./lang/en.json");
+var strings= require("./lang/en.json");
 const langVar= require("./js/languages.js");
 const db= require("./db");
 const client = db.client;
@@ -276,7 +277,7 @@ function getOrdinal(n) {
 	}
 	return ord;
   }
-/** 
+/** Paginates an array
   *@param a- The array you're paginating.
   *@param n- How many items per page.
 */
@@ -301,10 +302,102 @@ function paginate (a, n){
 function forbidUser(res, req){
 	return res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });
 }
+/**
+ * Turns a string to base64 (This isn't to save space; it's just to obfuscate)
+ * @param {string} str The string
+ * @returns {string} string in base 564
+ */
+function base64encode (str){
+	return Buffer.from(str).toString('base64')
+}
 
+/**
+ * Turns a base64 string into a human readable one. (This isn't to save space; it's just to obfuscate)
+ * @param {string} str The base64 string
+ * @returns {string} The decoded string
+ */
+function base64decode (str){
+	return Buffer.from(str, "base64").toString()
+}
+/**
+ * Turns an array into a truncated list
+ * @param {Array} array Array to be truncated.
+ * @param {Number} maxLength How many items before cut-off
+ * @returns {String} Truncated array with "(x more)" at the end (x= Remainder of array)
+ */
+function truncateAndStringify(array, maxLength) {
+	if (array.length <= maxLength) {
+	  return array.join(", ");
+	}
+  
+	const truncatedArray = array.slice(0, maxLength);
+	if (array.length - (maxLength + 1) <= 0){
+	  return `${truncatedArray.join(", ")}`;
+	} else {
+	  return `${truncatedArray.join(", ")}... (+${
+		array.length - (maxLength + 1)
+	  } more)`;
+	}
+	
+  }
+/**
+ * Renders system lists as a nested list
+ * @param {Array} data the system dataset
+ * @param {Array} alters The users' alters.
+ * @returns {*} System in a nested List
+ */
+  function renderNestedList(data, alters) {
+	const processed = new Set(); // Track processed item IDs
+	let altList= alters;
+	function renderItem(item) {
+	  const hasChildren = data.some(child => child.parent === item.id);
+	  const listClass = hasChildren ? 'has-children' : '';
+	  const indent = item.parent ? '&nbsp; &nbsp; &nbsp; ' : '';
+  
+	  if (processed.has(item.id)) {
+		return ''; // Skip rendering if already processed
+	  }
+  
+	  processed.add(item.id); // Mark item as processed
+  
+	  let innerHTML = `
+		<li class="${listClass}${indent == '' ? '' : ' subsys'}">
+		<a class="dyn" href="/editsys/${item.id}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+		<a href="/deletesys/${item.id}" name="${item.id}" class="dyn"><i class="fa fa-trash" aria-hidden="true"></i></a>
+		<a href="/system/communal-journal?sys=${item.id}"><i class="fa fa-book" aria-hidden="true"></i></a>
+		<span class="item-name"><a href="/system/${item.id}">${Buffer.from(item.alias, "base64").toString()}</a></span>`;
 
+	  if (item.icon){
+		innerHTML += `<img src="/img/svg/${item.icon}.svg" class="vvtinyimg">`
+	  }
+
+	  // Handle Alter list.
+	  let altArr=[]
+	  altList.forEach((alt)=>{
+		if (alt.sys_id == item.id){
+			altArr.push(`${Buffer.from(alt.name, "base64").toString()}`)
+		} 
+	  });
+	  if (altArr.length > 0){ 
+		innerHTML += `<div class="subsys dyn" style="font-style: italic;"><small>[[ALTERSCAP]]: ${truncateAndStringify(altArr, 5)}</small></div>`
+	  }
+  
+	  // Now look for children.
+	  if (hasChildren) {
+		const childData = data.filter(child => child.parent === item.id);
+		innerHTML += childData.map(renderItem).join('\n');
+	  }
+
+	  innerHTML += `</li>`;
+	  return innerHTML;
+	}
+  
+	// Call the recursive function on the root items (parent === null)
+	return data.filter(item => item.parent === null).map(renderItem).join('\n');
+  }
   
   const apiRouter = require('./api');
+  const systemRouter = require('./system');
 var app = express();
   app.use('/', express.static(__dirname + '/public'))
   app.use(session({
@@ -327,8 +420,7 @@ app.use(bodyParser.json()).use(bodyParser.urlencoded({extended: true}));
 	});
 	app.use(express.static(path.join(__dirname, "node_modules/tabulator-tables/dist/css")));
 	app.use(express.static(path.join(__dirname, "node_modules/tabulator-tables/dist/js")));
-	// Mount API routes
-app.use('/api', apiRouter);
+
 let monthNames=["January","February","March","April","May","June","July",
 "August","September","October","November","December"];
 // App Local Variables
@@ -347,6 +439,9 @@ app.locals.isLoggedIn = function(cookies){
 	  return true;
 	}
   };
+app.locals.pad= function (number, digits) {
+    return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
+}
 app.locals.randomise= randomise;
 app.locals.truncate= truncate;
 app.locals.distill= distill;
@@ -360,7 +455,28 @@ app.locals.capitalise= capitalise;
 app.locals.pluralize= pluralize;
 app.locals.boil= stripHTML;
 app.locals.generateToken= generateToken;
+app.locals.encode= base64encode;
+app.locals.decode= base64decode;
+app.locals.dateOptions= {
+	weekday: 'short',
+	year: 'numeric',
+	month: 'short',
+	day: 'numeric',
+}
+app.locals.timeOptions={
+	hour: '2-digit', 
+    minute:'2-digit'
+}
+app.locals.truncateAndStringify= truncateAndStringify;
+app.locals.renderNestedList = renderNestedList;
 
+// Other routes 
+// Mount API routes
+app.use('/api', apiRouter);
+app.use("/system", systemRouter);
+
+
+// ------ //
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs');
 
@@ -388,6 +504,11 @@ app.all('*', async function (req, res){
 					req.session.textsize= results.textsize;
 					req.session.worksheets_enabled= results.worksheets_enabled;
 					req.session.font= results.font;
+					req.session.glossary_enabled= results.glossary_enabled;
+
+					// Now update strings to let it be what their language is.
+					strings= require(`./lang/${req.session.language}.json`);
+					app.locals.strings= strings;
 			} catch (e){
 				// They're likely logged out.
 			}
@@ -400,6 +521,7 @@ app.all('*', async function (req, res){
 		req.session.innerworld_term= "inner world";
 		req.session.plural_term= "plural";
 		req.session.font="Lexend";
+		strings= require(`./lang/en.json`);
 	}
 	
 	req.next();
@@ -459,6 +581,8 @@ app.all('*', async function (req, res){
 			res.redirect("/")
 		}
   });
+
+
 
   // Refactored!
   app.get('/safety-plan', async function(req, res){
@@ -641,6 +765,21 @@ app.get('/bottle-letters',async function (req, res){
 	} else {forbidUser(res,req)}
 	
 })
+
+// Refactored!
+app.get('/54321', async function (req, res){
+	if (isLoggedIn(req)){
+		if (!req.session.worksheets_enabled){
+		// Make sure they have worksheets enabled.
+		const wsEn= await db.query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+		req.session.worksheets_enabled = wsEn[0].worksheets_enabled;
+		if (req.session.worksheets_enabled== false) return res.render(`pages/worksheetsdisabled`, { session: req.session, splash:splash, cookies:req.cookies });
+	}
+	res.render(`pages/54321`, { session: req.session, splash:splash, cookies:req.cookies });	
+	} else {forbidUser(res,req)}
+	
+})
+
  // No need to refactor
 app.get('/tutorial', (req, res) => {
 		res.render(`pages/tutorial`, { session: req.session, splash:splash, cookies:req.cookies});
@@ -1045,29 +1184,23 @@ app.get('/worksheets', async function (req, res){
   });
 
 });
-app.get('/glossary', (req, res, next) => {
-	res.render(`pages/glossary-maintenance`, { session: req.session, splash:splash, cookies:req.cookies, lang:req.acceptsLanguages()[0] });
-	/* client.query({text: "SELECT * FROM glossary ORDER BY term ASC;",values: []}, (err, result) => {
-		if (err) {
-		  console.log(err.stack);
-		  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-	  } else {
-		var terms= result.rows;
-		client.query({text: "SELECT * FROM glossary WHERE essential= true ORDER BY term ASC;",values: []}, (err, result) => {
-			if (err) {
-			  console.log(err.stack);
-			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash, cookies:req.cookies });
-		  } else {
-			res.render(`pages/glossary`, { session: req.session, splash:splash, cookies:req.cookies, terms:terms, important:result.rows, lang:req.acceptsLanguages()[0] });
-			splash=null; 
-		  }
-	  });
-	  }
-  }); */
 
+// Refactored!
+app.get('/glossary', async function(req, res){
+	const terms= await db.query(client, "SELECT * FROM glossary ORDER BY term ASC;", [], res, req);
+		
+	if (isLoggedIn(req)){
+		const glossEn= await db.query(client, "SELECT glossary_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+
+		if (glossEn[0].glossary_enabled == false){
+			// Show the disabled page.
+			return res.render(`pages/glossary-disabled`, { session: req.session, splash:splash, cookies:req.cookies, });
+		}
+	}
+	res.render(`pages/glossary`, { session: req.session, splash:splash, cookies:req.cookies, terms:terms, lang:req.acceptsLanguages()[0] });
 }); 
 
-// app.get('/philosophy', (req, res, next) => { res.render(`pages/philo`, { session: req.session, splash:splash, cookies:req.cookies })});
+app.get('/philosophy', (req, res, next) => { res.render(`pages/phil`, { session: req.session, splash:splash, cookies:req.cookies })});
   
 
 app.get('/about', (req, res, next) => {
@@ -1311,12 +1444,6 @@ app.get('/wish-d/:id', (req, res) => {
 				} else {
 					// console.table(result.rows);
 					req.session.alters = result.rows;
-					// console.table(req.session.alters);
-					// req.session.alters = [];
-  	              // for (i in (result.rows)){
-  	              //     // (req.session.sys).push(Buffer.from(result.rows[i].sys_alias, 'base64').toString())
-  	              //     (req.session.alters).push({name: Buffer.from(result.rows[i].name, 'base64').toString(), id: result.rows[i].sys_id, sys_name: Buffer.from(result.rows[i].sys_alias, 'base64').toString()})
-  	              // }
 				  res.render(`pages/edit_sys`, { session: req.session, splash:splash, alt:req.session.chosenSys, alters: result.rows,cookies:req.cookies });
 				}
 				});
@@ -1502,12 +1629,29 @@ app.get('/wish-d/:id', (req, res) => {
   
 });
 
-// Refactored!
+// Refactoring
   app.get('/system', async function(req, res) {
     if (isLoggedIn(req)){
 		const innerWorlds= await db.query(client, "SELECT inner_worlds from USERS WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 		req.session.innerworld = innerWorlds[0].inner_worlds || false;
-		res.status(200).render('pages/system',{ session: req.session, splash:splash,cookies:req.cookies});
+
+		const systemData = await db.query(client, "SELECT * FROM systems WHERE user_id=$1", [getCookies(req)['u_id']], res, req);
+
+		const alterData= await db.query(client, "SELECT alters.name, systems.sys_id FROM alters INNER JOIN systems ON alters.sys_id = systems.sys_id WHERE systems.user_id = $1;", [getCookies(req)['u_id']], res, req);
+
+		let systemMap = new Array();
+		systemData.forEach((sys)=>{
+			systemMap.push({
+				id: sys.sys_id,
+				alias: sys.sys_alias,
+				icon: sys.icon,
+				parent: sys.subsys_id
+			})
+		})
+		  
+		  
+		// console.log(groupedData)
+		res.status(200).render('pages/system',{ session: req.session, splash:splash,cookies:req.cookies, system: systemMap, alters: alterData});
     } else {
         forbidUser(res, req);
     }
@@ -1530,6 +1674,7 @@ app.get('/wish-d/:id', (req, res) => {
 			const subsysInf= await db.query(client, "SELECT sys_alias FROM systems WHERE sys_id=$1", [`${req.session.chosenSys.subsys_id}`], res, req);
 			req.session.chosenSys.subsys_alias= subsysInf[0].sys_alias;
 		}
+			const numUp= await db.query(client, "SELECT altupnum FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 
 			const alters = await db.query(client, "SELECT alters.alt_id, alters.img_url, alters.sys_id, alters.name, alters.pronouns, alter_moods.mood, alters.is_archived, alters.img_blob, alters.blob_mimetype, alters.colour FROM alters LEFT JOIN alter_moods ON alters.alt_id = alter_moods.alt_id WHERE alters.sys_id=$1;", [`${req.params.id}`], res, req);
 			req.session.alters=[]
@@ -1548,21 +1693,9 @@ app.get('/wish-d/:id', (req, res) => {
 				})
 			});
 			let altCount= req.session.alters.length;
-			let numUp= new Number();
-			// Account for big systems so they don't have 4897 pages.
-			switch (true) {
-				case altCount > 150:
-				  numUp= 50;
-				  break;
-				case altCount > 200:
-				  numUp= 75;
-				  break;
-				default:
-				  numUp=15;
-			  }
 			(req.session.alters).sort((a, b) => a.name.localeCompare(b.name))
-			req.session.alters= paginate(req.session.alters, numUp)
-			res.render(`pages/sys_info`, { session: req.session, splash:splash, alterArr: req.session.alters[req.params.pg -1 || 0],cookies:req.cookies, sys_id: req.params.id, pgCount: req.session.alters.length, altCount: altCount, curPage: req.params.pg || 1});
+			req.session.alters= paginate(req.session.alters, Number(numUp[0].altupnum))
+			res.render(`pages/sys_info`, { session: req.session, splash:splash, alterArr: req.session.alters[req.params.pg -1 || 0],cookies:req.cookies, sys_id: req.params.id, pgCount: req.session.alters.length, altCount: altCount, curPage: req.params.pg || 1, numup: Number(numUp[0].altupnum)});
 
     } else {
 		forbidUser(res, req)
@@ -1574,10 +1707,13 @@ app.get('/wish-d/:id', (req, res) => {
   app.get("/alter/:id", async function(req, res, next){
 	 if (isLoggedIn(req)){
 		// Get Alter.
-		const altInfo= await db.query(client, "SELECT alter_moods.*, alters.*, systems.sys_alias, systems.user_id FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id LEFT JOIN alter_moods ON alters.alt_id = alter_moods.alt_id WHERE alters.alt_id=$1", [`${req.params.id}`], res, req);
+		const altInfo= await db.query(client, `SELECT alter_moods.*, alters.*, systems.sys_alias, systems.user_id, systems.subsys_id AS "parentsys" FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id LEFT JOIN alter_moods ON alters.alt_id = alter_moods.alt_id WHERE alters.alt_id=$1`, [`${req.params.id}`], res, req);
 		var selectedAlt= altInfo[0];
 		// Before going any further-- Check that the alter's user ID and the actual requester's user ID matches.
 		if (!idCheck(req, selectedAlt.user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
+
+		req.session.chosenAlt= selectedAlt;
+
 		// If they have a mood reason, decrypt that now.
 		try{
 			if (selectedAlt.reason){
@@ -1586,6 +1722,7 @@ app.get('/wish-d/:id', (req, res) => {
 		} catch (e){
 			// No mood.
 		}
+		
 		// Grab journal info.
 		const journQuer= await db.query(client, "SELECT * FROM journals WHERE alt_id=$1;", [`${req.params.id}`], res, req);
 		var altJournal= journQuer[0];
@@ -1604,7 +1741,7 @@ app.get('/wish-d/:id', (req, res) => {
 			}
 		// Grab all systems.
 		req.session.sysList= await db.query(client, "SELECT * FROM systems WHERE user_id=$1;", [`${getCookies(req)['u_id']}`], res, req);
-
+		
 		if (selectedAlt.is_archived==true){
 			// This alter is archived.
 			var archivedPosts= new Array();
@@ -1747,7 +1884,7 @@ app.get('/wish-d/:id', (req, res) => {
 				console.log(err.stack);
 				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 			} else {
-				res.render(`pages/edit_post`, { session: req.session, splash:splash,cookies:req.cookies, cJourn: {id: result.rows[0].p_id, body: decryptWithAES(result.rows[0].body), title: decryptWithAES(result.rows[0].title), is_comm: false}, journalID: result.rows[0].j_id, alt_id:result.rows[0].alt_id});
+				res.render(`pages/edit_post`, { session: req.session, splash:splash,cookies:req.cookies, cJourn: {id: result.rows[0].p_id, body: decryptWithAES(result.rows[0].body), title: decryptWithAES(result.rows[0].title), is_comm: false, date: result.rows[0].created_on}, journalID: result.rows[0].j_id, alt_id:result.rows[0].alt_id, });
 			}
 		});
 	  } else {
@@ -1757,35 +1894,38 @@ app.get('/wish-d/:id', (req, res) => {
 
   });
 
-  app.get('/comm/:id/edit', (req, res)=>{
+  app.get('/comm/:id/edit', async function (req, res){
 	if (isLoggedIn(req)){
-		client.query({text: "SELECT * FROM comm_posts WHERE id=$1;",values: [`${req.params.id}`]}, (err, result) => {
-		   if (err) {
-			  console.log(err.stack);
-			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
-		  } else {
-			  res.render(`pages/edit_post`, { session: req.session, splash:splash,cookies:req.cookies, cJourn: {id: result.rows[0].id, body: decryptWithAES(result.rows[0].body), title: decryptWithAES(result.rows[0].title), is_comm: true} });
-		  }
-	  });
+		const sysCheck = await db.query(client, "SELECT id FROM comm_posts WHERE u_id=$1", [getCookies(req)['u_id']], res, req);
+		const sysList = sysCheck.map(obj => obj.id);
+		if (!(sysList.includes(req.params.id))) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", cookies:req.cookies });
+
+		const postInfo= await db.query(client, "SELECT * FROM comm_posts WHERE id=$1", [`${req.params.id}`], res, req);
+		res.render(`pages/edit_post`, { session: req.session, cookies:req.cookies, cJourn: {id: postInfo[0].id, body: decryptWithAES(postInfo[0].body), title: decryptWithAES(postInfo[0].title), is_comm: true, date: postInfo[0].created_on, sysid: postInfo[0].system_id} });
 	} else {
-		res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });
+		forbidUser(res,req);
 	}
 
 
   });
 
-  app.get('/comm/:id/delete', (req, res)=>{
+  app.get('/comm/:id/delete', async function (req, res){
 	if (isLoggedIn(req)){
-		client.query({text: "SELECT * FROM comm_posts WHERE id=$1;",values: [`${req.params.id}`]}, (err, result) => {
+		client.query({text: "SELECT * FROM comm_posts WHERE id=$1;",values: [`${req.params.id}`]}, async function (err, result) {
 		   if (err) {
 			  console.log(err.stack);
 			  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 		  } else {
+			const sysCheck = await db.query(client, "SELECT id FROM comm_posts WHERE u_id=$1", [getCookies(req)['u_id']], res, req);
+			const sysList = sysCheck.map(obj => obj.id);
+			if (!(sysList.includes(req.params.id))) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", cookies:req.cookies });
+
 			  // console.log(result.rows[0]);
 			  req.session.jPost= result.rows[0];
 			  req.session.jPost.body= decryptWithAES(req.session.jPost.body);
 			  req.session.jPost.title= decryptWithAES(req.session.jPost.title);
-			  res.render(`pages/delete_post`, { session: req.session, splash:splash, cookies:req.cookies });
+			  let sysid= result.rows[0].system_id;
+			  res.render(`pages/delete_post`, { session: req.session, splash:splash, cookies:req.cookies, sysid: sysid });
 		  }
 	  });
 	} else {
@@ -1938,8 +2078,9 @@ app.get('/wish-d/:id', (req, res) => {
 					req.session.worksheets_enabled= result.rows[0].worksheets_enabled;
 					var theirEmail = Buffer.from(result.rows[0].email, "base64").toString();
 					var theirName = Buffer.from(result.rows[0].username, "base64").toString();
+					var numUp= result.rows[0].altupnum;
 				}
-				res.render(`pages/profile`, { session: req.session, splash:splash,cookies:req.cookies, theirEmail: theirEmail, theirName: theirName });
+				res.render(`pages/profile`, { session: req.session, splash:splash,cookies:req.cookies, theirEmail: theirEmail, theirName: theirName, numUp: numUp });
 			});
 		} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 
@@ -1961,6 +2102,7 @@ app.get('/wish-d/:id', (req, res) => {
 
 
 	*/
+	
 	app.post('/forum/:id/new', (req, res) => {
 		if (isLoggedIn(req)){
 			let postAuth= req.body.author== "blur" ? null : req.body.author;
@@ -2526,6 +2668,27 @@ app.get('/wish-d/:id', (req, res) => {
 						}
 					});
 				}
+				if (req.body.gloss){
+					// Change fonts
+					client.query({text: 'UPDATE users SET glossary_enabled= $2 WHERE id=$1', values: [getCookies(req)['u_id'], req.body.gloss]}, async (err, result)=>{
+						if (err) {
+						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+						} else {
+							req.session.glossary_enabled = req.body.gloss;
+							req.flash("flash", strings.account.updated);
+						}
+					});
+				}
+				if (req.body.numUp){
+					let numUp= Number(req.body.numUp)
+					client.query({text: 'UPDATE users SET altUpNum=$2 WHERE id=$1', values: [getCookies(req)['u_id'], numUp]}, async (err, result)=>{
+						if (err) {
+						  return res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
+						} else {
+							req.flash("flash", strings.account.updated);
+						}
+					});
+				}
 				// After all those changes.
 				// res.cookie('subsystem_term', req.body.subTerm,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true });
 				res
@@ -2681,7 +2844,12 @@ app.get('/wish-d/:id', (req, res) => {
 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 			  } else {
 				  req.session.jPost= null;
-				  res.redirect(`/system`);
+				//   res.redirect(`/system`);
+				if (req.body.sysid){
+					res.redirect(`/system/communal-journal?sys=${req.body.sysid}`);
+				} else {
+					res.redirect(`/system/communal-journal`);
+				}
 			  }
 		  });
 		} else {
@@ -2691,13 +2859,23 @@ app.get('/wish-d/:id', (req, res) => {
 
 	app.post('/comm/:id/edit', (req, res)=>{
 		if (isLoggedIn(req)){
-			client.query({text: "UPDATE comm_posts SET title=$1, body=$2 WHERE id=$3; ",values: [`${encryptWithAES(req.body.jTitle)}`, `${encryptWithAES(req.body.jBody)}`, `${req.params.id}`]}, (err, result) => {
+			client.query({text: "UPDATE comm_posts SET title=$1, body=$2, created_on=$4 WHERE id=$3; ",
+			values: [
+				`${encryptWithAES(req.body.jTitle)}`, 
+				`${encryptWithAES(req.body.jBody)}`, 
+				`${req.params.id}`,
+				`${req.body.jDate}`
+			]}, (err, result) => {
 			   if (err) {
 				  console.log(err.stack);
 				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
 			  } else {
 				  req.session.jPost= null;
-				  res.redirect(`/system`);
+				  if (req.body.sysid){
+					res.redirect(`/system/communal-journal?sys=${req.body.sysid}`);
+				} else {
+					res.redirect(`/system/communal-journal`);
+				}
 			  }
 
 		  });
@@ -2907,7 +3085,7 @@ app.get('/wish-d/:id', (req, res) => {
 			if (req.files){
 				// They've uploaded a thing.
 				// console.log("Caught an upload.")
-				client.query({text: "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24, img_blob=$25, blob_mimetype=$26, colour=$27 WHERE alt_id=$1",values: [
+				client.query({text: "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24, img_blob=$25, blob_mimetype=$26, colour=$27, nickname=$28 WHERE alt_id=$1",values: [
 					`${req.params.id}`,
 					`'${Buffer.from(req.body.name).toString('base64')}'`,
 					`'${Buffer.from(req.body.postr).toString('base64')}'`,
@@ -2934,7 +3112,8 @@ app.get('/wish-d/:id', (req, res) => {
 					`'${Buffer.from(req.body.appearance).toString('base64')}'`,
 					req.body.clear ? null : req.files.imgupload.data,
 					req.body.clear ? null : req.files.imgupload.mimetype,
-					req.body.colour
+					req.body.colour,
+					`'${Buffer.from(req.body.nickname).toString('base64')}'`,
 				]}, (err, result) => {
 					if (err) {
 					  console.log(err.stack);
@@ -2948,7 +3127,7 @@ app.get('/wish-d/:id', (req, res) => {
 			} else {
 				// No upload was made.
 				// console.log("No upload.");
-				client.query({text: "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24, colour=$25 WHERE alt_id=$1",values: [
+				client.query({text: "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24, colour=$25, nickname=$26 WHERE alt_id=$1",values: [
 					`${req.params.id}`,
 					`'${Buffer.from(req.body.name).toString('base64')}'`,
 					`'${Buffer.from(req.body.postr).toString('base64')}'`,
@@ -2973,7 +3152,8 @@ app.get('/wish-d/:id', (req, res) => {
 					`'${Buffer.from(req.body.relationships).toString('base64')}'`,
 					`'${Buffer.from(req.body.hobbies).toString('base64')}'`,
 					`'${Buffer.from(req.body.appearance).toString('base64')}'`,
-					req.body.colour
+					req.body.colour,
+					`'${Buffer.from(req.body.nickname).toString('base64')}'`,
 				]}, (err, result) => {
 					if (err) {
 					  console.log(err.stack);
@@ -3126,48 +3306,16 @@ app.get('/wish-d/:id', (req, res) => {
 	  }
   });
 
-	app.post('/deletesys/:alt', function(req, res){
-		// console.table(req.session.chosenSys);
-		/* issue */
-		client.query({text: "SELECT * FROM systems WHERE sys_id=$1",values: [`${req.params.alt}`]}, (err, result) => {
-			if (err) {
-              console.log(err.stack);
-              res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
-		  } else {
-			//   console.table(result.rows[0]);
-			  if (getCookies(req)['u_id']= result.rows[0].user_id){
-				  // DELETE FROM alters WHERE sys_id=$1;
-				  // posts, journals, alters, system
-				  client.query({text: "DELETE FROM journals WHERE sys_id=$1;",values: [`${req.params.alt}`]}, (err, result) => {
-					  if (err){
-						  console.log(err.stack);
-						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
-					  } else {
-							  client.query({text: "DELETE FROM alters WHERE sys_id=$1;",values: [`${req.params.alt}`]}, (err, result) => {
-								  if (err){
-									  console.log(err.stack);
-									  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
-								  }
-								  client.query({text: "DELETE FROM systems WHERE sys_id=$1::uuid OR subsys_id=$1::text;",values: [`${req.params.alt}`]}, (err, result) => {
-									  if (err){
-										  console.log(err.stack);
-										  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
-									  }
-									  
-									  req.session.chosenSys= null;
-									  res.redirect("/system");
-								  });
-							  });
-
-					  }
-				  });
-			  } else {
-					// Not their system.
-					res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });
-			  }
-
-		  }
-		});
+	app.post('/deletesys/:alt', async function(req, res){
+		const sysData = await db.query(client, "SELECT * FROM systems WHERE sys_id=$1", [`${req.params.alt}`], res, req);
+		if (getCookies(req)['u_id']= sysData[0].user_id){
+			await db.query(client, "DELETE FROM systems WHERE sys_id=$1", [`${req.params.alt}`], res, req);
+			await db.query(client, "DELETE FROM systems WHERE subsys_id=$1", [`${req.params.alt}`], res, req);
+			req.session.chosenSys= null;
+			res.redirect("/system");
+		} else {
+			forbidUser(res, req)
+		}
 	});
 
 	app.post('/editsys/:alt', function(req, res){
@@ -4004,10 +4152,107 @@ if (process.env["environment"]== "dev"){
 	app.get("/dev-test", function (req, res){
 		res.send("Congrats! You found a dev-only page.")
 	})
+	app.get('/inbox/:alt', async function(req, res){
+		if (isLoggedIn(req)){
+			// Get Alter.
+			const altInfo= await db.query(client, "SELECT alters.*, systems.* from alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alt_id=$1", [`${req.params.alt}`], res, req);
+			var selectedAlt= altInfo[0];
+	
+			// console.log(selectedAlt)
+			// Before going any further-- Check that the alter's user ID and the actual requester's user ID matches.
+			if (!idCheck(req, selectedAlt.user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
+	
+			req.session.chosenAlt= selectedAlt;
+			const msg= await db.query(client, "SELECT * FROM messages WHERE sender = $1 OR recipient = $1;", [`${req.params.alt}`], res, req);
+			const messages = new Array();
+			msg.forEach((m)=>{
+				messages.push({
+					id: m.id,
+					sender: m.sender,
+					recipient: m.recipient,
+					created_on: m.created_on,
+					is_read: m.is_read,
+					title: m.title
+				})
+			})
+	
+			res.render(`pages/messages`, { session: req.session, splash:splash, cookies:req.cookies, alter:selectedAlt, messages: messages });
+		} else {
+			forbidUser(res, req)
+		}
+	  });
+	  app.get('/inbox/messages/:id', async function(req, res){
+		if (isLoggedIn(req)){
+	
+			// Before going any further-- Check that the alter's user ID and the actual requester's user ID matches.		
+			const msgTest= await db.query(client, "SELECT DISTINCT alters.alt_id, systems.user_id FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id INNER JOIN messages ON messages.recipient = alters.alt_id OR messages.sender = alters.alt_id WHERE messages.id=$1", [`${req.params.id}`], res, req);
+			if (!idCheck(req, msgTest[0].user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies }); // Fake 404 so people think it's just a mistake.
+	
+			// Message Info
+			const messageInf= await db.query(client, "SELECT * FROM messages WHERE id=$1", [`${req.params.id}`], res, req);
+			const message={
+				id: messageInf[0].id,
+				sender: messageInf[0].sender,
+				recipient: messageInf[0].recipient,
+				body: messageInf[0].msg,
+				title: messageInf[0].title,
+				created_on: messageInf[0].created_on
+			}
+	
+			const senderInf= await db.query(client, "SELECT alters.*, systems.* FROM alters INNER JOIN systems ON alters.sys_id = systems.sys_id WHERE alt_id=$1", [`${message.sender}`], res, req);
+			const sender= senderInf[0];
+	
+			const recInf= await db.query(client, "SELECT alters.*, systems.* FROM alters INNER JOIN systems ON alters.sys_id = systems.sys_id WHERE alt_id=$1", [`${message.recipient}`], res, req);
+			const recipient= recInf[0];
+	
+			// Mark as read if the recipient opens it!
+			// if (message.recipient == )
+	
+			res.render(`pages/message`, { session: req.session, splash:splash, cookies:req.cookies, message: message, sender: sender, recipient: recipient});
+		} else {
+			forbidUser(res, req)
+		}
+	  });
+	  app.get('/inbox/:alt/create', async function(req, res){
+		if (isLoggedIn(req)){
+			// Get Alter.
+			const altInfo= await db.query(client, "SELECT alters.*, systems.* from alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alt_id=$1", [`${req.params.alt}`], res, req);
+			var selectedAlt= altInfo[0];
+	
+			// console.log(selectedAlt)
+			// Before going any further-- Check that the alter's user ID and the actual requester's user ID matches.
+			if (!idCheck(req, selectedAlt.user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
+	
+			res.render(`pages/create_message`, { session: req.session, splash:splash, cookies:req.cookies, alter:selectedAlt });
+		} else {
+			forbidUser(res, req)
+		}
+	  })
+
+	app.post('/inbox/:alt/create', async function(req, res){
+		if (isLoggedIn(req)){
+			// Get Alter.
+			const altInfo= await db.query(client, "SELECT alters.*, systems.* from alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alt_id=$1", [`${req.params.alt}`], res, req);
+			var selectedAlt= altInfo[0];
+			// Before going any further-- Check that the alter's user ID and the actual requester's user ID matches.
+			if (!idCheck(req, selectedAlt.user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
+
+			await db.query(client, "INSERT INTO messages (sender, recipient, title, msg) VALUES ($1, $2, $3, $4)", [
+				`${req.params.alt}`,
+				`${req.body.recipient}`,
+				`${encryptWithAES(req.body.fTitle)}`,
+				`${encryptWithAES(req.body.msgBody)}`
+			], res, req);
+	
+			res.redirect(`/inbox/${req.params.alt}`)
+		} else {
+			forbidUser(res, req)
+		}
+	  })
 }
   // ERROR ROUTES. DO NOT PUT NEW PAGES BENEATH THESE.
 	app.use(function(req,res){
-			res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", splash:splash,cookies:req.cookies });
+			res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", cookies:req.cookies });
 	});
   // End pages.
   app.listen(PORT, async function(res, req){

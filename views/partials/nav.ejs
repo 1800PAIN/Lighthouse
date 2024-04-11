@@ -2,126 +2,267 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
-
-
-
-.active {
-  color: var(--col2);
+    nav {
+  background-color: var(--col6);
+  padding: 3px 16px;
+  display: -ms-flexbox;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  color: var(--nav-txt);
+}
+nav .m-menu__checkbox {
+  display: none;
+}
+nav label.m-menu__toggle {
+  cursor: pointer;
+}
+nav .m-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: 450px;
+  width: calc(100vw - 30px);
+  height: 100%;
+  -moz-transform: translate3d(-450px, 0, 0);
+  -o-transform: translate3d(-450px, 0, 0);
+  -ms-transform: translate3d(-450px, 0, 0);
+  -webkit-transform: translate3d(-450px, 0, 0);
+  transform: translate3d(-450px, 0, 0);
+  -moz-transition: transform 0.35s;
+  -o-transition: transform 0.35s;
+  -webkit-transition: transform 0.35s;
+  transition: transform 0.35s;
+  z-index: 1;
+  overflow: hidden;
+  background-color: var(--col6);
+}
+nav .m-menu__overlay {
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  position: absolute;
+  top: 0;
+  width: 100%;
+  bottom: 0;
+  z-index: 1;
+  display: none;
+}
+nav .m-menu__header {
+  padding: 0 16px;
+  height: 50px;
+  display: -ms-flexbox;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: space-around;
+  justify-content: space-around;
+  -ms-flex-pack: space-around;
+  -webkit-align-items: center;
+  align-items: center;
+}
+nav .m-menu__header span {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  width: auto;
+  margin-right: 2em;
+}
+nav .m-menu .m-menu {
+  -moz-transform: translate3d(480px, 0, 0);
+  -o-transform: translate3d(480px, 0, 0);
+  -ms-transform: translate3d(480px, 0, 0);
+  -webkit-transform: translate3d(480px, 0, 0);
+  transform: translate3d(480px, 0, 0);
+}
+nav .m-menu ul {
+  height: 100%;
+  overflow-y: auto;
+}
+nav .m-menu ul li a, nav .m-menu ul li label {
+  display: block;
+  text-align: left;
+  padding: 0 15px;
+  line-height: 47px;
+  text-decoration: none;
+  color: var(--nav-txt);
+  cursor: pointer;
+  font-size: 1rem;
+  /* border-bottom: 1px solid var(--col7); */
+  position: relative;
+}
+nav .m-menu ul li label.a-label__chevron::after {
+  content: "";
+  position: absolute;
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  border-color: var(--col3);
+  border-style: solid;
+  border-width: 1px 1px 0 0;
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  top: 50%;
+  margin-top: -5px;
+  right: 16px;
+}
+nav .m-menu ul li .-invisible {
+  border-bottom: 0;
+}
+nav .m-menu .m-menu label.m-menu__toggle {
+  display: -ms-flexbox;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  border-bottom: 0;
+  padding: 0;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+nav .m-menu__checkbox:checked ~ .m-menu__overlay {
+  display: block;
+}
+nav .m-menu__checkbox:checked ~ .m-menu {
+  -moz-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
-.panicbutton{
-  -webkit-filter: drop-shadow(1px 1px 0 black)
-                  drop-shadow(-1px -1px 0 black);
-  filter: drop-shadow(1px 1px 0 black) 
-          drop-shadow(-1px -1px 0 black);
+.wrapper {
+  width: 480px;
+  height: 667px;
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: var(--col2);
+  position: relative;
 }
   </style>
-  </head>
-  <div id="menubg"></div>
-  <div id="logo"><a href="/"><img style="margin-right: 10px; float: left;" src="/img/logo.png" width="64px" alt="<%= siteLanguage[session.language || "en"].title %> logo"><span id="logoname" style="line-height:30px;"><%= siteLanguage[session.language || "en"].title %></span><br/>
-    <% if (isLoggedIn(cookies)) { %>
-      <span class="greeting"><%= (siteLanguage[session.language || "en"].greeting).replace("[[USER]]",cookies.username ? cookies.username : "friend") %></span>
-    <% } else { %>
-    <span class="greeting">Journal Together</span>
-      <% } %>
-  </a>
-
-</div>
-  <div class="topnav" id="myTopnav">
-    <% if (isLoggedIn(cookies)){ %>
-      <a href="/logout"><%= siteLanguage[session.language || "en"].signOut %></a>
-        <% } else { %>
-          <a href="/signup"><%= siteLanguage[session.language || "en"].signUp %></a>
-          <a href="/login"><%= siteLanguage[session.language || "en"].signIn %></a>
-        <% } %>
-    <% if (isLoggedIn(cookies)){ %>
-      <% if (session.system_term) { %> 
-        <a href="/system"><%= (siteLanguage[session.language || "en"].mySys).replace("[[SYSTEM]]", capitalise(session.system_term)) %></a>
-      <% } else { %>
-        <a href="/system"><%= (siteLanguage[session.language || "en"].mySys).replace("[[SYSTEM]]", siteLanguage[session.language || "en"].system) %></a>
-        <% } %>
-      <a href="/profile"><%= siteLanguage[session.language || "en"].settings %></a>
-      <a href="/forum"><%= siteLanguage[session.language || "en"].myForum %></a>
-      <% } %>
-    
-      <% if (session.is_dev){ %>
-        <a href="/mod">Mod Panel</a>
-        <% } %>
-      <div class="dropdown">
-      <button class="dropbtn" onclick='$("#drop").slideToggle()'><%= siteLanguage[session.language || "en"].info %> ⮛
-      </button>
-      <div class="dropdown-content" id="drop">
-        <a href="/about"><%= siteLanguage[session.language || "en"].about %></a>
-        <a href="/tutorial"><%= siteLanguage[session.language || "en"].tutorial %></a>
-        <a href="/glossary"><%= siteLanguage[session.language || "en"].glossary %></a>
-        <a href="/changelog"><%= siteLanguage[session.language || "en"].changelog %></a>
-        <a href="/crisis"><%= siteLanguage[session.language || "en"].crisis %></a>
-        <a href="/tos"><%= siteLanguage[session.language || "en"].tos %></a>
-        <a href="/privacypolicy"><%= siteLanguage[session.language || "en"].pp %></a>
-        <a title="Current Language"><%= (siteLanguage[session.language || "en"].name) %> <%= (siteLanguage[session.language || "en"].flag) %></a>
-      </div>
-      
-    </div> 
-      <a href="javascript:history.back()"><%= siteLanguage[session.language || "en"].back %></a>
-      
-  <button id="mode" style="background:transparent; "onclick="toggleMode()"><span name="mode" class="material-symbols-outlined mode" style="vertical-align:middle;color: var(--button)">light_mode</span></button>
-  <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="toggleMobile()">&#9776;</a>
+ <nav>
   
-  <!-- <a id="panic"><i class="fa fa-window-close panicbutton" aria-hidden="true" style="color:rgb(223, 65, 65); "></i></a> -->
+  <input type="checkbox" id="menu" name="menu" class="m-menu__checkbox">
+  
+  <label class="m-menu__toggle" for="menu">
+    <svg width="35" height="35" viewBox="0 0 24 24" fill="#000" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="arcs"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+  </label>
+  <label class="m-menu__overlay" for="menu"></label>
 
-    
+  <div style="width: 100%;
+  text-align: center">
+    <a href="/" style="text-decoration: none;"><img src="/img/logo.png" class="vtinyimg" alt="<%= siteLanguage[session.language || "en"].title %> logo"><span id="logoname"><%= siteLanguage[session.language || "en"].title %></span></a>
   </div>
+  
 
+  <div class="m-menu">
+    <div class="m-menu__header">
+      <label class="m-menu__toggle" for="menu">
+        <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="arcs">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </label>
+      
+    </div>
+    
+    <ul>
+      <li><label><a href="/">Home</a></label></li>
+      <% if (isLoggedIn(cookies)){ %>
+        <% if (session.system_term) { %> 
+          <li><label><a href="/system"><%= (siteLanguage[session.language || "en"].mySys).replace("[[SYSTEM]]", capitalise(session.system_term)) %></a></label></li>
+        <% } else { %>
+          <li><label><a href="/system"><%= (siteLanguage[session.language || "en"].mySys).replace("[[SYSTEM]]", siteLanguage[session.language || "en"].system) %></a></label></li>
+          
+          <% } %>
+        <li><label><a href="/profile"><%= siteLanguage[session.language || "en"].settings %></a></label></li>
+        <li><label><a href="/forum"><%= siteLanguage[session.language || "en"].myForum %></a></label></li>
+        <% } %>
+      
+        <% if (session.is_dev){ %>
+          <li><label><a href="/mod">Mod Panel</a></label></li>
+          <% } %>
+      <li>
+        <label class="a-label__chevron" for="item-2"><%= siteLanguage[session.language || "en"].info %></label>
+        <input type="checkbox" id="item-2" name="item-2" class="m-menu__checkbox">
+        <div class="m-menu">
+          <div class="m-menu__header">
+            <label class="m-menu__toggle" for="item-2">
+              <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-linejoin="arcs">
+                <path d="M19 12H6M12 5l-7 7 7 7"/>
+              </svg>
+            </label>
+            <span style="color:var(--nav-txt)"><%= siteLanguage[session.language || "en"].info %></span>
+          </div>
+          <ul>
+            <li><label><a href="/about"><%= siteLanguage[session.language || "en"].about %></a></label></li>
+            <li><label><a href="/tutorial"><%= siteLanguage[session.language || "en"].tutorial %></a></label></li>
+            <li><label><a href="/philosophy"><%= siteLanguage[session.language || "en"].phil %></a></label></li>
+            <% if (!(isLoggedIn) || session.glossary_enabled){ %><li><label><a href="/glossary"><%= siteLanguage[session.language || "en"].glossary %></a></label></li><% } %>
+            <li><label><a href="/changelog"><%= siteLanguage[session.language || "en"].changelog %></a></label></li>
+            <li><label><a href="/crisis"><%= siteLanguage[session.language || "en"].crisis %></a></label></li>
+            <li><label><a href="/tos"><%= siteLanguage[session.language || "en"].tos %></a></label></li>
+            <li><label><a href="/privacypolicy"><%= siteLanguage[session.language || "en"].pp %></a></label></li>
+            <li><label><a title="Current Language"><%= (siteLanguage[session.language || "en"].name) %></a></label></li>
+        </div>
+      </li>
+      <li><label id="mode" onclick="toggleMode()" ><i name="mode" class="fa fa-sun-o mode" aria-hidden="true" style="color: var(--nav-txt)"></i><span class="mode" style="font-size: .65em; color: var(--nav-txt)"> <span id="modetxt" class="mode" style="color: var(--nav-txt)"></span> Mode</span></label></li>
+
+      <li><label><a href="javascript:history.back()"><%= siteLanguage[session.language || "en"].back %></a></label></li>
+      <% if (isLoggedIn(cookies)){ %>
+        <li><label><a href="/logout"><%= siteLanguage[session.language || "en"].signOut %></a></label></li>
+          <% } else { %>
+            <li><label><a href="/signup"><%= siteLanguage[session.language || "en"].signUp %></a></label></li>
+            <li><label><a href="/login"><%= siteLanguage[session.language || "en"].signIn %></a></label></li>
+          <% } %>
+
+    </ul>  
+  </div>
+</nav>
 <script>
   if (localStorage.lighthouse_mode){
       if (localStorage.lighthouse_mode == "dark") {
-        $('[name="mode"]').text(`dark_mode`);
+        $('[name="mode"]').removeClass(`fa-sun-o`).addClass(`fa-moon-o`);
         $("html").data('theme','dark'); 
+        $("#modetxt").text("Light");
       } else {
-        $('[name="mode"]').text(`light_mode`);
+        $('[name="mode"]').removeClass(`fa-moon-o`).addClass(`fa-sun-o`);
         $("html").data('theme','light'); 
+        $("#modetxt").text("Dark");
       }
 
     } else {
       localStorage.lighthouse_mode= "light";
 
     }
-  $( "#hamburger" ).on( "click", function() {
-   $("#mobilenav").slideToggle("fast");
-} );
-$( ".infowindow" ).on( "click", function() {
-   $(".infodd").slideToggle("fast");
-} );
 
-function toggleMobile() {
-  var x = document.getElementById("myTopnav");
-  if (x.className === "topnav") {
-    x.className += " responsive";
-  } else {
-    x.className = "topnav";
-  }
-}
 
 function toggleMode(){
   event.preventDefault();
   if (localStorage.lighthouse_mode){
     // Toggle.
     if (localStorage.lighthouse_mode == "dark") {
-      $('[name="mode"]').text(`light_mode`);
+      $('[name="mode"]').removeClass(`fa-moon-o`).addClass(`fa-sun-o`);
       localStorage.lighthouse_mode="light";
       $("html").data('theme','light'); 
       document.querySelector("html").setAttribute("data-theme", "light");
+      $("#modetxt").text("Dark");
     } else {
       localStorage.lighthouse_mode="dark";
-      $('[name="mode"]').text(`dark_mode`);
+      $("#modetxt").text("Light");
+      $('[name="mode"]').removeClass(`fa-sun-o`).addClass(`fa-moon-o`);
       document.querySelector("html").setAttribute("data-theme", "dark");
       
     }
   } else {
     // Define and then darken.
     localStorage.lighthouse_mode="dark";
-      $('[name="mode"]').text(`dark_mode`);
-      $('head').append('<link type="text/css" rel="stylesheet" media="all" href="/stylesheets/dark.css">');
+      $("#modetxt").text("Light");
+      $('[name="mode"]').removeClass(`fa-sun-o`).addClass(`fa-moon-o`);
+      document.querySelector("html").setAttribute("data-theme", "dark");
 
   }
 }

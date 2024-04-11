@@ -6,9 +6,12 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
-            <% if (locals.messages.flash) { %>
-                <div class="splash"><%- locals.messages.flash %></div>
-            <% } %>
+            <section>
+                <ul class="breadcrumb">
+                    <li><a href="/system" title="Your <%= capitalise(session.system_term) %>"><%= capitalise(session.system_term) %></a></li>
+                    <li><a href="/worksheets" title="Worksheets">Worksheets</a></li>
+                    <li>Then and Now</li>
+                </ul>
             <section>
                 <h2>Then and Now</h2>
                 <p>Using the chart below, separate your traumatic memories and how those situations have changed now.</p>

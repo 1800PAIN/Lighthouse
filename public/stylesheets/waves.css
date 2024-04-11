@@ -1,18 +1,18 @@
 /* Waves Theme Colours */
 [data-theme="light"] {
     --col1: #05465a;
-    --col2: #87dde8;
+    --col2: #6db0e7;
     --col3: #50f7b7;
     --col4: #29489c;
-    --col5: #000b6e;
+    --col5: #6974db;
 	--col6: #1d2c42;
     --col7: #cee7f5;
-    --col8: #1f2b5f;
+    --col8: #2a9efd;
     --forum-shade: rgba(10, 13, 153, 0.05);
     --input: rgba(160, 193, 236, .2); 
     --bg-img: url("../img/water.png");
     --menu-bg: url("../img/big-wave.jpg");
-    --wrapper: rgba(200, 249, 255, 0.4);
+    --wrapper: rgba(200, 249, 255, 0.8);
     --text: black;
     --archivedtxt: grey;
     --archivedbg: silver;
@@ -20,6 +20,9 @@
     --grad1: rgba(32, 95, 189,0);
     --grad2: rgba(5, 54, 100,1);
     --button: rgb(74, 234, 255);
+    --nav-txt: rgb(150, 252, 255);
+    --page: rgb(39,236,250);
+    --page: linear-gradient(190deg, rgba(39,236,250,1) 0%, rgba(102,111,255,1) 100%);
   }
   
   [data-theme="dark"] {
@@ -33,9 +36,9 @@
     --col7: #1c1b1f;
     --col8: #33c8df;
     --input: rgb(29, 43, 68); 
-    --bg-img: url("../img/water.png"), rgb(6, 4, 34);
+    --bg-img: url("../img/bubbles.png");
     --menu-bg: url("../img/jellyfish.jpg");
-    --wrapper: rgba(1, 8, 29, 0.4);
+    --wrapper: rgba(1, 8, 29, 0.6);
     --text: rgb(204, 195, 211);
     --polar: rgb(68, 80, 92);
     --archivedtxt: rgb(46, 46, 70);
@@ -44,6 +47,8 @@
     --grad1: rgba(13, 108, 146, 0);
     --grad2: rgb(0, 24, 44);
     --button: rgb(12, 177, 199);
+    --page: rgb(10,23,91);
+    --page: linear-gradient(190deg, rgba(10,23,91,1) 0%, rgba(16,15,25,1) 100%);
 
     /* CKEditor */
     --ck-color-base-border: #746fbd !important;
@@ -58,12 +63,7 @@
 input:hover{
     color: var(--text);
 }
-html{
-    background-image: var(--bg-img);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}
+
 #menubg{
     background: var(--menu-bg);
     background-size: cover;
@@ -74,7 +74,4 @@ html{
 }
 hr{
     background-image:url('../img/svg/horizontal_rule_waves.svg');
-}
-a:not(.navel):hover{
-    color: var(--col8);
 }

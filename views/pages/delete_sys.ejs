@@ -23,7 +23,7 @@
             </ul></p>
             <a class="linkbutton" href="/system/<%= alt.sys_id %>">Go back</a>
             <form method="post">
-                <input class="warningbutton" type="submit" value="Delete <%=  Buffer.from(alt.sys_alias, 'base64').toString() %> forever" name="delete">
+                <input class="warningbutton" type="submit" value="Delete <%=  truncate(Buffer.from(alt.sys_alias, 'base64').toString(), 12) %> forever" name="delete">
             </form>
         </section>
     </div>

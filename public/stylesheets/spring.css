@@ -4,25 +4,24 @@
     --col2: #f0c539;
     --col3: #a8e221;
     --col4: #701346;
-    --col5: #2fc229;
+    --col5: #22a71e;
 	--col6: #21640c;
-    --col7: #fafffc;
+    --col7: #88eeb1;
     --col8: #0e093d;
     --forum-shade: rgba(52, 163, 52, 0.05);
     --input: rgba(158, 160, 255, 0.2); 
-    --bg-img: url("../img/spring-bg.png"), var(--col7);
-    --menu-bg: url("/img/spring.jpg");
-    --wrapper: rgba(220, 255, 204, 0.527);
+    --bg-img: url("../img/grass-day.png");
+    --wrapper: rgba(220, 255, 204, 0.8);
     --text: rgb(0, 0, 0);
     --archivedtxt: grey;
     --archivedbg: silver;
     --lighthouse: rgb(255, 254, 202);
     --grad1: rgba(1, 107, 89, 0);
     --grad2: rgb(83, 145, 119);
-    --nav-txt: #6bfae7;
+    --nav-txt: #f3b84a;
     --button: var(--nav-txt);
     --greeting: rgb(223, 227, 250);
-    --linkhov: var(--col6);
+    --page: rgb(169, 241, 191);
 }
 [data-theme="dark"]{
     --col1: #ee9ef8;
@@ -35,8 +34,7 @@
     --col8: #c1baff;
     --forum-shade: rgba(52, 163, 52, 0.05);
     --input: rgba(6, 56, 1, 0.2); 
-    --bg-img: url("../img/dew.png"), var(--col7);
-    --menu-bg: url("/img/rainy.jpg");
+    --bg-img: url("../img/grass.png");
     --wrapper: rgba(0, 24, 31, 0.527);
     --text: rgb(232, 255, 241);
     --archivedtxt: grey;
@@ -48,17 +46,10 @@
     --button: var(--nav-txt);
     --greeting: rgb(223, 250, 227);
     --linkhov: var(--col4);
+    --page: rgb(29, 41, 29);
 }
 
 hr{
     height:3em;
     background-image:url('../img/svg/horizontal_rule_spring.svg');
-}
-
-.dropdown-content a{
-    color: var(--text)
-}
-
-a:hover{
-    color: var(--linkhov) !important;
 }

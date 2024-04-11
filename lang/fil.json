@@ -1,23 +1,84 @@
 {
     "test": "Hello Mundo",
     "alter": {
-        "created": "-Alter- matagumpay na naidagdag!",
-        "updated": "-Alter- matagumpay na na-update!",
-        "deleted": "-Alter- matagumpay na natanggal."
+        "created": "[[ALTERNAME]] matagumpay na naidagdag!",
+        "updated": "[[ALTERNAME]] matagumpay na na-update!",
+        "deleted": "[[ALTERNAME]] matagumpay na natanggal.",
+        "delete": "Tanggalin si [[ALTERNAME]]",
+        "archive": "I-archive si [[ALTERNAME]]"
     },
     "mood":{
         "updated": "Updated mood!",
         "deleted": "Cleared mood."
     },
     "system": {
-        "created": "System created!",
-        "updated": "System updated!",
-        "deleted": "Deleted system.",
-        "imported": "Imported from Pluralkit successfully."
+        "addSystem": "Magdagdag ng [[SYSTEM]]",
+        "created": "Nagawa ang [[SYSTEM]]",
+        "updated": "[[SYSTEMCAP]] na-update!",
+        "deleted": "Tinanggal [[SYSTEM]].",
+        "links":{
+            "search": "[[ALTERCAP]] Search",
+            "rules": "[[SYSTEMCAP]] Rules",
+            "wishlist": "Wishlist",
+            "worksheets": "Worksheets",
+            "tutorial": "Tutorial",
+            "combine": "Pagsamahin ang [[ALTERS]]"
+        }
     },
     "account":{
-        "created": "Thank you for signing up to Lighthouse! You are now logged in.",
-        "updated": "Settings updated!",
-        "deleted": "So sorry to see you go. You can sign up again at any time."
+        "created": "Salamat sa pag-sign up sa Lighthouse!",
+        "updated": "Na-update ang mga setting!",
+        "deleted": "Nalulungkot na makita kang umalis. Maaari kang mag-sign up muli anumang oras.",
+        "alreadyExists": "<strong>Uh oh!</strong> Ginagamit na ang username o email na iyon. <a href='/login'>Kailangan mo bang mag-log in sa halip?</a>",
+        "incorrect": "Ang iyong email o password ay hindi tama. <a href='/forgot-password'>Kailangan mo bang i-reset ang iyong password?</a>",
+        "loggedout": "Naka-log out ka.",
+        "loggedin": "Kumusta, [[USERNAME]]! Naka-log in ka na!",
+        "sessionExpired": "Maaaring nag-expire na ang iyong session. Mangyaring mag-log in muli.",
+        "skin": "Matagumpay na nabago ang tema ng website!",
+        "notVerified": "Hindi pa nabe-verify ang iyong account! Pakisuri ang iyong email at i-verify ang iyong account.",
+        "alreadyVerified": "Na-verify na ang iyong account."
+    },
+    "wish":{
+        "created": "Nagawa ang wish!",
+        "granted": "Wish granted!",
+        "deleted": "Wish deleted."
+    },
+    "import":{
+        "PK":{
+          "success": "Matagumpay ang pag-import mula sa Pluralkit!",
+          "failure":{
+            "noCheck": "Walang [[ALTERS]] ang napiling i-import.",
+            "notExists": "Mukhang wala ang [[SYSTEM]] na iyon.",
+            "unavailable": "Ang Pluralkit ay kasalukuyang hindi maabot."
+          }
+        },
+        "SP":{
+            "success": "Matagumpay ang pag-import mula sa Simply Plural!",
+            "failure":{
+                "noCheck": "Walang [[ALTERS]] ang napiling i-import.",
+                "notExists": "Mukhang wala ang [[SYSTEM]] na iyon.",
+                "unavailable": "Ang Simply Plural ay kasalukuyang hindi maabot."
+              }
+          }
+        
+    },
+    "posts":{
+        "moved": "Matagumpay na nailipat ang entry sa journal.",
+        "deleted": "Tinanggal na Journal entry."
+    },
+    "journals":{
+        "updateSkin": "I-update ang Balat ng Journal"
+    },
+    "actions":{
+        "rename": "Palitan ang pangalan",
+        "delete": "Burahin",
+        "startOver": "Start Over",
+        "setIcon": "Itakda ang Icon",
+        "editAlter": "I-edit ang [[ALTERNAME]]",
+        "update": "I-update",
+        "lock": "Lock",
+        "unlock": "I-unlock",
+        "setMood": "I-update ang Mood",
+        "clearMood": "Clear Mood"
     }
 }

@@ -12,9 +12,36 @@
               background: transparent;
               color: var(--col5)
             }
-            .padLinks > a{
-              margin-top: .5em;
+            .padLinks {
+              column-count: 4
+          }
+          .padLinks > li > a:hover{
+            filter:brightness(1.2) !important;
+          }
+          .padLinks > li {
+            list-style-type: none;
+          }
+          @media only screen and (max-width: 900px) {
+            .padLinks {
+              column-count: 1;
             }
+          }
+          #sysList{
+            padding: 3px;
+            align-items: center;
+            justify-content: center;
+            font-size: calc(100% + 25%);
+          }
+          #sysList > li > a, #sysList > li > a > i{
+            color: var(--col8) !important;
+            text-decoration: none;
+          }
+          #sysList> li:not(:last-child){
+            border-bottom: 1px solid var(--nav-txt);
+          }
+          .subsys{
+            margin-left: 3em;
+          }
           </style>
     </head>
     <body>
@@ -22,27 +49,23 @@
         <%- include ("../partials/nav.ejs") %>
 
         <div id="wrapper">
-          
-          <% if (locals.messages.flash) { %>
-            <div class="splash"><%- locals.messages.flash %></div>
-        <% } %>
         <% let currentP= 0; %>
-            
-            <h2 id="sysHeader"></h2>
-            <div class="grid-sm padLinks" style="margin: auto;text-align:center;line-height: 1;">
-              <a title= "<%= capitalise(cookies.alter_term) %> Search" href="/search"><%= capitalise(cookies.alter_term) %> Search</a>
-              <a title= "<%= capitalise(cookies.system_term) %> Rules" href="/rules"><%= capitalise(cookies.system_term) %> Rules</a>
-              <% if (session.innerworld == true) { %> <a title="Your <%= capitalise(session.innerworld_term) %>" href="/inner-world"><%= capitalise(session.innerworld_term) %></a> <%}%>
-              <a title="Your <%= capitalise(cookies.system_term) %>'s wants, needs, and wishes" href="/wish">Wishlist</a>
-              <% if (session.worksheets_enabled == true){ %><a title="Worksheets for trauma (WIP)" href="/worksheets">Worksheets</a><% }%>
-              <a title="Crash course on using Lighthouse" href="/tutorial">Tutorial</a>
-              <a title="Combine <%= pluralize(cookies.alter_term) %>" href="/combine/alts">Combine <%= capitalise(pluralize(cookies.alter_term)) %></a>
-            </div>
-            <p><sub id="sysCount" style="display: none;"></sub></p>
-            <div id="WaitSys"></div>
-            <div id="sysList">
-            </div>
-            <button id="tbutton">Add a <%= capitalise(cookies.system_term) %></button>
+            <h1 class="dyn">[[SYSTEMCAP]] Page</h1>
+            <ul class="padLinks">
+              <li><a class="dyn linkbutton" title= "<%= strings.system.links.search %>" href="/search"><%= strings.system.links.search %></a></li>
+              <li><a class="dyn linkbutton" title= "<%= strings.system.links.rules %>" href="/rules"><%= strings.system.links.rules %></a></li>
+              <li><% if (session.innerworld == true) { %> <a class="dyn linkbutton" title="<%= capitalise(session.innerworld_term) %>" href="/inner-world"><%= capitalise(session.innerworld_term) %></a> <%}%></li>
+              <li><a class="dyn linkbutton" title="<%= strings.system.links.wishlist %>" href="/wish"><%= strings.system.links.wishlist %></a></li>
+              <li><% if (session.worksheets_enabled == true){ %><a class="dyn linkbutton" title="<%= strings.system.links.worksheets %>" href="/worksheets"><%= strings.system.links.worksheets %></a><% }%></li>
+              <li><a class="dyn linkbutton" title="Crash course on using Lighthouse" href="/tutorial"><%= strings.system.links.tutorial %></a></li>
+              <li><a class="dyn linkbutton" title="<%= strings.system.links.combine %>" href="/combine/alts"><%= strings.system.links.combine %></a></li>
+              <li><a class="dyn linkbutton" title="<%= siteLanguage[session.language || "en"].comm %>" href="/system/communal-journal/"><%= siteLanguage[session.language || "en"].comm %></a></li>
+            </ul>
+            <h2 id="sysHeader">Your <%= capitalise(system.length == 1 ? session.system_term : pluralize(session.system_term)) %></h2>
+            <ul id="sysList" style="list-style-type: none;">
+              <%- renderNestedList(system, alters) %>
+              </ul>
+            <button id="tbutton" class="dyn"><%= strings.system.addSystem %></button>
               <!-- The Modal -->
               <div id="myModal" class="modal">
 
@@ -51,7 +74,7 @@
                   <span class="material-symbols-outlined close">
                     cancel
                     </span>
-                    <h2>Add a New <%= capitalise(cookies.system_term) %></h2>
+                    <h2 class="dyn"><%= strings.system.addSystem %></h2>
                   <form method="post">
                     <label for="sysname"><%= capitalise(cookies.system_term) %> Name: </label>
                     <input type="text" name="sysname" required><br>
@@ -59,6 +82,9 @@
                       <label for="subsys">Nest this <%= cookies.system_term %> under: </label>
                       <select name="subsys" id="subdrop">
                         <option checked>None</option>
+                        <% system.forEach((sys)=>{ %> 
+                          <option value="<%= sys.id %>"><%= Buffer.from(sys.alias, "base64").toString() %></option>
+                      <% }) %>
                       </select>
                       <br><small>Nesting a <%= cookies.system_term %> creates a <%= cookies.subsystem_term %>.</small>
                     </div>
@@ -71,23 +97,9 @@
             <p style="margin-bottom:-1em;"><small>Or, import from another source:</small></p>
             <a href="/pluralkit" class="linkbutton"><img src="https://pluralkit.me/favicon.png" class="vvtinyimg">Pluralkit</a>
             <a href="/simply-plural" class="linkbutton"><img src="/img/sp-icon.png" class="vvtinyimg">Simply Plural</a>
-            <hr/>
-            <section>
-                <h2>Communal Journal</h2>
-                <form method="post">
-                    <label for="cTitle">Post Title</label><br/>
-                    <input type="text" name="cTitle" autocomplete="off"><br/>
-                    <div id="editor" autocomplete="off" cols="60" rows="15"></div><br/>
-                    <input type="submit" name="post" value="Create Journal Post">
-                    <input type="reset" name="reset" value="Start Over">
-                    <textarea name="cBody" id="hidden-text" style="display:none;">
-                    </textarea>
-                    <%- include ("../partials/quill.ejs") %>
-                </form>
-                <div id="Wait"></div>
-                <div id="journalPosts">
-                </div>
-            </section>
+            <hr>
+            <h2>Your Communal Journal Just Got an Upgrade!</h2>
+            <p class="dyn">The Communal Journal is now available for individual [[SYSTEMS]] and [[SUBSYSTEMS]]. <a href="/system/communal-journal/">Access it here.</a></p>
         </div>
 
         <%- include ("../partials/footer.ejs") %>
@@ -105,144 +117,6 @@
           }
           </script>
         <script>
-
-  const controller = new AbortController();
-  const { signal } = controller;
-
-    function deleteWarn(title){
-      if (confirm(`You're about to delete ${title}. Is this ok?`)){
-      } else {
-        event.preventDefault();
-      }
-    }
-
-    signal.addEventListener("abort", () => {
-  console.log(signal.aborted);
-});
-
-async function fetchPosts(){
-  $("#sysList").empty();
-  $("#journalPosts").empty();
-  $("#Wait").html(`<img src="/img/svg/bubbles.svg" class="tinyimg">`);
-  $("#WaitSys").html(`<img src="/img/svg/bubbles.svg" class="tinyimg">`);
-  let response = await fetch(`/system-data`, { 
-    method: "GET",
-                headers: { 
-                  "api-lh-call": "api-lh-call",
-                  'Content-Type': 'application/json',
-                  "grab": "comm-posts"
-                } 
-            });
-            
-            let body = await response.text();
-            let sysInfo = JSON.parse(body);
-            // sysArr, nonPinned, isPinned
-            $("#Wait").empty();
-            $("#WaitSys").empty();
-            if (!response.ok) return $("#Wait").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
-            if (sysInfo.code == 400) return $("#Wait").html("<p><img src='/img/svg/broken_anchor.svg' class='tinyimg'><em>There was an error loading your Communal Journal. Please reload or try again later.</em></p>");
-            (sysInfo.sysArr).sort((a, b) => a.alias.localeCompare(b.alias));
-            var sysCount = 0;
-            var subSysCount = 0;
-            if (sysInfo.sysArr.length > 0){
-              $("#sysCount").show();
-              $("#sysList").append("For sanity's sake and neatness, <%- pluralize(cookies.subsystem_term) %> are only shown 1 level deep. <%- capitalise(pluralize(cookies.subsystem_term)) %> within <%- pluralize(cookies.subsystem_term) %> are nested in their parent's page.");
-            } else {
-              $("#sysCount").hide();
-              $("#sysList").append("You don't have a <%= cookies.system_term %> created yet. Click \"Add a <%= capitalise(cookies.system_term) %>\"");
-            }
-            for (i in sysInfo.sysArr){
-              // We need to do some logic. 
-              $("#subdrop").append(`<option value="${sysInfo.sysArr[i].sys_id}">${sysInfo.sysArr[i].alias}</option>`);
-              if (sysInfo.sysArr[i].subsys){
-                // Is there a subsystem under this one? Check.
-                continue;
-              } else {
-              // This is a system.
-              sysCount++;
-              $("#sysList").append(`<div class="systemdiv" id="${sysInfo.sysArr[i].sys_id}">
-              <a class="systembutton" title="${sysInfo.sysArr[i].alias}" href="/system/${sysInfo.sysArr[i].sys_id}">${sysInfo.sysArr[i].alias} <a class="linkbutton editbtn" href="/editsys/${sysInfo.sysArr[i].sys_id}">Rename</a></a><a href="/deletesys/${sysInfo.sysArr[i].sys_id}" name="${sysInfo.sysArr[i].sys_id}" class="linkbutton deletebtn">Delete</a>
-              </div>`);
-                            // Grab one system.
-                for (n in sysInfo.sysArr){
-                // Loop through the other systems. If the one you're looping through is the same, skip. 
-                
-                if (sysInfo.sysArr[i].sys_id== sysInfo.sysArr[n].sys_id){
-                  // It's the same system.
-                  continue;
-                } else {
-                  if (sysInfo.sysArr[i].sys_id== sysInfo.sysArr[n].subsys){
-                    // We have a subsystem to list.
-                    subSysCount++;
-                    $("#sysList").append(`<div class="systemdiv subsystem" id="${sysInfo.sysArr[n].subsys}">
-              <a class="systembutton" title="${sysInfo.sysArr[n].alias}" href="/system/${sysInfo.sysArr[n].sys_id}">${sysInfo.sysArr[n].alias} <a class="editbtn" href="/editsys/${sysInfo.sysArr[n].sys_id}">Rename</a></a><a href="/deletesys/${sysInfo.sysArr[n].sys_id}" name="${sysInfo.sysArr[n].sys_id}" class="deletebtn">Delete</a>
-              </div>`);
-                  } else continue;
-                }
-              }                
-              }
-            }
-            $("#sysCount").text(`You have ${sysCount} ${sysCount == 1 ? '<%- cookies.system_term %>' : '<%- pluralize(cookies.system_term) %>'} and ${subSysCount} ${subSysCount == 1 ? '<%- cookies.subsystem_term %>' : 'visible <%- pluralize(cookies.subsystem_term) %>'}.`);
-            $("#sysHeader").text(`Your ${sysCount == 1 ? '<%- capitalise(cookies.system_term) %>' : '<%- capitalise(pluralize(cookies.system_term)) %>'}`);
-            var language = window.navigator.userLanguage || window.navigator.language;
-            
-            
-            if (sysInfo.isPinned.length > 0){
-            for (i in sysInfo.isPinned){
-                          var bodyArr= (sysInfo.isPinned[i].body).replace(/\r/gi, '').split("\n").filter(function() { return true; });
-                          var postStr= new String();
-                          if (sysInfo.isPinned[i].title){ 
-                            postStr += `<h2><i style="color:var(--col4)" class="fa fa-thumb-tack" aria-hidden="true" title="Pinned Post"></i> ${sysInfo.isPinned[i].title}</h2> <a title="Edit ${sysInfo.isPinned[i].title}" href="/comm/${sysInfo.isPinned[i].id}/edit"><i class="fa fa-pencil" aria-hidden="true"></i></a><form method="post" style="display: inline;"><button type="submit" name="${sysInfo.isPinned[i].id}" value="Remove" class="textless" onclick="deleteWarn('${sysInfo.isPinned[i].title ? sysInfo.isPinned[i].title : "this untitled post"}')"><span class="material-symbols-outlined textless"> delete</span></button></form> <i style="color:var(--col4)" title="Unpin this post from the top of your journal" class="fa fa-thumb-tack" aria-hidden="true"onclick="pinPosts('${sysInfo.isPinned[i].id}')"></i><p><sub>Posted ${(sysInfo.isPinned[i].created_on).substr(0,10)}</sub></p>`
-                          } else {
-                            postStr += `<h2><i style="color:var(--col4)" class="fa fa-thumb-tack" aria-hidden="true" title="Pinned Post"></i></h2> <a title="Edit ${sysInfo.isPinned[i].title}" href="/comm/${sysInfo.isPinned[i].id}/edit"><i class="fa fa-pencil" aria-hidden="true"></i></a><form method="post" style="display: inline;"><button type="submit" name="${sysInfo.isPinned[i].id}" value="Remove" class="textless" onclick="deleteWarn('${sysInfo.isPinned[i].title ? sysInfo.isPinned[i].title : "this untitled post"}')"><span class="material-symbols-outlined textless"> delete</span></button></form> <i style="color:var(--col4)" title="Unpin this post from the top of your journal" class="fa fa-thumb-tack" aria-hidden="true"onclick="pinPosts('${sysInfo.isPinned[i].id}')"></i><p><sub>Posted ${(sysInfo.isPinned[i].created_on).substr(0,10)}</sub></p>`
-                          }
-                          for (i in bodyArr){
-                            postStr += `<p>${bodyArr[i]}</p>`;
-                          }
-          $("#journalPosts").append(`<article>${postStr}</article>`);
-                        }
-                        
-            }
-            if (sysInfo.nonPinned.length > 0){
-              for (i in sysInfo.nonPinned){
-                var bodyArr= (sysInfo.nonPinned[i].body).replace(/\r/gi, '').split("\n").filter(function() { return true; });
-                var postStr= new String();
-                if (sysInfo.nonPinned[i].title){ 
-                  postStr += `<h2>${sysInfo.nonPinned[i].title}</h2> <a title="Edit ${sysInfo.nonPinned[i].title}" href="/comm/${sysInfo.nonPinned[i].id}/edit"><i class="fa fa-pencil" aria-hidden="true"></i></a> <form method="post" style="display: inline;"><button type="submit" name="${sysInfo.nonPinned[i].id}" value="Remove" class="textless" onclick="deleteWarn('${sysInfo.nonPinned[i].title}')"><span class="material-symbols-outlined textless"> delete</span></button></form> <i style="color:var(--col4)" class="fa fa-thumb-tack" title="Pin this post to the top of your journal" aria-hidden="true" onclick="pinPosts('${sysInfo.nonPinned[i].id}')"></i><p><sub>Posted ${(sysInfo.nonPinned[i].created_on).substr(0,10)}</sub></p>`
-                } else {
-                  postStr += `<a title="Edit ${sysInfo.nonPinned[i].title}" href="/comm/${sysInfo.nonPinned[i].id}/edit"><i class="fa fa-pencil" aria-hidden="true"></i></a> <form method="post" style="display: inline;"><button type="submit" name="${sysInfo.nonPinned[i].id}" value="Remove" class="textless" onclick="deleteWarn('${sysInfo.nonPinned[i].title}')"><span class="material-symbols-outlined textless"> delete</span></button></form> <i style="color:var(--col4)" class="fa fa-thumb-tack" title="Pin this post to the top of your journal" aria-hidden="true" onclick="pinPosts('${sysInfo.nonPinned[i].id}')"></i><p><sub>Posted ${(sysInfo.nonPinned[i].created_on).substr(0,10)}</sub></p>`
-                }
-                for (i in bodyArr){
-                  postStr += `<p>${bodyArr[i]}</p>`;
-                }
-            $("#journalPosts").append(`<article>${postStr}</article>`);  
-              }
-                          
-            }
-}
-async function pinPosts(pID){
-  $("#Wait").html(`<img src="/img/svg/bubbles.svg" class="tinyimg">`);
-  $("#WaitSys").html(`<img src="/img/svg/bubbles.svg" class="tinyimg">`);
-  let response = await fetch(`/system-data`, { 
-                method: "PUT",
-                headers: { 
-                  "api-lh-call": "api-lh-call",
-                  'Content-Type': 'application/json',
-                  "grab": "comm-posts"
-                }, 
-                body: JSON.stringify({
-                  "edit": "pin",
-                  "postID": `${pID}`
-                })
-            });
-            let body = await response.text();
-            if (!response.ok) return $("#Wait").html("<p><img src='/img/svg/ship-icon.svg' class='tinyimg'><em>There was an error communicating with our database. Please reload or try again later.</em></p>");
-            let sysInfo = JSON.parse(body);
-            fetchPosts();
-          }
-$(document).ready(function(){
-  fetchPosts();
-});
 </script>
     </body>
 </html>

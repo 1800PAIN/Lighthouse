@@ -31,7 +31,7 @@
             <section>
                 <img src="./img/sp-icon.png" class="tinyimg" style="float:left;margin-right:.5em;" alt="Simply Plural Icon"><h1>Import from Simply Plural</h1>
                 <p>If you have a <%= cookies.system_term %> on Simply Plural, you can import your <%= pluralize(cookies.alter_term) %> onto Lighthouse. To do this, you will need your user ID. You can find this under Settings > Account > Account Settings. Your ID will be at the bottom of your account. You will also need to generate a token. Lighthouse only needs read permissions from this token. You can generate one under Settings > Account > Tokens.</p>
-                <p>Please keep in mind that <strong>Lighthouse does not store your User ID or your token.</strong> We cannot retrieve account information based on these things.</p>
+                <p>Please keep in mind that <strong>Lighthouse does not store your User ID or your token.</strong> We cannot retrieve your Lighthouse account using your User ID or token.</p>
             </section>
             <textarea id="jsonPlop" style="display:none;"></textarea>
             <section id="form">
@@ -94,12 +94,12 @@
             $("#checkall").click(function() {
                     // var cblist = $("input[name=alterChoice]");
                     if ($("#checkall").text()== "Select All"){
-                       $('input:checkbox').each(function(){
+                       $('input:checkbox.alterChoice').each(function(){
                             $(this).prop('checked',true);
                     }) 
                     $("#checkall").text("Unselect All");
                     } else {
-                        $('input:checkbox').each(function(){
+                        $('input:checkbox.alterChoice').each(function(){
                             $(this).prop('checked',false);
                     }) 
                     $("#checkall").text("Select All");

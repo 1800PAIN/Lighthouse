@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" style="visibility: hidden;">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+        <style>
+            .switch {
+            position: relative;
+            display: inline-block;
+            width: 3em;
+            height: 1em;
+            }
+
+            /* Hide default HTML checkbox */
+            .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            }
+
+            /* The slider */
+            .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--col1);
+            -webkit-transition: .4s;
+            transition: .4s;
+            }
+
+            .slider:before {
+            position: absolute;
+            content: "";
+            height: 1em;
+            width: 1em;
+            left: 4px;
+            background-color: ghostwhite;
+            -webkit-transition: .4s;
+            transition: .4s;
+            }
+
+            input:checked + .slider {
+            background-color: var(--col3);
+            }
+
+            input:focus + .slider {
+            box-shadow: 0 0 1px var(--col3);
+            }
+
+            input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+            }
+
+            /* Rounded sliders */
+            .slider.round {
+            border-radius: 34px;
+            }
+
+            .slider.round:before {
+            border-radius: 50%;
+            }
+        </style>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+            <ul class="breadcrumb">
+                <% if (session.chosenSystem) {%>
+                    <li><a href="/system" class="dyn">My [[SYSTEMCAP]]</a></li>
+                    <li><a href="/system/<%= session.chosenSystem.sys_id %>"><%= decode(session.chosenSystem.sys_alias) %></a></li>
+                <% } else { %>
+                    <li><a href="/system" class="dyn">My [[SYSTEMCAP]]</a></li>
+                <% } %>
+                <li><%= siteLanguage[session.language || "en"].comm %></li>
+            </ul>
+            <% if (finalPage > 1){ %>
+                <section class="pageJump">
+                  Pages:
+                  <ul>
+                    <% if (pageNum > 1){ %><li>
+                        <% if (session.chosenSystem){ %>
+                            <a href="/system/communal-journal?sys=<%= session.chosenSystem.sys_id %>&pg=<%= parseInt(pageNum) - 1 %>"><i class="fa fa-arrow-left" aria-hidden="true"></i> Previous</a>
+                        <% } else { %>
+                            <i class="fa fa-arrow-left" aria-hidden="true"></i> 
+                            <a href="/system/communal-journal?pg=<%= parseInt(pageNum) - 1 %>">Previous</a>
+                        <% } %>
+                    </li>
+                    <% } %>
+                  <li class="pageNum"><%= pageNum %></li>
+                  <% if (pageNum < finalPage){ %><li>
+                    <% if (session.chosenSystem){ %>
+                        <a href="/system/communal-journal?sys=<%= session.chosenSystem.sys_id %>&pg=<%= parseInt(pageNum) + 1 %>">Next</a>
+                    <% } else { %>
+                        <a href="/system/communal-journal?pg=<%= parseInt(pageNum) + 1 %>">Next</a>
+                    <% } %> <i class="fa fa-arrow-right" aria-hidden="true"></i></a></li><% } %>
+                  </ul>
+                  <form method="none">
+                  <label for="page">Go to page: </label><input type="number" min="1" max="<%= finalPage %>" name="page" id="page" style="width: 3em;">
+                  <button id="go">Go</button>
+                  </form>
+                </section>            
+                  <% } %>
+            <section>
+                <h1><%= siteLanguage[session.language || "en"].comm %><% if (session.chosenSystem) {%>- <%= decode(session.chosenSystem.sys_alias) %><% } %></h1>
+                <p class="dyn">Your Communal Journal is a safe space for all [[ALTERS]]<% if (session.chosenSystem) {%> in <%= decode(session.chosenSystem.sys_alias) %><% } %> to share, connect, and understand each other better. </p> 
+            </section>
+            <hr>
+            <section name="newpost">
+                <form method="post">
+                    <input type="hidden" name="sysid" value="<%= sysChoice %>">
+                    <label for="title">Title </label>
+                    <input type="text" name="title" id="title"><br>
+                    <div id="editor"></div>
+                    <textarea name="body" id="hidden-text" ></textarea><br/>
+                    <span>Pin this post</span> <label for="ispinned" class="switch"><input type="checkbox" id="ispinned" name="ispinned"><span class="slider round"></span></label> <br>
+                    <input type="submit" name="newtop" value="Post Entry">
+                </form>
+            </section>
+            <section>
+                <h2>Need ideas?</h2>
+                <p>Below are a bunch of prompts you can use for journalling.</p>
+                <button class="collapsible">Prompts</button>
+                <div class="collapse-content">
+                    <h3>General Communication</h3>
+                    <ul>
+                        <li>Today, who feels like writing? Introduce yourself (if you haven't yet) and what you'd like to share.</li>
+                        <li>Is there anything someone else needs help with right now? How can we all support each other?</li>
+                        <li class="dyn">If we could have a [[SYSTEM]] meeting, what topics would be important to discuss?</li>
+                        <li>Describe a situation you recently felt strong in. What skills or strengths did you bring to the table?</li>
+                    </ul>
+                    <h3 class="dyn">Communication With Another [[ALTERCAP]]</h3>
+                    <ul>
+                        <li class="dyn">If you could ask another [[ALTER]] in the [[SYSTEM]] one question, what would it be?</li>
+                        <li class="dyn">Write a letter to another [[ALTER]] expressing gratitude for something they do for the [[SYSTEM]].</li>
+                    </ul>
+                    <h3 class="dyn">[[ALTERSCAP]]</h3>
+                    <ul>
+                        <li>What are some things that make you feel safe and comfortable?</li>
+                        <li class="dyn">What are some interests you share with another [[ALTER]]?</li>
+                        <li class="dyn">Think of another [[ALTER]]. Do you understand them well? If not, write them a letter introducing yourself and asking questions.</li>
+                        <li class="dyn">For the [[SYSTEM]]: Describe yourself in three words.</li>
+                        <li>Why do you think you formed?</li>
+                        <li class="dyn">Is there anything you'd like the other [[ALTERS]] to know about you?</li>
+                        <li class="dyn">Who else in the [[SYSTEM]] do you feel most comfortable with? Why?</li>
+                    </ul>
+                    <h3>Difficult Topics</h3>
+                    <p class="alert alert-error">It's important to only use these prompts if you are feeling safe and grounded enough to do so.</p>
+                    <ul>
+                        <li>Describe the situation that triggered you. What sights, sounds, smells, or feelings were in your immediate surroundings? (Focus on the present moment, not the memory itself.)</li>
+                        <li>Think of a time you were triggered recently. Have you encountered this trigger in the past? If so, how did you react then?</li>
+                        <li>Imagine a safe space you can retreat to when triggered. Describe this space in detail.</li>
+                        <li>What coping mechanisms have helped you manage triggers in the past? List them down.</li>
+                    </ul>
+                </div>
+            </section>
+            <% if (pinned.length > 0 || posts[Number(pageNum)-1]) { %><hr><% } %>
+
+            <!-- COMMUNAL JOURNAL POSTS -->
+            <section>
+                <% if (pinned.length > 0){ %> 
+                    <% pinned.forEach((post)=>{ %>
+                        <article>
+                            <div>
+                                <h2><i class="fa fa-thumb-tack" aria-hidden="true"></i> <%- decrypt(post.title) %></h2>
+                                <div><a href="/comm/<%= post.id %>/edit"><i class="fa fa-pencil fa-2x" aria-hidden="true"></i>
+                                </a> <a href="/comm/<%= post.id %>/delete"><i class="fa fa-trash fa-2x" aria-hidden="true"></i>
+                                </a></div>
+                                <p><small>Posted <%= (post.created_on).toLocaleDateString(undefined, dateOptions) %> <%= (post.created_on).toLocaleDateString(undefined, timeOptions) %></small></p>
+                                <div>
+                                    <%- decrypt(post.body) %>
+                                </div>
+                            </div>
+                        </article>
+                    <% }) %>
+                <% } %>
+                <% if (posts.length > 0){ %> 
+                    <% posts[Number(pageNum)-1].forEach((post)=>{ %>
+                        <article>
+                            <div>
+                                <h2><%- decrypt(post.title) %></h2>
+                                <div><a href="/comm/<%= post.id %>/edit"><i class="fa fa-pencil fa-2x" aria-hidden="true"></i>
+                                </a> <a href="/comm/<%= post.id %>/delete"><i class="fa fa-trash fa-2x" aria-hidden="true"></i>
+                                </a></div>
+                                <p><small>Posted <%= (post.created_on).toLocaleDateString(undefined, dateOptions) %> <%= (post.created_on).toLocaleDateString(undefined, timeOptions) %></small></p>
+                                <div>
+                                    <%- decrypt(post.body) %>
+                                </div>
+                            </div>
+                        </article>
+                    <% }) %>
+                <% } %>
+                
+            </section>
+            
+    </div>
+    <%- include ("../partials/footer.ejs") %>
+    <%- include ("../partials/quill.ejs") %>
+    <%- include ("../partials/collapse.ejs") %>
+    <script>
+        <% if (session.chosenSystem){ %>
+            $("#go").on("click", function(){
+          event.preventDefault();
+          window.location= `/system/communal-journal?sys=<%= session.chosenSystem %>&pg=${$("#page").val()}`
+        })
+        <% } else { %>
+            $("#go").on("click", function(){
+          event.preventDefault();
+          window.location= `/system/communal-journal?pg=${$("#page").val()}`
+        })
+        <% } %>
+        
+    </script>
+    </body>
+</html>

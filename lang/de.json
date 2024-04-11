@@ -1,31 +1,41 @@
 {
     "test": "Hallo Welt",
     "alter": {
-        "created": "[ALTER] erfolgreich hinzugefügt!",
-        "updated": "[ALTER] erfolgreich aktualisiert!",
-        "deleted": "[ALTER] erfolgreich entfernt."
+        "created": "[[ALTERCAP]] erfolgreich hinzugefügt!",
+        "updated": "[[ALTERCAP]] erfolgreich aktualisiert!",
+        "deleted": "[[ALTERCAP]] erfolgreich entfernt.",
+        "archive": "Archive"
     },
     "mood":{
         "updated": "Aktualisierte Stimmung!",
         "deleted": "Klare Stimmung!"
     },
     "system": {
-        "created": "[System] wurde erstellt!",
-        "updated": "[System] wurde aktualisiert!",
-        "deleted": "[System] gelöscht.",
-        "imported": "Erfolgreich aus Pluralkit importiert."
+        "addSystem": "[[SYSTEMCAP]] hinzufügen",
+        "created": "[[SYSTEMCAP]] wurde erstellt!",
+        "updated": "[[SYSTEMCAP]] wurde aktualisiert!",
+        "deleted": "[[SYSTEMCAP]] gelöscht.",
+        "links":{
+            "search": "[[ALTERCAP]]suche",
+            "rules": "[[SYSTEMCAP]]regeln",
+            "wishlist": "Wunschzettel",
+            "worksheets": "Arbeitsblätter",
+            "tutorial": "Leitfaden",
+            "combine": "[[ALTERSCAP]] kombinieren"
+        }
     },
     "account":{
-        "created": "Vielen Dank, dass Sie sich Lighthouse angeschlossen haben! Sie sind jetzt eingeloggt.",
+        "created": "Danke shein, dass Sie sich Lighthouse angeschlossen haben! Sie sind jetzt eingeloggt.",
         "updated": "Einstellungen aktualisiert!",
         "deleted": "Bis später. Sie können sich jederzeit erneut anmelden.",
         "alreadyExists": "<strong>Oh nein!</strong> Dieser Benutzername oder diese E-Mail-Adresse wird bereits verwendet. <a href='/login'>Müssen Sie sich stattdessen anmelden?</a>",
         "incorrect": "Deine E-Mail oder dein Passwort ist falsch. <a href='/forgot-password'>Müssen Sie Ihr Passwort zurücksetzen?</a>",
         "loggedout": "Sie sind jetzt ausgeloggt.",
-        "loggedin": "Sie sind jetzt eingeloggt!",
+        "loggedin": "Hallo, [[USERNAME]]! Sie sind jetzt eingeloggt.",
         "sessionExpired": "Deine Sitzung ist abgelaufen. Bitte neu anmelden.",
         "skin": "Website-Theme erfolgreich geändert!",
-        "notVerified": "Your account isn't verified yet!"
+        "notVerified": "Your account isn't verified yet! Please check your email and verify your account.",
+        "alreadyVerified": "Your account is already verified."
     },
     "wish":{
         "created": "Wunsch gemacht!",
@@ -36,12 +46,38 @@
         "PK":{
           "success": "Import aus Pluralkit erfolgreich!",
           "failure":{
-            "noCheck": "Es wurde kein [Alters] zum Importieren ausgewählt."
+            "noCheck": "Es wurde kein [[ALTERS]] zum Importieren ausgewählt.",
+            "notExists": "That [[SYSTEM]] doesn't seem to exist.",
+            "unavailable": "Pluralkit is currently unreachable."
           }
-        }
+        },
+        "SP":{
+            "success": "Import from Simply Plural successful!",
+            "failure":{
+                "noCheck": "No [[ALTERS]] were selected to import.",
+                "notExists": "That [[SYSTEM]] doesn't seem to exist.",
+                "unavailable": "Simply Plural is currently unreachable."
+              }
+          }
         
     },
     "posts":{
-        "moved": "Der Journaleintrag wurde erfolgreich verschoben."
+        "moved": "Der Journaleintrag wurde erfolgreich verschoben.",
+        "deleted": "Deleted Journal entry."
+    },
+    "journals":{
+        "updateSkin": "Update Journal Skin"
+    },
+    "actions":{
+        "rename": "Bearbeiten",
+        "delete": "Löschen",
+        "startOver": "Von anfängen",
+        "setIcon": "Symbol aktualisieren",
+        "editAlter": "Bearbeiten [[ALTERNAME]]",
+        "update": "Aktualisieren",
+        "lock": "Sperren",
+        "unlock": "Freischalten",
+        "setMood": "Stimmung aktualisieren",
+        "clearMood": "Stimmung löschen"
     }
 }

@@ -1,0 +1,130 @@
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+
+.mode{
+  color: var(--nav-txt);
+}
+
+.active {
+  color: var(--col2);
+}
+
+.panicbutton{
+  -webkit-filter: drop-shadow(1px 1px 0 black)
+                  drop-shadow(-1px -1px 0 black);
+  filter: drop-shadow(1px 1px 0 black) 
+          drop-shadow(-1px -1px 0 black);
+}
+  </style>
+  </head>
+
+
+</div>
+  <div class="topnav" id="myTopnav">
+    <a href="/"><img style="margin-right: 10px;" src="/img/logo.png" class="vtinyimg" alt="<%= siteLanguage[session.language || "en"].title %> logo"></a>
+    <% if (isLoggedIn(cookies)){ %>
+      <a href="/logout"><%= siteLanguage[session.language || "en"].signOut %></a>
+        <% } else { %>
+          <a href="/signup"><%= siteLanguage[session.language || "en"].signUp %></a>
+          <a href="/login"><%= siteLanguage[session.language || "en"].signIn %></a>
+        <% } %>
+    <% if (isLoggedIn(cookies)){ %>
+      <% if (session.system_term) { %> 
+        <a href="/system"><%= (siteLanguage[session.language || "en"].mySys).replace("[[SYSTEM]]", capitalise(session.system_term)) %></a>
+      <% } else { %>
+        <a href="/system"><%= (siteLanguage[session.language || "en"].mySys).replace("[[SYSTEM]]", siteLanguage[session.language || "en"].system) %></a>
+        <% } %>
+      <a href="/profile"><%= siteLanguage[session.language || "en"].settings %></a>
+      <a href="/forum"><%= siteLanguage[session.language || "en"].myForum %></a>
+      <% } %>
+    
+      <% if (session.is_dev){ %>
+        <a href="/mod">Mod Panel</a>
+        <% } %>
+      <div class="dropdown">
+      <button class="dropbtn" onclick='$("#drop").slideToggle()'><%= siteLanguage[session.language || "en"].info %> ⮛
+      </button>
+      <div class="dropdown-content" id="drop">
+        <a href="/about"><%= siteLanguage[session.language || "en"].about %></a>
+        <a href="/tutorial"><%= siteLanguage[session.language || "en"].tutorial %></a>
+        <a href="/glossary"><%= siteLanguage[session.language || "en"].glossary %></a>
+        <a href="/changelog"><%= siteLanguage[session.language || "en"].changelog %></a>
+        <a href="/crisis"><%= siteLanguage[session.language || "en"].crisis %></a>
+        <a href="/tos"><%= siteLanguage[session.language || "en"].tos %></a>
+        <a href="/privacypolicy"><%= siteLanguage[session.language || "en"].pp %></a>
+        <a title="Current Language"><%= (siteLanguage[session.language || "en"].name) %> <%= (siteLanguage[session.language || "en"].flag) %></a>
+      </div>
+      
+    </div> 
+      <a href="javascript:history.back()"><%= siteLanguage[session.language || "en"].back %></a>
+      
+  <button id="mode" style="background:transparent; "onclick="toggleMode()"><i name="mode" class="fa fa-sun-o mode" aria-hidden="true"></i><span class="mode" style="font-size: .65em"> Switch to <span id="modetxt" class="mode"></span> Mode</span></button>
+  <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="toggleMobile()">&#9776;</a>
+  
+  <!-- <a id="panic"><i class="fa fa-window-close panicbutton" aria-hidden="true" style="color:rgb(223, 65, 65); "></i></a> -->
+
+    
+  </div>
+
+<script>
+  if (localStorage.lighthouse_mode){
+      if (localStorage.lighthouse_mode == "dark") {
+        $('[name="mode"]').removeClass(`fa-sun-o`).addClass(`fa-moon-o`);
+        $("html").data('theme','dark'); 
+        $("#mode").text("Light");
+      } else {
+        $('[name="mode"]').removeClass(`fa-moon-o`).addClass(`fa-sun-o`);
+        $("html").data('theme','light'); 
+        $("#modetxt").text("Dark");
+      }
+
+    } else {
+      localStorage.lighthouse_mode= "light";
+
+    }
+  $( "#hamburger" ).on( "click", function() {
+   $("#mobilenav").slideToggle("fast");
+} );
+$( ".infowindow" ).on( "click", function() {
+   $(".infodd").slideToggle("fast");
+} );
+
+function toggleMobile() {
+  var x = document.getElementById("myTopnav");
+  if (x.className === "topnav") {
+    x.className += " responsive";
+  } else {
+    x.className = "topnav";
+  }
+}
+
+function toggleMode(){
+  event.preventDefault();
+  if (localStorage.lighthouse_mode){
+    // Toggle.
+    if (localStorage.lighthouse_mode == "dark") {
+      $('[name="mode"]').removeClass(`fa-moon-o`).addClass(`fa-sun-o`);
+      localStorage.lighthouse_mode="light";
+      $("html").data('theme','light'); 
+      document.querySelector("html").setAttribute("data-theme", "light");
+      $("#modetxt").text("Dark");
+    } else {
+      localStorage.lighthouse_mode="dark";
+      $("#modetxt").text("Light");
+      $('[name="mode"]').removeClass(`fa-sun-o`).addClass(`fa-moon-o`);
+      document.querySelector("html").setAttribute("data-theme", "dark");
+      
+    }
+  } else {
+    // Define and then darken.
+    localStorage.lighthouse_mode="dark";
+      $("#modetxt").text("Light");
+      $('[name="mode"]').removeClass(`fa-sun-o`).addClass(`fa-moon-o`);
+      document.querySelector("html").setAttribute("data-theme", "dark");
+
+  }
+}
+
+</script>

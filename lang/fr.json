@@ -3,21 +3,82 @@
     "alter": {
         "created": "Persona ajouté avec succès !",
         "updated": "Persona mis à jour avec succès !",
-        "deleted": "Persona supprimé."
+        "deleted": "Persona supprimé.",
+        "delete": "Supprimer [[ALTERNAME]]",
+        "archive": "Archiver [[ALTERNAME]]"
     },
     "mood":{
-        "updated": "L'humeur de Persona mise à jour !",
-        "deleted": "L'humeur de Persona a été supprimée."
+        "updated": "Émotion mise à jour !",
+        "deleted": "Émotion mise à effacée."
     },
     "system": {
-        "created": "Système créé !",
-        "updated": "Système mis à jour !",
-        "deleted": "Système supprimé.",
-        "imported": "Importé depuis Pluralkit avec succès."
+        "addSystem": "Ajouter un [[SYSTEMCAP]]",
+        "created": "[[SYSTEMCAP]] créé !",
+        "updated": "[[SYSTEM]] mis à jour !",
+        "deleted": "[[SYSTEM]] supprimé.",
+        "links":{
+            "search": "[[ALTERCAP]] Recherche",
+            "rules": "[[SYSTEMCAP]] Règles",
+            "wishlist": "Souhait",
+            "worksheets": "Activités",
+            "tutorial": "Tutoriel",
+            "combine": "Combiner [[ALTERS]]"
+        }
     },
     "account":{
-        "created": "Merci de vous être inscrit à Lighthouse ! Vous êtes maintenant inscrit.",
-        "updated": "Paramètres mis à jour!",
-        "deleted": "Désolé de te voir partir. Vous pouvez vous réinscrire à tout moment."
+        "created": "Merci de vous être inscrit à Lighthouse !",
+        "updated": "Paramètres mis à jour !",
+        "deleted": "Désolé de vous voir partir. Vous pouvez vous réabonner à tout moment.",
+        "alreadyExists": "<strong>Euh oh !</strong> Ce nom d'utilisateur ou cette adresse e-mail est déjà utilisé. <a href='/login'>Devez-vous vous connecter à la place ?</ a>",
+        "incorrect": "Votre email ou votre mot de passe est incorrect. <a href='/forgot-password'>Avez-vous besoin de réinitialiser votre mot de passe ?</a>",
+        "loggedout": "You're now logged out.",
+        "loggedin": "Bonjour, [[USERNAME]] ! Vous êtes maintenant connecté !",
+        "sessionExpired": "Votre session a peut-être expiré. Veuillez vous reconnecter.",
+        "skin": "L'apparence du site Web a été modifiée avec succès !",
+        "notVerified": "Votre compte n'est pas encore vérifié ! Veuillez vérifier votre courrier électronique et vérifier votre compte.",
+        "alreadyVerified": "Votre compte est déjà vérifié."
+    },
+    "wish":{
+        "created": "Vœu créé !",
+         "granted": "Vœu exaucé !",
+         "deleted": "Souhait supprimé."
+     },
+    "import":{
+        "PK":{
+          "success": "Importation depuis Pluralkit réussie !",
+          "failure":{
+            "noCheck": "Aucun [[ALTERS]] n'a été sélectionné pour l'importation.",
+            "notExists": "Ce [[SYSTEM]] ne semble pas exister.",
+            "unavailable": "Pluralkit est actuellement inaccessible."
+          }
+        },
+        "SP":{
+            "success": "Importation depuis Simply Plural réussie !",
+            "failure":{
+              "noCheck": "Aucun [[ALTERS]] n'a été sélectionné pour l'importation.",
+              "notExists": "Ce [[SYSTEM]] ne semble pas exister.",
+              "unavailable": "Simply Plural est actuellement inaccessible."
+            }
+          }
+        
+    },
+    "posts":{
+        "moved": "L'entrée du journal a été déplacée avec succès.",
+         "deleted": "Entrée de journal supprimée."
+    },
+    "journals":{
+        "updateSkin": "Mettre à jour le thème du Journal"
+    },
+    "actions":{
+        "rename": "Renommer",
+        "delete": "Supprimer",
+        "startOver": "Recommencer",
+        "setIcon": "Définir l'icône",
+        "editAlter": "Modifier [[ALTERNAME]]",
+        "update": "Mise à jour",
+        "lock": "Verrouiller",
+        "unlock": "Déverrouiller",
+        "setMood": "Mettre à jour l'humeur",
+        "clearMood": "Effacer l'humeur"
     }
 }

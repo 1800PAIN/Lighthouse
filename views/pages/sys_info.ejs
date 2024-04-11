@@ -91,9 +91,11 @@ var journSkin=[
                   <button id="go">Go</button>
                   </form>
                 </div>
+                <a class="dyn linkbutton" title="<%= siteLanguage[session.language || "en"].comm %>" href="/system/communal-journal?sys=<%= session.chosenSys.sys_id %>"><%= siteLanguage[session.language || "en"].comm %></a>
             <% if (parseInt(altCount) > 0){ %>
                 <a class="linkbutton" href="/search"><i class="fa fa-search"></i> <%= capitalise(cookies.alter_term) %> Search</a>
                 <p><%= capitalise(pluralize(cookies.alter_term)) %>: <strong><%= parseInt(altCount).toLocaleString() %></strong></p>
+                <p class="dyn">Showing you <%= numup %> [[ALTERS]] per page.</p>
             <div class="grid" id="sysContainer">
                 <% for ( i in alterArr) {
                     if (alterArr[i].is_archived== false){
@@ -241,9 +243,7 @@ var journSkin=[
         fetchSystems();
         $("input").attr('autocomplete','off');
 
-        if($("#sysContainer a").length <= 3){
-            $("#sysContainer").css({"justify-content": "space-evenly", "width": "50%"})
-        }
+
         });
         if ($("#addAlts").length){
             async function grabPerson() {

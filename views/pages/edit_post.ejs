@@ -9,9 +9,6 @@
     <%- include ("../partials/nav.ejs") %>
     <div id="wrapper">
         <section>
-            <% if (locals.messages.flash) { %>
-                <div class="splash"><%- locals.messages.flash %></div>
-            <% } %>
             <h2>Edit <%- cJourn.title %></h2>
             <div id="Wait"></div>
             <form method="post" id="editpost">
@@ -23,8 +20,18 @@
                         <option selected value="skip">Leave as is</option>
                     </select><br>
                 <% } %>
+                <% if (cJourn.is_comm == true){ %>
+                    <input type="hidden" id="sysid" name="sysid" value="<%- cJourn.sysid %>">
+                <% } %>
                 <label for="jTitle">Post title</label><br/>
-                <input type="text" name="jTitle" value="<%- cJourn.title %>"><br/>
+                <input 
+                    type="text" 
+                    name="jTitle" 
+                    value="<%- cJourn.title %>"
+                    ><br/>
+                <label for="jDate">Post Date (mm/dd/yyyy, hh:mm)</label><br/>
+                <!-- 2017-06-01T08:30 -->
+                <input type="datetime-local" id="jDate" name="jDate" value="<%= (cJourn.date).getFullYear() %>-<%= pad(Number((cJourn.date).getMonth()) +1, 2) %>-<%= pad((cJourn.date).getDate(), 2) %>T<%= pad((cJourn.date).getHours(), 2) %>:<%= (cJourn.date).getMinutes() %>"/><br>
                 <label for="jBody">Post Body</label><br/>
                 <div id="editor"><%- cJourn.body %></div>
                 <textarea name="jBody" autocomplete="off" cols="60" rows="15" id="hidden-text" ></textarea><br/>

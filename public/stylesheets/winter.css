@@ -10,8 +10,7 @@
     --col8: #09193d;
     --forum-shade: rgba(1, 149, 175, 0.05);
     --input: rgba(158, 160, 255, 0.2); 
-    --bg-img: url("../img/winter-bg.png"), var(--col7);
-    --menu-bg: url("/img/winter.jpg");
+    --bg-img: url("../img/snowfall.png");
     --wrapper: rgba(217, 247, 255, 0.527);
     --text: rgb(6, 2, 65);
     --archivedtxt: grey;
@@ -22,6 +21,7 @@
     --nav-txt: #6bfae7;
     --button: var(--nav-txt);
     --greeting: rgb(223, 227, 250);
+    --page: ghostwhite;
 }
 [data-theme="dark"]{
     --col1: #77ddeb;
@@ -34,8 +34,7 @@
     --col8: #5274c4;
     --forum-shade: rgba(1, 149, 175, 0.05);
     --input: rgba(82, 85, 235, 0.2); 
-    --bg-img: url("../img/dark-winter.png"), var(--col7);
-    --menu-bg: url("/img/aurora.jpg");
+    --bg-img: url("../img/snowfall-night.png");
     --wrapper: rgba(1, 44, 56, 0.527);
     --text: rgb(232, 230, 255);
     --archivedtxt: grey;
@@ -46,17 +45,9 @@
     --nav-txt: #6bfae7;
     --button: var(--nav-txt);
     --greeting: rgb(114, 134, 245);
+    --page: rgb(25, 25, 44);
 }
 hr{
     height:3em;
     background-image:url('../img/svg/horizontal_rule_winter.svg');
-}
-.version{
-    color: var(--col2)
-}
-.greeting{
-    color: var(--greeting)
-}
-.dropdown-content a{
-    color: var(--text)
 }

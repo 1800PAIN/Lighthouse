@@ -1,18 +1,18 @@
 /* Coral Theme Colours */
 [data-theme="light"]{
     --col1: #791122;
-    --col2: #ffae34;
-    --col3: #ff8b3e;
+    --col2: #e0921c;
+    --col3: #ca5a0f;
     --col4: #c5008a;
     --col5: #df5248;
-	--col6: #b4193b;
+	--col6: #793141;
     --col7: #ffceb2;
     --col8: #501638;
     --forum-shade: rgba(116, 0, 71, 0.05);
     --input: rgba(126, 126, 126, 0.2); 
-    --bg-img: url("../img/coral.png");
-    --menu-bg: url("../img/coral-reef.jpg");
-    --wrapper: rgba(255, 174, 120, 0.096);
+    --bg-img: url("../img/coral-day.png");
+    /* --menu-bg: url("../img/coral-reef.jpg"); */
+    --wrapper: rgba(246, 233, 255, 0.836);
     --text: black;
     --button: gainsboro;
     --archivedtxt: grey;
@@ -21,6 +21,8 @@
     --grad1: rgba(112, 7, 7, 0);
     --grad2: rgb(9, 7, 141);
     --nav-txt: #f8e6eb;
+    --page:rgb(78,27,126);
+    --page: linear-gradient(0deg, rgba(78,27,126,1) 0%, rgba(198,102,173,1) 100%);
 }
 [data-theme="dark"]{
     --col1: #f7c3cc;
@@ -33,9 +35,9 @@
     --col8: #ff7cc8;
     --forum-shade: rgba(116, 0, 71, 0.05);
     --input: rgba(126, 126, 126, 0.2); 
-    --bg-img: url("../img/coral.png"), var(--col7);
-    --menu-bg: url("../img/coral-reef.jpg");
-    --wrapper: rgba(73, 1, 7, 0.281);
+    --bg-img: url("../img/coral-night.png");
+    /* --menu-bg: url("../img/coral-reef.jpg"); */
+    --wrapper: rgba(36, 1, 4, 0.651);
     --text: rgb(255, 238, 238);
     --button: gainsboro;
     --archivedtxt: grey;
@@ -44,6 +46,8 @@
     --grad1: rgba(112, 7, 7, 0);
     --grad2: rgb(9, 7, 141);
     --nav-txt: #f8e6eb;
+    --page: rgb(39,7,70);
+    --page:linear-gradient(0deg, rgba(39,7,70,1) 0%, rgba(115,8,69,1) 100%);
 }
 hr{
     height:3em;
@@ -52,3 +56,4 @@ hr{
 .greeting{
     color: gainsboro;
 }
+

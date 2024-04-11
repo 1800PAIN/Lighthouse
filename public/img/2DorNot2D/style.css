@@ -1,0 +1,37 @@
+:root{
+    --col1: #42C1B2; 
+    --col2: #00648C;
+    --col3: #033E51;
+    --col4: #F7F9ED;
+    --col5: #010609;
+}
+*{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+body{
+    background: var(--col3);
+    color: var(--col4);
+}
+#bgpanel{
+    position: absolute; 
+    left: 0; 
+    right: 0; 
+    margin-left: auto; 
+    margin-right: auto;
+    width: 75vw;
+    max-width: 75vw;
+    height: auto;
+    background: rgba(255,255,255,.2);
+    text-align:center;
+    display: flex;
+    justify-content: space-around;
+    padding: .5em;
+}
+#bgpanel > div{
+    min-width:35vw;
+}
+img{
+    width: 7em;
+    height: 7em;
+    object-fit: cover;
+}

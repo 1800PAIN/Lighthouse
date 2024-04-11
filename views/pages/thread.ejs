@@ -18,9 +18,13 @@
             width: 80%;
             }
           }
-        </style>
+      </style>
+      <link rel="stylesheet" href="/stylesheets/quill-fonts.css">
     </head>
     <body>
+      <% var timeStamp= (originalPost.created_on).toLocaleString().split(",") 
+                    var timePost= timeStamp[1]
+                  %>
         <%- include ("../partials/nav.ejs") %>
                                       <!-- The Modal -->
                                       <div id="myModal" class="modal">
@@ -55,18 +59,22 @@
                                                     <br><input type="submit" name="editop" value="Edit Topic">
                                                 </form>
                                                 <script>
+                                                  var Font = Quill.import('formats/font');
+                                                  Font.whitelist = ['times-new-roman', 'arial', 'monospace', 'cursive', 'marker', 'creepster','homemade-apple', 'shadows' ,'redacted', 'rubik', 'notojp', 'notokr'];
+                                                  Quill.register(Font, true);
                                                   var myToolbar= [
-                                                  [{ header: [1, 2, false] }],
-                                                  ['bold', 'italic', 'underline', 'strike'],       
-                                                  ['blockquote', 'code-block'],
-                                              
-                                                  [{ 'color': [] }],         
-                                                  [{ 'font': [] }],
-                                                  [{ 'align': [] }],
-                                              
-                                                  ['clean'],                                        
-                                                  ['image'] //add image here
-                                              ];
+                                                        [{ size: [ 'small', false, 'large', 'huge' ]}],
+                                                        ['bold', 'italic', 'underline', 'strike'],       
+                                                        ['blockquote', 'code-block'],
+                                                        [{ 'list': 'ordered' },{ 'list': 'bullet'}, { 'indent': '-1' }, { 'indent': '+1' } ], 
+                                                        [{ 'color': [] }],         
+                                                        [{ 'font': ['', 'times-new-roman', 'arial', 'monospace', 'cursive','marker', 'creepster', 'shadows', 'homemade-apple', 'redacted', 'rubik', 'notojp', 'notokr'] }],
+                                                        [{ 'align': [] }],
+                                                        [{ 'direction': 'rtl' }],
+                                                        ['link', 'image'],
+                                                        ['clean']                                       
+                                                        
+                                                    ];
                                               
                                               
                                                   var quill = new Quill('#opeditor', {
@@ -78,6 +86,29 @@
                                                           }
                                                       }
                                                     },
+                                                    formats : [
+                                                              "background",
+                                                              "bold", 
+                                                              "color", 
+                                                              "font", 
+                                                              "code", 
+                                                              "italic", 
+                                                              "link", 
+                                                              "size", 
+                                                              "strike", 
+                                                              "script",
+                                                              "underline", 
+                                                              "blockquote", 
+                                                              // "header",
+                                                              "indent", 
+                                                              // "list", <-- commented-out to suppress auto bullets
+                                                              "align", 
+                                                              "direction", 
+                                                              "code-block", 
+                                                              "formula", 
+                                                              "image",
+                                                              "video"
+                                                          ],
                                                     placeholder: 'Write your post here.',
                                                     theme: 'snow'  // or 'bubble'
                                                   });
@@ -115,10 +146,10 @@
             <% 
             var opInfo= {id: null, name: "Blurry", pronouns:'', type:'', avatar:'', sys_alias:'', is_archived: false, img_blob:'', mimetype:''}
                 for (i in alterArr){ 
-               if (alterArr[i].id == originalPost.alt_id){ 
-                opInfo= alterArr[i];
-                break;
-               }
+                  if (alterArr[i].id == originalPost.alt_id){ 
+                    opInfo= alterArr[i];
+                    break;
+                  }
                }
                %>
 
@@ -144,7 +175,7 @@
                     <img src="/img/avatar-default.jpg" class="smallimg">
                   </div>
                   <div class="post">
-                      <p> <small>Posted <%- (originalPost.created_on).toLocaleString().split(",")[0] %></small></p>
+                      <p> <small>Posted <%- timeStamp[0] %> at <%- timeStamp[1].split(":")[0] %>:<%- timeStamp[1].split(":")[1] %></small></p>
                       <%- originalPost.body %>
                   </div>
               </section>
@@ -154,7 +185,7 @@
                 <!-- Time to do some alter logic. -->
                 <% for (i in alterArr){ %> 
                     <% if (alterArr[i].id == originalPost.alt_id){ %> 
-                      
+
                         <h3><a href="/alter/<%= alterArr[i].id %>" style="color:<%= alterArr[i].colour == "#000000" ? "" : alterArr[i].colour %>"><%= alterArr[i].name %> <i class='far fa-newspaper' title="Original Author" aria-hidden="false"></i></a></h3>
 
                         <% if (alterArr[i].img_blob){ %> 
@@ -173,7 +204,7 @@
                 <% } %>
                 </div>
                 <div class="post">
-                    <p> <small>Posted <%- (originalPost.created_on).toLocaleString().split(",")[0] %></small></p>
+                    <p> <small>Posted <%- timeStamp[0] %> at <%- timeStamp[1].split(":")[0] %>:<%- timeStamp[1].split(":")[1] %></small></p>
                     <%- originalPost.body %>
                 </div>
             </section>
@@ -242,7 +273,7 @@
                 <form autocomplete="off"  method="post">
                   <input type="hidden" name="pagenum" value="<%= currPage %>">
                     <label for="replyauthor">Who is replying to this?</label>
-                    <select name="replyauthor" id="replyauthor" required>
+                    <select name="replyauthor" class="selectize" id="replyauthor" required>
                         <option value="" disabled selected>Choose...</option>
                         <% for (i in alterArr){ %>
                           <% if (!alterArr[i].is_archived){ %>
@@ -256,12 +287,86 @@
                     <textarea name="reply" id="hidden-text" style="display:none"></textarea>
                       <input type="submit" name="newtop" value="Submit Reply">
                     </form>
-                      <%- include ("../partials/quill.ejs") %>
+                      <script>
+                      $("#replyauthor").selectize({ 
+                      // sortField: 'text' 
+                    });
+                    var Font = Quill.import('formats/font');
+    Font.whitelist = ['times-new-roman', 'arial', 'monospace', 'cursive', 'marker', 'creepster','homemade-apple', 'shadows' ,'redacted', 'rubik', 'notojp', 'notokr'];
+    Quill.register(Font, true);
+    
+    var myToolbar= [
+    [{ size: [ 'small', false, 'large', 'huge' ]}],
+    ['bold', 'italic', 'underline', 'strike'],       
+    ['blockquote', 'code-block'],
+    [{ 'list': 'ordered' },{ 'list': 'bullet'}, { 'indent': '-1' }, { 'indent': '+1' } ], 
+    [{ 'color': [] }],         
+    [{ 'font': ['', 'times-new-roman', 'arial', 'monospace', 'cursive','marker', 'creepster', 'shadows', 'homemade-apple', 'redacted', 'rubik', 'notojp', 'notokr'] }],
+    [{ 'align': [] }],
+    [{ 'direction': 'rtl' }],
+    ['link', 'image'],
+    ['clean']                                       
+    
+];
+
+
+    var quill = new Quill('#editor', {
+      modules: {
+        toolbar: {
+            container: myToolbar,
+            handlers: {
+                image: imageHandler
+            }
+        },
+      },
+      formats : [
+            "background",
+            "bold", 
+            "color", 
+            "font", 
+            "code", 
+            "italic", 
+            "link", 
+            "size", 
+            "strike", 
+            "script",
+            "underline", 
+            "blockquote", 
+            // "header",
+            "indent", 
+            // "list", <-- commented-out to suppress auto bullets
+            "align", 
+            "direction", 
+            "code-block", 
+            "formula", 
+            "image",
+            "video"
+        ],
+      theme: 'snow'  // or 'bubble'
+    });
+    function imageHandler() {
+    var range = this.quill.getSelection();
+    var value = prompt('please copy paste the image url here.');
+    if(value){
+        this.quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
+    }
+}
+$("#editor").on("paste change keyup keydown input", function(){
+  var editor= $("#editor").children('div').eq(0).html();
+$("#hidden-text").text(editor)
+});
+$('input[type=submit]').click(function(){
+    // JUST in case.
+    var editor= $("#editor").children('div').eq(0).html();
+$("#hidden-text").text(editor)
+})
+            </script>
                 <% } else { %>
                   <h2>This thread has been locked. <i class="fa fa-lock" aria-hidden="true"></i></h2>
                   <p>No more replies can be made until the thread is unlocked.</p>
                 <% } %>
             </section>
+            
     </div>
     <script>
         var modal = document.getElementById("myModal");
@@ -369,6 +474,7 @@
           event.preventDefault();
           window.location= `/topic/<%= topic %>/${$("#page").val()}`
         })
+        
     </script>
     <%- include ("../partials/footer.ejs") %>
     </body>

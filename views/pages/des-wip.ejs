@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" style="visibility: hidden;">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+        <style>
+            .radio-group{
+                margin-top: 1em;
+            }
+            #loadcontainer{
+                width: 100%;
+                height: 1em;
+                background: var(--col2);
+                padding:calc(.25em);
+            }
+            #loadbar{
+                /* background: var(--col1); */
+                background: linear-gradient(var(--col1), var(--col4));
+                height: inherit;
+                width: 0%;
+                /* width: 50%; */
+                border-radius: 0 1em 1em 0;
+            }
+            .label-con{
+                display: flex;
+                flex-grow: 1;
+                align-items: center;
+                vertical-align: middle;
+                margin-bottom: .5em;
+            }
+            .left,.right{
+                display:inline-block;
+                font-size: .75em;
+                flex-grow:0;
+                width:100%;
+            }
+            .right{
+                text-align: right;
+                position: inherit;
+            }
+            #rangeInput, .section {
+            width: 100%; /* Adjust width as needed */
+            }
+
+            #rangeLabels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%; /* Match range input width */
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            }
+
+            #rangeLabels li {
+            text-align: center;
+            }
+            .slider {
+                /* -webkit-appearance: none; */
+                width: 100%;
+                height: 15px;
+                border-radius: 5px;  
+                background: linear-gradient(90deg, rgba(60,136,0,1) 0%, rgba(104,186,40,1) 10%, rgba(255,219,25,1) 50%, rgba(250,8,8,1) 85%, rgba(170,3,3,1) 100%);
+                outline: none;
+                opacity: 0.7;
+                -webkit-transition: .2s;
+                transition: opacity .2s;
+                border: 2px solid var(--col1);
+                flex-grow:1;
+                }
+            .slider::-moz-range-thumb {
+            width: 16px;
+            height: 25px;
+            border: 2px solid var(--col1);
+            background: gainsboro;
+            cursor: pointer;
+
+            }
+
+        </style>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+            <ul class="breadcrumb">
+                <li><a href="/system" title="Your <%= capitalise(cookies.system_term) %>"><%= capitalise(cookies.system_term) %></a></li>
+                <li><a href="/worksheets" title="Worksheets">Worksheets</a></li>
+                <li>DES-II</li>
+            </ul>
+            <section>
+                <h2>DES-II</h2>
+                <p><strong>This is not a diagnostic tool, nor is this written by a professional.</strong> Please consult a professional regarding any mental health concerns you may have. The purpose of this test is to help people gauge or track the severity of their dissociative symptoms, if present. You should answer these questions without factoring in behaviour when using drugs or alcohol.</p>
+                <p>These questions are not asking about a specific timeframe, so use the whole of your memories when answering these questions. Your information will not be saved.</p>
+                <hr>
+            </section>
+            <section id="test">
+                <div id="loadcontainer">
+                    <div id="loadbar"></div>
+                </div>
+                <h2 class="loading" id="qNo">Loading</h2>
+                <p>Generally, how often do you experience the following:</p>
+                <label for="experience" id="question">Test</label>
+                  <div>
+                    <input type="range" min="0" max="10" step="1" id="rangeInput" value="0" class="slider" autocomplete="off">
+<ul id="rangeLabels"></ul>
+
+                    
+                </div>
+                  <!-- <button id="back" class="testbtn">Back</button> -->
+                  <button id="next" class="testbtn">Next</button>
+            </section>
+            <section id="results" style="display: none;">
+                <p>You scored: <strong><span id="score"></span></strong></p>
+                <p id="levelSplash"></p><p><strong>This is not a formal diagnostic test.</strong> Higher scores may indicate a need to address these symptoms to a professional. The DES-II is not a diagnostic tool; it is a screener for if dissociative symptoms need to be further addressed. All indications of severity are based on data about DES-II levels and various groups of the population. <a href="http://traumadissociation.com/des" target="_blank">Source</a></p>
+            </section>
+    </div>
+    <%- include ("../partials/footer.ejs") %>
+    <script src="./fe-vars.js"></script>
+    <script>
+
+
+
+        function between(x, min, max) {
+        return x >= min && x <= max;
+        }
+    var DES= 0;
+    var quesNo= 0;
+        function moveTo(x){
+
+            let addScore= x == 0 ? 0 : document.querySelector("#rangeInput").value;
+
+            if ((x < 0 && quesNo + x < 0) || (x + quesNo > desArr.length)) return;
+            quesNo += x;
+
+            $("#loadbar").animate({width: ((quesNo)/(desArr.length) * 100) + "%"}, 200 );
+
+            document.querySelector("#qNo").innerHTML= "Question " + Number(quesNo+1);
+            document.querySelector("#question").innerHTML = desArr[quesNo];
+
+            DES += Number(addScore);
+            if (quesNo == 28){
+               // End of DES.
+            //    document.querySelector("#test").style.display= "none";
+            //    document.querySelector("#results").style.display= "block";
+            $("#test").slideUp()
+            $("#results").slideDown();
+               // We need to divide their score by the number of questions, no rounding.
+               DES = parseInt((Number(DES)*10)/28);
+               console.log(DES)
+               // Switch/Case score.
+               var indication;
+                var levelSplash;
+                if (DES < 10){
+                    indication= "Very Little";
+                    levelSplash="Your level of dissociation symptoms are considered to be about the same as the general population. The average adult population tends to score a 5-6, while the average for adults with depression or anxiety is 7-9.";
+                } else if (between(DES,10, 20)){
+                    indication= "Mild";
+                    levelSplash="Your level of dissociation symptoms are considered to be slightly higher the general population. The average adult population tends to score a 5-6, while people ages 18-24 in transitional periods (going to college, moving out, etc) and those with schizophrenia tend to score closer to 16-17.";
+                } else if(between(DES, 20, 30)){
+                    indication= "Moderate";
+                    levelSplash="Your level of dissociation symptoms are notably higher the general population. The average adult population tends to score a 5-6, while those with Borderline Personality Disorder tend to score around 19.";
+                } else if(between(DES, 30, 45)){
+                    indication= "Heavy";
+                    levelSplash="Your level of dissociation symptoms are significantly higher the general population. The average adult population tends to score a 5-6, while those with Post-Traumatic Stress Disorder (PTSD) and Dissociative Disorder Not Otherwise Specified (DDNOS) tend to score between 31-36.";
+                } else {
+                    indication= "Very Heavy";
+                    levelSplash="Your level of dissociation symptoms are considerably higher the general population. The average adult population tends to score a 5-6, while those with Dissociative Identity Disorder (DID) tend to score between 31-36. However, a high DES-II score does not mean you have DID.";
+                }
+                document.querySelector("#score").innerHTML=`${DES}- ${indication} Levels of Dissociation`;
+                document.querySelector("#levelSplash").innerHTML= levelSplash;
+            } else {
+                document.querySelector("#score").innerHTML= DES;
+            }
+
+            
+        }
+
+        // Set the first question. Clear all checked.
+        var ele = document.getElementsByName("experience");
+        for(var i=0;i<ele.length;i++) ele[i].checked = false;
+        document.querySelector("#qNo").classList.remove("loading");
+        moveTo(0);
+
+        // Buttons
+        // document.querySelector("#back").addEventListener("click", function(){
+        //     moveTo(-1)
+        // })
+        document.querySelector("#next").addEventListener("click", function(){
+            moveTo(1)
+        })
+
+        const rangeInput = document.getElementById('rangeInput');
+const rangeLabels = document.getElementById('rangeLabels');
+
+            // Create labels for each step value
+            var occur=["Almost Never", "Occasionally", "Sometimes", "Often", "Constantly"]
+            for (i in occur) {
+            const label = document.createElement('li');
+            label.textContent = occur[i];
+            rangeLabels.appendChild(label);
+            }
+
+            // Update label positions based on range input value
+            rangeInput.addEventListener('input', function() {
+            const value = rangeInput.value;
+            const labels = rangeLabels.querySelectorAll('li');
+
+            // Calculate relative position for each label based on value
+            for (let i = 0; i < labels.length; i++) {
+                const labelValue = parseInt(labels[i].textContent);
+                const position = (labelValue / 100) * 100; // Convert to percentage
+                labels[i].style.left = `${position}%`;
+            }
+            });
+
+    </script>
+    </body>
+</html>

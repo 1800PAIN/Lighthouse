@@ -1,7 +1,6 @@
 const siteLanguage={
     "en":{ // English
         "name": "Language: English",
-        "flag": "🇬🇧",
         "title": "Lighthouse",
         "greeting": "Hi, [[USER]]!",
         "signUp": "Sign Up",
@@ -19,11 +18,12 @@ const siteLanguage={
         "back": "Go Back",
         "system": "System",
         "tos": "Terms of Service",
-        "pp": "Privacy Policy"
+        "pp": "Privacy Policy",
+        "phil": "Philosophy",
+        "comm": "Communal Journal"
     },
     "es":{ // Spanish
         "name": "Idioma: español",
-        "flag": "🇪🇸",
         "title": "Faro",
         "greeting": "Hola, [[USER]]!",
         "signUp": "Regístrate",
@@ -41,11 +41,12 @@ const siteLanguage={
         "back": "Volver",
         "system": "Sistema",
         "tos": "Términos de Servicio",
-        "pp": "Política de Privacidad"
+        "pp": "Política de Privacidad",
+        "phil": "Filosofía",
+        "comm": "Diario Comunitario"
     },
     "fr":{ // French
         "name": "Langue : Français",
-        "flag": "🇫🇷",
         "title": "Phare",
         "greeting": "Salut, [[USER]]!",
         "signUp": "Inscrivez-vous",
@@ -63,11 +64,12 @@ const siteLanguage={
         "back": "Retour",
         "system": "Système",
         "tos": "Conditions d'utilisation",
-        "pp": "Politique de confidentialité"
+        "pp": "Politique de confidentialité",
+        "phil": "Philosophie",
+        "comm": "Agenda Collectif"
     },
     "de":{ // German
         "name": "Sprache: Deutsch",
-        "flag": "🇩🇪",
         "title": "Leuchtturm",
         "greeting": "Hallo, [[USER]]!",
         "signUp": "Melden Sie sich an",
@@ -85,11 +87,12 @@ const siteLanguage={
         "back": "Gehen Sie zurück",
         "system": "System",
         "tos": "Nutzungsbedingungen",
-        "pp": "Datenschutzrichtlinie"
+        "pp": "Datenschutzrichtlinie",
+        "phil": "Philosophie",
+        "comm": "Gemeinsames Tagebuch"
     },
     "ko":{ // Korean
         "name": "언어: 한국어",
-        "flag": "🇰🇷",
         "title": "등대",
         "greeting": "안녕하세요, [[USER]]님!",
         "signUp": "가입",
@@ -107,11 +110,12 @@ const siteLanguage={
         "back": "돌아가기",
         "system": "체계",
         "tos": "서비스 약관",
-        "pp": "개인정보 보호정책"
+        "pp": "개인정보 보호정책",
+        "phil": "철학",
+        "comm": "집단 일기"
     },
     "pl":{ // Polish
         "name": "Język: polski",
-        "flag": "🇵🇱",
         "title": "Latarnia Morska",
         "greeting": "Witaj, [[USER]]!",
         "signUp": "Zarejestruj się",
@@ -129,11 +133,12 @@ const siteLanguage={
         "back": "Go Back",
         "system": "Wróć",
         "tos": "Regulamin",
-        "pp": "Polityka prywatności"
+        "pp": "Polityka prywatności",
+        "phil": "Filozofia",
+        "comm": "Dziennik wspólnotowy"
     },
     "fil":{ // Filipino
         "name": "Wika: Filipino",
-        "flag": "🇵🇭",
         "title": "Parola",
         "greeting": "Kumusta, [[USER]]!",
         "signUp": "Mag-sign Up",
@@ -151,11 +156,12 @@ const siteLanguage={
         "back": "Bumalik ka",
         "system": "Sistema",
         "tos": "Mga Tuntunin ng Serbisyo",
-        "pp": "Patakaran sa Privacy"
+        "pp": "Patakaran sa Privacy",
+        "phil": "Pilosopiya",
+        "comm": "Kolektibong Talaarawan"
     },
     "jp":{ // Japanese
         "name": "言語: 日本語",
-        "flag": "🇯🇵",
         "title": "灯台",
         "greeting": "こんにちは、[[USER]]!",
         "signUp": "サインアップ",
@@ -173,11 +179,12 @@ const siteLanguage={
         "back": "ゴーバック",
         "system": "システム",
         "tos": "利用規約",
-        "pp": "プライバシーポリシー"
+        "pp": "プライバシーポリシー",
+        "phil": "哲学",
+        "comm": "共有ジャーナル"
     },
     "uk":{ // Ukranian
         "name": "Мова: українська",
-        "flag": "🇺🇦",
         "title": "Маяк",
         "greeting": "Привіт, [[USER]]!",
         "signUp": "Зареєструватися",
@@ -195,11 +202,12 @@ const siteLanguage={
         "back": "Попередній",
         "system": "Система",
         "tos": "Умови надання послуг",
-        "pp": "Політика конфіденційності"
+        "pp": "Політика конфіденційності",
+        "phil": "Філософія",
+        "comm": "Спільний щоденник"
     },
     "gd":{ // Gaelic, Scotland
         "name": "Cànan: Scots Gaelic",
-        "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
         "title": "Taigh-solais",
         "greeting": "Halo, [[USER]]!",
         "signUp": "Clàradh",
@@ -217,11 +225,12 @@ const siteLanguage={
         "back": "Cùl",
         "system": "Siostam",
         "tos": "Cumhachan seirbheis",
-        "pp": "Poileasaidh Dìomhaireachd"
+        "pp": "Poileasaidh Dìomhaireachd",
+        "phil": "Feallsanachd",
+        "comm": "Leabhar-latha Coimhearsnachd"
     },
     "ie":{ // Irish
         "name": "Teanga: Gaeilge",
-        "flag": "🇮🇪",
         "title": "Tigh Solais",
         "greeting": "Dia dhaoibh, [[USER]]!",
         "signUp": "Cláraigh",
@@ -239,11 +248,12 @@ const siteLanguage={
         "back": "Cùl",
         "system": "Córas",
         "tos": "Téarmaí seirbhíse",
-        "pp": "Beartas Príobháideachta"
+        "pp": "Beartas Príobháideachta",
+        "phil": "Fealsúnacht",
+        "comm": "Dialann Phobail"
     },
     "it":{ // Italian
         "name": "Lingua: italiano",
-        "flag": "🇮🇹",
         "title": "Faro",
         "greeting": "Ciao, [[USER]]!",
         "signUp": "Iscriviti",
@@ -261,11 +271,12 @@ const siteLanguage={
         "back": "Indietro",
         "system": "Sistema",
         "tos": "Termini di servizio",
-        "pp": "Informativa sulla privacy"
+        "pp": "Informativa sulla privacy",
+        "phil": "Filosofia",
+        "comm": "Diario Comunitario"
     },
     "eo":{ // Esperanto
         "name": "Lingvo: Esperanto",
-        "flag": "🇺🇳", // The actual esperanto flag isn't available.
         "title": "Lumturo",
         "greeting": "Saluton, [[USER]]!",
         "signUp": "Aliĝu",
@@ -283,8 +294,56 @@ const siteLanguage={
         "back": "Reiru",
         "system": "Sistemo",
         "tos": "Servokondiĉoj",
-        "pp": "Privateca Politiko"
+        "pp": "Privateca Politiko",
+        "phil": "Filozofio",
+        "comm": "Komunuma Taglibro"
     },
+    "ru":{ // Russian
+        "name": "Language: English",
+        "title": "Lighthouse",
+        "greeting": "Hi, [[USER]]!",
+        "signUp": "Sign Up",
+        "signOut": "Log Out",
+        "signIn": "Log In",
+        "mySys": "My [[SYSTEM]]",
+        "settings": "Settings",
+        "myForum": "My Forum",
+        "info": "Information",
+        "about": "About",
+        "tutorial": "Tutorial",
+        "glossary": "Glossary",
+        "changelog": "Changelog",
+        "crisis": "In Crisis?",
+        "back": "Go Back",
+        "system": "System",
+        "tos": "Terms of Service",
+        "pp": "Privacy Policy",
+        "phil": "Философия",
+        "comm": "Общий дневник"
+    },
+    "ar":{ // Arabic
+        "name": "اللغة: العربية",
+        "title": "منارة",
+        "greeting": "مرحباً!",
+        "signUp": "إنشاء حساب",
+        "signOut": "تسجيل خروج",
+        "signIn": "تسجيل الدخول",
+        "mySys": "[[SYSTEM]]",
+        "settings": "إعدادات",
+        "myForum": "المنتدى الخاص بي",
+        "info": "معلومة",
+        "about": "معلومات عنا",
+        "tutorial": "درس تعليمي",
+        "glossary": "قائمة كلمات",
+        "changelog": "سجل التغيير",
+        "crisis": "في أزمة الصحة العقلية؟",
+        "back": "الصفحة السابقة",
+        "system": "نظام",
+        "tos": "شروط الخدمة",
+        "pp": "سياسة الخصوصية",
+        "phil": "فلسفة",
+        "comm": "يوميات جماعية"
+    }
 }
 
 

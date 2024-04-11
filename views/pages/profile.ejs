@@ -53,17 +53,28 @@
 
 					<p><small><em>Note: the custom term for "plural" will eventually show itself on the site. Right now, it's not used.</em></small></p>
 					<h3>Optional Experiences</h3>
-					<p>The experiences below may not apply to all <%= pluralize(cookies.system_term) %>. You can toggle the below pages off or on for your account.</p>
+
+					<p>The experiences below may not apply to all users. You can toggle the below pages off or on for your account.</p>
+
 					<label for="innerworld"><%- capitalise(session.innerworld_term) %></label>
 					<select name="innerworld" id="innerworld">
 						<option value="true" <% if (session.inner_worlds == true) { %> selected <%}%>>Enabled</option>
 						<option value="false" <% if (session.inner_worlds == false) { %> selected <%}%>>Disabled</option>
 					</select><br>
+
 					<label for="ws">Self-Help Worksheets</label>
 					<select name="ws" id="ws">
 						<option value="true" <% if (session.worksheets_enabled == true) { %> selected <%}%>>Enabled</option>
 						<option value="false" <% if (session.worksheets_enabled == false) { %> selected <%}%>>Disabled</option>
+					</select><br>
+
+					<label for="gloss">Glossary</label>
+					<select name="gloss" id="gloss">
+						<option value="true" <% if (session.glossary_enabled == true) { %> selected <%}%>>Enabled</option>
+						<option value="false" <% if (session.glossary_enabled == false) { %> selected <%}%>>Disabled</option>
 					</select>
+
+
 					<input type="submit" value="Update Settings" style="display:block;">
 					</form>
 			<section>
@@ -84,19 +95,21 @@
 				<form method="post" style="margin-top:1em;">
 					<label for="userlang">User Language (still a work in progress)</label>
 					<select name="userlang" id="userlang">
-						<option value="en" <% if (session.language == "en") {%> selected <% }%>>English 🇬🇧</option>
-						<option value="es" <% if (session.language == "es") {%> selected <% }%>>Español 🇪🇸</option>
-						<option value="fr" <% if (session.language == "fr") {%> selected <% }%>>Français 🇫🇷</option>
-						<option value="de" <% if (session.language == "de") {%> selected <% }%>>Deutsch 🇩🇪</option>
-						<option value="ko" <% if (session.language == "ko") {%> selected <% }%>>한국인 🇰🇷</option>
-						<option value="pl" <% if (session.language == "pl") {%> selected <% }%>>Polski 🇵🇱</option>
-						<option value="fil" <% if (session.language == "fil") {%> selected <% }%>>Filipino 🇵🇭</option>
-						<option value="jp" <% if (session.language == "jp") {%> selected <% }%>>日本語 🇯🇵</option>
-						<option value="uk" <% if (session.language == "uk") {%> selected <% }%>>Українська 🇺🇦</option>
-						<option value="gd" <% if (session.language == "gd") {%> selected <% }%>>Gàidhlig na h-Alba 🏴󠁧󠁢󠁳󠁣󠁴󠁿</option>
-						<option value="ie" <% if (session.language == "ie") {%> selected <% }%>>Gaeilge 🇮🇪</option>
-						<option value="it" <% if (session.language == "it") {%> selected <% }%>>Italiano 🇮🇹</option>
-						<option value="eo" <% if (session.language == "eo") {%> selected <% }%>>Esperanto 🇺🇳</option>
+						<option value="en" <% if (session.language == "en") {%> selected <% }%>>English</option>
+						<option value="es" <% if (session.language == "es") {%> selected <% }%>>Español</option>
+						<option value="fr" <% if (session.language == "fr") {%> selected <% }%>>Français</option>
+						<option value="de" <% if (session.language == "de") {%> selected <% }%>>Deutsch</option>
+						<option value="ko" <% if (session.language == "ko") {%> selected <% }%>>한국인</option>
+						<option value="pl" <% if (session.language == "pl") {%> selected <% }%>>Polski</option>
+						<option value="fil" <% if (session.language == "fil") {%> selected <% }%>>Filipino</option>
+						<option value="jp" <% if (session.language == "jp") {%> selected <% }%>>日本語</option>
+						<option value="uk" <% if (session.language == "uk") {%> selected <% }%>>Українська</option>
+						<option value="gd" <% if (session.language == "gd") {%> selected <% }%>>Gàidhlig na h-Alba</option>
+						<option value="ie" <% if (session.language == "ie") {%> selected <% }%>>Gaeilge</option>
+						<option value="it" <% if (session.language == "it") {%> selected <% }%>>Italiano</option>
+						<option value="ar" <% if (session.language == "ar") {%> selected <% }%>>عربي</option>
+						<option value="ru" <% if (session.language == "ru") {%> selected <% }%>>Русский</option>
+						<option value="eo" <% if (session.language == "eo") {%> selected <% }%>>Esperanto</option>
 					</select><br>
 					<input name="languageUpdate" type="submit" value="Update Language"><br>
 					<small>Default language is English.</small>
@@ -135,7 +148,8 @@
 						<option value="Times" <% if (session.font=="Times"){ %>selected<%} %>>Times New Roman</option>
 						<option value="Monospace" <% if (session.font=="Monospace"){ %>selected<%} %>>Monospaced text</option>
 					</select><br>
-					<input type="submit" value="Set Customisation Settings">
+					<label for="numUp">Alters per System page: </label><input type="number" id="numUp" name="numUp" value="<%= numUp %>" min="5" max="100">
+					<br><input type="submit" value="Set Customisation Settings">
 				</form>
 			</section>
 
