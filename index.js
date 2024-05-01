@@ -445,6 +445,12 @@ app.use(bodyParser.json()).use(bodyParser.urlencoded({extended: true}));
 	app.use(express.static(path.join(__dirname, "node_modules/tabulator-tables/dist/css")));
 	app.use(express.static(path.join(__dirname, "node_modules/tabulator-tables/dist/js")));
 	
+	app.use((req, res, next) => {
+		const theme = req.session.skin || getCookies(req)['skin'] || 'lighthouse';  // Set default if missing
+		app.locals.theme = theme;
+		next();
+	  });
+	
 
 let monthNames=["January","February","March","April","May","June","July",
 "August","September","October","November","December"];
