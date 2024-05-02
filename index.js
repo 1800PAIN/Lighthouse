@@ -262,25 +262,9 @@ function apiEyesOnly(req) {
  * @returns {string} suffix/ordinal of a number (number not included)
  */
 function getOrdinal(n) {
-	let ord;
-	switch(n){
-		case n % 10== 1:
-		case n % 100 != 11:
-			ord="st";
-			break;
-		case n%10== 2:
-		case n%100 != 12:
-			ord="nd";
-			break;
-		case n%10==3:
-		case n % 100 != 13:
-			ord= "rd";
-			break;
-		default:
-			ord="th";
-			break; 
-	}
-	return ord;
+	var s = ["th", "st", "nd", "rd"],
+      v = n % 100;
+  	return (s[(v - 20) % 10] || s[v] || s[0]);
   }
 /** Paginates an array
   *@param a- The array you're paginating.

@@ -1121,6 +1121,9 @@ blockquote p {
   display: inline;
 }
 
+i {
+  text-indent: 0;
+}
 .ql-editor, .ql-toolbar, .selectize-input .items .not-full .has-options  {
   background-color: var(--col7) !important;
 }
