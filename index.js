@@ -1700,7 +1700,7 @@ app.get('/wish-d/:id', (req, res) => {
 		if (req.session.chosenSys.subsys_id != null){
 			// There's a subsystem.
 			const subsysInf= await db.query(client, "SELECT sys_alias FROM systems WHERE sys_id=$1", [`${req.session.chosenSys.subsys_id}`], res, req);
-			req.session.chosenSys.subsys_alias= subsysInf[0].sys_alias;
+			req.session.chosenSys.subsys_alias= subsysInf[0].sys_alias || getCookies(req)['system_term'];
 		}
 			const numUp= await db.query(client, "SELECT altupnum FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 
@@ -2906,7 +2906,7 @@ app.get('/wish-d/:id', (req, res) => {
 				`${encryptWithAES(req.body.jTitle)}`, 
 				`${encryptWithAES(req.body.jBody)}`, 
 				`${req.params.id}`,
-				`${req.body.jDate}`
+				`${req.body.jDate || new Date().toISOString()}`
 			]}, (err, result) => {
 			   if (err) {
 				  console.log(err.stack);
@@ -2928,8 +2928,9 @@ app.get('/wish-d/:id', (req, res) => {
 
 	app.post('/journal/:id/edit', (req, res)=>{
 		if (!checkUUID(req.params.id)) return lostPage(res, req);
+
 		if (isLoggedIn(req)){
-			client.query({text: "UPDATE posts SET title=$1, body=$2 WHERE p_id=$3; ",values: [`${encryptWithAES(req.body.jTitle)}`, `${encryptWithAES(req.body.jBody)}`, `${req.params.id}`]}, (err, result) => {
+			client.query({text: "UPDATE posts SET title=$1, body=$2, created_on=$4 WHERE p_id=$3; ",values: [`${encryptWithAES(req.body.jTitle)}`, `${encryptWithAES(req.body.jBody)}`, `${req.params.id}`, `${req.body.jDate || new Date().toISOString()}`]}, (err, result) => {
  			   if (err) {
  				  console.log(err.stack);
  				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
