@@ -861,7 +861,8 @@ app.get('/worksheets', async function (req, res){
 
   
   app.get('/inner-world/:id', (req, res) => {
-	if (!checkUUID(req.params.id)) return lostPage(res, req);
+	console.log(checkUUID(req.params.id))
+	// if (!checkUUID(req.params.id)) return lostPage(res, req);
 	if (isLoggedIn(req)){
 		client.query({text: "SELECT * FROM inner_worlds WHERE u_id=$1 AND id=$2;",values: [getCookies(req)['u_id'], req.params.id]}, (err, result) => {
 			if (err) {
@@ -876,7 +877,6 @@ app.get('/worksheets', async function (req, res){
 		  }
 		});
 		
-	splash=null;
 	} else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 	
   });
