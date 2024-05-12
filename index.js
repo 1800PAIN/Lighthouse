@@ -861,7 +861,6 @@ app.get('/worksheets', async function (req, res){
 
   
   app.get('/inner-world/:id', (req, res) => {
-	console.log(checkUUID(req.params.id))
 	// if (!checkUUID(req.params.id)) return lostPage(res, req);
 	if (isLoggedIn(req)){
 		client.query({text: "SELECT * FROM inner_worlds WHERE u_id=$1 AND id=$2;",values: [getCookies(req)['u_id'], req.params.id]}, (err, result) => {

@@ -25,7 +25,7 @@
                 <% if (session.innerworld == false) { %> 
                 <p><strong><%= capitalise(pluralize(session.innerworld_term)) %> are not enabled on this account.</strong> Not everyone has one. You can change this in <a href="/profile" title="Settings">Settings</a>.</p>
                 <% } else { %>
-                  <p>Your <strong><%= session.innerworld_term %></strong> is a visualisation tool for people to visualise <%= pluralize(cookies.alter_term) %>, memory storage, feelings, and more. People with DID or OSDD more often than not have some sort of <%= session.innerworld_term %>. <%= capitalise(pluralize(session.innerworld_term)) %> can be as small as a singular room, or as big as an entire planet. In the end, it's all about what makes you feel safest. Think of it as your happy place. Here, you can describe sections of your <%= session.innerworld_term %> for other <%= pluralize(cookies.alter_term) %> who may struggle to visualise it.</p>
+                  <p>Your <strong><%= session.innerworld_term %></strong> is a visualisation tool for people to visualise <%= pluralize(cookies.alter_term) %>, memory storage, feelings, and more. <%= capitalise(pluralize(session.innerworld_term)) %> can be as small as a singular room, or as big as an entire planet. In the end, it's all about what makes you feel safest. Think of it as your happy place. Here, you can describe sections of your <%= session.innerworld_term %> for other <%= pluralize(cookies.alter_term) %> who may struggle to visualise it.</p>
                   <form method="post">
                     <label for="key">Name</label><br/>
                     <input type="text" name="key" required><br/>

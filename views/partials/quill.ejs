@@ -198,9 +198,6 @@ let Font = Quill.import('formats/font');
         this.quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
     }
 }
-quill.formatLine(4, 'list', 'ordered');
-
-// quill.format("list", "ordered");
 $("#editor").on("paste change keyup keydown input", function(){
 $("#hidden-text").text($(".ql-editor").html())
 });
