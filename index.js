@@ -1479,18 +1479,16 @@ app.get('/wish-d/:id', (req, res) => {
 	  // res.render(`pages/edit_sys`, { session: req.session, splash:splash, alt:req.params.alt });
   });
 
-  app.get('/deletesys/:alt', (req, res)=>{
-	if (!checkUUID(req.params.alt)) return;
+  app.get('/deletesys/:alt', async (req, res)=>{
+	// if (!checkUUID(req.params.alt)) return;
 	  if (isLoggedIn(req)){
-		  client.query({text: "SELECT * FROM systems WHERE sys_id=$1",values: [`${req.params.alt}`]}, (err, result) => {
-			  if (err) {
-				console.log(err.stack);
-				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", splash:splash,cookies:req.cookies });
-			} else {
-				req.session.chosenSys= result.rows[0];
-			}
+		try{
+			const systemDat = await db.query(client, "SELECT * FROM systems WHERE sys_id=$1 AND user_id=$2", [`${req.params.alt}`, getCookies(req)['u_id']], res, req);
+			req.session.chosenSys = systemDat[0];
 			res.render(`pages/delete_sys`, { session: req.session, splash:splash, alt:req.session.chosenSys,cookies:req.cookies });
-		  });
+		} catch(e){
+			lostPage(res, req)
+		}
 	  } else {res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", splash:splash,cookies:req.cookies });}
 	  // res.render(`pages/edit_sys`, { session: req.session, splash:splash, alt:req.params.alt });
   });
@@ -3333,7 +3331,7 @@ app.get('/wish-d/:id', (req, res) => {
   });
 
 	app.post('/deletesys/:alt', async function(req, res){
-		if (!checkUUID(req.params.id)) return lostPage(res, req);
+		if (!checkUUID(req.params.alt)) return lostPage(res, req);
 		const sysData = await db.query(client, "SELECT * FROM systems WHERE sys_id=$1", [`${req.params.alt}`], res, req);
 		if (getCookies(req)['u_id']= sysData[0].user_id){
 			await db.query(client, "DELETE FROM systems WHERE sys_id=$1", [`${req.params.alt}`], res, req);
