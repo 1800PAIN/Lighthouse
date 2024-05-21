@@ -378,15 +378,11 @@ td{
                     </form>
                 </div>
                 <% if (altJournal.skin_blob /* If the skin is uploaded */){ %>
-                    <% if (altJournal.is_private == true){ %>
                         <% if (altJournal.is_private == true){ %>
                             <img src="data:<%= altJournal.skin_mimetype %>;base64,<%= Buffer.from(altJournal.skin_blob).toString("base64") %>" width="400px" id="login" onclick="blogPopup()" alt="<%= decode(alterInfo.name) %>'s Journal." <% if (altJournal.is_pixelart == true){ %>class="pixelart"<% } %>>
                         <% } else { %>
                             <a href="/journal/<%- (altJournal.alt_id) %>"><img  src="data:<%= altJournal.skin_mimetype %>;base64,<%= Buffer.from(altJournal.skin_blob).toString("base64") %>" width="400px" id="login" alt="<%= decode(alterInfo.name) %>'s Journal." <% if (altJournal.is_pixelart == true){ %>class="pixelart"<% } %>></a>
                         <% } %>
-                    <% } else { %>
-
-                    <% } %>
                 <% } else if (altJournal.img_url /* If the skin is a url */) { %> 
                     <% if (altJournal.is_private == true){ %>
                         <img src="<%= decrypt(altJournal.img_url) %>" width="400px" id="login" onclick="blogPopup()" alt="<%= decode(alterInfo.name) %>'s Journal." <% if (altJournal.is_pixelart == true){ %>class="pixelart"<% } %>>
