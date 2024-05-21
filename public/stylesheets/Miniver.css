@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'Miniver';
+    src: url('../fonts/Miniver-Regular.ttf');
+  }
+
+
+  *{
+    font-family: 'Miniver', cursive;
+}

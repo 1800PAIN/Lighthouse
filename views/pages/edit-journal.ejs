@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <%- include ("../partials/header.ejs") %>
+        <style>
+            .skins {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            flex-wrap: wrap;
+            }
+            .verylongname{
+                grid-template-columns: repeat(1, 1fr) !important;
+            }
+            /* Media query for mobile screens */
+                @media only screen and (max-width: 900px) {
+                .skins {
+                    grid-template-columns: repeat(2, 1fr); /* Adjust for mobile columns */
+                }
+            }
+            .radio-toolbar input[type="radio"] {
+                    display: none;
+            }
+
+            .radio-toolbar label {
+                display: block;
+                cursor: pointer;
+                height: auto;
+                text-align:center;
+                transition:.125s;
+                font-size: 80%;
+                padding: calc(.25em);
+                min-width: max-content; /* Allow labels to grow to content width */
+            }
+
+            .method-content{
+                display: none;
+            }
+            
+
+            .radio-toolbar input[type="radio"]:checked ~ * { 
+                background:rgba(0,0,0,.5);
+                color: var(--nav-txt)
+            }
+            #discordwarning{
+                font-size: .75em;
+                /* color: var(--col4); */
+            }
+            .fail{
+                padding:0.5em;
+                background: rgb(173, 0, 0) !important;
+                color: white !important;
+                /* transition: .5s; */
+            }
+            .fail a{
+                color: yellow;
+            }
+            .fail strong{
+                color: orange;
+            }
+        </style>
+    </head>
+    <body>
+        <%- include ("../partials/nav.ejs") %>
+        <div id="wrapper">
+            <section>
+                <ul class="breadcrumb">
+                    <li><a href="/system" title=""><%= capitalise(cookies.system_term) %></a></li>
+                    <li><a href="/system/<%= journal.sys_id %>" title="Back to <%= decode(journal.sys_alias, "base64") %>"><%= decode(journal.sys_alias, "base64") %></a></li>
+                    <li><a href="/alter/<%= journal.alt_id %>"><%= decode(journal.name) %></a></li>
+                    <li>Edit Journal</li>
+                  </ul> 
+
+
+                <h1>Edit Journal- <%- decode(journal.name) %></h1>
+                <hr>
+                <h2>Edit Skin</h2>
+                <p class="dyn">Image URLs and uploaded skins will only be visible on the page of this [[ALTER]].</p>
+                <form method="post" enctype="multipart/form-data">
+
+                    <input type="radio" id="url" name="method" value="url" class="method">
+                    <label for="url">Image URL</label><br>
+                    <div id="method-url" class="method-content">
+                        <label for="imgurl">Paste URL Here</label> 
+                        <input type="url" id="imgurl" name="imgurl">
+                        <p id="discordwarning"></p>
+                    </div>
+
+                    <input type="radio" id="upload" name="method" value="upload" class="method"> 
+                    <label for="upload">Upload Skin</label>
+                    <div id="method-upload" class="method-content">
+                        <input type="file" name="imgupload" id="imgupload" accept="image/*">
+                    </label>
+                    </div>
+
+
+                    <br>
+                    <input type="radio" id="preset" name="method" value="preset" class="method">
+                    <label for="preset">Choose a Preset</label>
+                    <div id="method-preset" class="method-content" style="height: auto;margin:auto;">
+                    <label for="presetimg">Presets:</label>
+                    <% journalArr.forEach((group, i)=>{ %>
+                        <% if (skinGroups[i] == "Unlockables" && cookies.is_legacy == "false"){ %>
+
+                        <% } else { %>
+                            <h3><%- skinGroups[i] %></h3>
+                            <div class="skins<% if(skinGroups[i] == "Pride"){ %> verylongname<% } %>">
+                                <% group.forEach((item)=>{ %>
+                                    <div class="radio-toolbar child" >
+                                        <input type="radio" id="<%= item.val %>" name="journ" value="<%= item.val %>">
+                                        <label for="<%= item.val %>">
+                                            <img src="/img/<%- item.val %>.<%- item.ext %>" class="smallimg"><br>
+                                            <% if (skinGroups[i] == "Pride" || skinGroups[i] == "Misc. User Skins"){ %>
+                                                <%- item.c %> 
+                                            <% } else { %>
+                                                <%- (item.c).replace(/\(.*\)/, "") %> 
+                                            <% } %>
+                                        </label>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                        <% }  %>
+                        
+                    <% }) %>
+                    </div>
+                    <br>
+                    <div id="pixelart" style="display:none;">
+                        <label for="ispixel">Check this box if this skin is pixel art. </label>
+                        <input type="checkbox" id="ispixel" name="ispixel">
+                    </div>
+                        
+                    <br>
+                    <input type="submit" name="submit" id="submit" value="Update Journal">
+                </form>
+            </ul>
+            </section>
+    </div>
+    <%- include ("../partials/footer.ejs") %>
+    <script>
+    function checkURL(){
+        if ($("#imgurl").val().match(/cdn.discordapp.com/g)){
+            // They have a discord link.
+            // $("#discordwarning").addClass("fail").html(`We have detected that this URL is pointing to Discord. These URLs will fail and be unreachable outside of the app. Please use a different file host, such as <a href="https://imgbb.com/" target="_blank" title="ImgBB">ImgBB</a>, <a href="https://filegarden.com/" target="_blank" title="FileGarden">FileGarden</a>, or <a href="https://files.catbox.moe/" target="_blank" title="Catbox.moe">Catbox.moe</a>.`)
+            $("#discordwarning").addClass("fail").html(`<strong>Attention!</strong> This image link might not work as expected. Images hosted on Discord's CDN become inaccessible outside of the Discord app within 24 hours of being uploaded. To ensure your image displays correctly, consider using a reliable image hosting service like <a href="https://imgur.com/" target="_blank" title="Imgur">Imgur</a>, <a href="https://imgbb.com/" target="_blank" title="ImgBB">ImgBB</a>, or any other service that allows public image sharing.`);
+        } else {
+            $("#discordwarning").removeClass("fail").empty();
+        }
+    }
+    // Attach click event to all radio buttons
+    $("input[type='radio'].method").click(function() {
+        var value = $(this).val();
+        // Show the element with the corresponding ID (method-url, method-upload, etc.)
+        $(".method-content").slideUp("fast");
+        $("#method-" + value).slideDown("fast");
+        if (value == "url" || value=="upload"){
+            $("#pixelart").slideDown("fast")
+        } else {
+            $("#pixelart").slideUp("fast")
+        }
+    });
+
+    $("#imgurl").bind("keydown keyup change paste", function(){
+        checkURL();
+    });
+    checkURL();
+
+    $("#imgupload").change(function(){
+            verifyUp();
+        });
+        $("#submit").click(function(){
+            verifyUp()
+        })
+    function verifyUp(){
+       var maxBytes = 2097152; // 2MB
+       var fld = document.getElementById("imgupload");
+       if( fld.files && fld.files.length == 1 && fld.files[0].size > maxBytes ){
+        $("#submit").val(`Keep uploaded files under ${parseInt(maxBytes/1024/1024)}MB`).addClass("fail").prop("disabled", true);
+            event.preventDefault();
+          return false;
+       }
+       $("#submit").removeClass("fail").prop("disabled", false).text("Update Journal");
+
+
+        return true;
+    }
+    </script>
+    </body>
+</html>

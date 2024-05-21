@@ -405,6 +405,7 @@ async function getSystems(userID, res, req){
   
   const apiRouter = require('./api');
   const systemRouter = require('./system');
+  const alterRouter = require('./alter');
 var app = express();
 
   app.use('/', express.static(__dirname + '/public'))
@@ -444,6 +445,7 @@ app.locals.siteLanguage= langVar.siteLanguage;
 app.locals.editorColours=tuning.editorColours;
 app.locals.journalArr= splitByGroup(tuning.journals);
 app.locals.journals= tuning.journals;
+app.locals.skinGroups= tuning.skinGroups;
 app.locals.strings=strings;
 app.locals.apiKey= process.env.apiKey;
 app.locals.moods=tuning.moods;
@@ -489,6 +491,7 @@ app.locals.renderNestedList = renderNestedList;
 // Mount API routes
 app.use('/api', apiRouter);
 app.use("/system", systemRouter);
+app.use("/alter", alterRouter);
 
 
 // ------ //
@@ -545,7 +548,7 @@ app.all('*', async function (req, res){
  if (process.env.maintenance== "true"){
 	// Maintenance mode on.
 	app.use(function(req,res){
-		return res.render(`pages/maintenance`, { session: req.session, splash:splash, cookies:req.cookies });
+		return res.render(`pages/maintenance`, { session: req.session, cookies:req.cookies });
 });
 	
  }
@@ -3096,46 +3099,33 @@ app.get('/wish-d/:id', (req, res) => {
 	});
 	app.post("/edit-alter/:id", async (req, res, next)=>{
 		if (!checkUUID(req.params.id)) return lostPage(res, req);
+
 		if (isLoggedIn(req)){
+			// Is this their alter tho?
+			let altInf= await db.query(client, "SELECT systems.user_id FROM systems INNER JOIN alters ON alters.sys_id = systems.sys_id WHERE alters.alt_id = $1;", [`${req.params.id}`], res, req);
+			if (!idCheck(req, altInf[0].user_id)) return lostPage(res, req);
+
+			// Ok, this is their alter. Proceed.
 			let pkId= req.body.pkid ? `${encryptWithAES(req.body.pkid)}` : null;
 			let spId= req.body.spid ? `${encryptWithAES(req.body.spid)}` : null;
 			if (req.files){
-				// They've uploaded a thing.
-				await db.query(client, "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24, img_blob=$25, blob_mimetype=$26, colour=$27, nickname=$28, species=$29, pk_id= $30, sp_id=$31 WHERE alt_id=$1", [`${req.params.id}`,
-					`'${Buffer.from(req.body.name).toString('base64')}'`,
-					`'${Buffer.from(req.body.postr).toString('base64')}'`,
-					`'${Buffer.from(req.body.negtr).toString('base64')}'`,
-					`'${Buffer.from(req.body.age).toString('base64')}'`,
-					`'${Buffer.from(req.body.likes).toString('base64')}'`,
-					`'${Buffer.from(req.body.dislikes).toString('base64')}'`,
-					`'${Buffer.from(req.body.internalJob).toString('base64')}'`,
-					`'${Buffer.from(req.body.safety).toString('base64')}'`,
-					`'${Buffer.from(req.body.wish).toString('base64')}'`,
-					`'${Buffer.from(req.body.acc).toString('base64')}'`,
-					`'${Buffer.from(req.body.notes).toString('base64')}'`,
-					`'${Buffer.from(req.body.imgurl).toString('base64')}'`,
-					req.body.type,
-					`'${Buffer.from(req.body.pronouns).toString('base64')}'`,
-					`'${Buffer.from(req.body.birthday).toString('base64')}'`,
-					`'${Buffer.from(req.body.firstnoted).toString('base64')}'`,
-					`'${Buffer.from(req.body.gender).toString('base64')}'`,
-					`'${Buffer.from(req.body.sexuality).toString('base64')}'`,
-					`'${Buffer.from(req.body.source).toString('base64')}'`,
-					`'${Buffer.from(req.body.fronttells).toString('base64')}'`,
-					`'${Buffer.from(req.body.relationships).toString('base64')}'`,
-					`'${Buffer.from(req.body.hobbies).toString('base64')}'`,
-					`'${Buffer.from(req.body.appearance).toString('base64')}'`,
+				
+				if (req.files.imgupload){
+					// This is for the icons!
+					await db.query(client, "UPDATE alters SET img_blob=$2, blob_mimetype=$3, img_url=null WHERE alt_id=$1", [`${req.params.id}`,
 					req.body.clear ? null : req.files.imgupload.data,
-					req.body.clear ? null : req.files.imgupload.mimetype,
-					req.body.colour,
-					`'${Buffer.from(req.body.nickname).toString('base64')}'`,
-					`'${Buffer.from(req.body.species).toString("base64")}'`,
-					pkId,
-					spId,], res, req);
-
-			} else {
-				// No upload was made.
-				// console.log("No upload.");
+					req.body.clear ? null : req.files.imgupload.mimetype], 
+					res, req);
+				}
+				
+				if (req.files.headeralt){
+					// This is for the header!
+					await db.query(client, "UPDATE alters SET header_blob=$2, header_mimetype=$3 WHERE alt_id=$1", [`${req.params.id}`,
+					req.files.headeralt.data,
+					req.files.headeralt.mimetype], 
+					res, req);
+				}
+			} 
 				await db.query(client, "UPDATE alters SET name=$2, triggers_pos=$3, triggers_neg= $4, agetext=$5, likes=$6, dislikes=$7, job=$8, safe_place=$9, wants=$10, acc=$11, notes=$12, img_url=$13, type=$14, pronouns=$15, birthday=$16, first_noted=$17, gender=$18, sexuality=$19, source=$20, fronttells=$21, relationships=$22, hobbies=$23, appearance=$24, colour=$25, nickname=$26, species=$27, pk_id=$28, sp_id=$29 WHERE alt_id=$1", [
 					`${req.params.id}`,
 					`'${Buffer.from(req.body.name).toString('base64')}'`,
@@ -3170,8 +3160,9 @@ app.get('/wish-d/:id', (req, res) => {
 				if (req.body.clear){
 					await db.query(client, "UPDATE alters SET  img_blob=null, blob_mimetype=null WHERE alt_id=$1", [`${req.params.id}`], res, req);
 				}
-			}
-
+				if (req.body.headersclear){
+						await db.query(client, "UPDATE alters SET  header_blob=null, header_mimetype=null WHERE alt_id=$1", [`${req.params.id}`], res, req);
+					}
 			
 			let otherSystems;
 			if (typeof req.body.othersys == "string"){

@@ -45,6 +45,9 @@ var tuning={
     //           ms     s   m    h    d   w
     cookietime: 1000 * 60 * 60 * 24 * 7 * 2 //2 weeks
 }
+
+var skinGroups=["Default", "Misc. User Skins", "Galaxii Kingdom", "Constellation Collection", "Chaotic Troop", "Pax Vesania Collective", "Pride", "DivineChrysalism", "GOOPYGAMER9000", "Era vulgaris", "Unlockables"] 
+
 // Group 1: Default Skins.
 // Group 2: Single user skins (These users didn't make more than 2 skins)
 // Group 3: Galaxii Kingdom
@@ -176,4 +179,5 @@ exports.moods= moods;
 exports.editorColours= editorColours;
 exports.options= options;
 exports.timeOptions=timeOptions;
+exports.skinGroups= skinGroups;
 console.log("➬ General Vars loaded.")
