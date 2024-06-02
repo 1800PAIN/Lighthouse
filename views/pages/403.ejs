@@ -11,12 +11,12 @@
                 <div class="splash"><%- locals.messages.flash %></div>
             <% } %>
             <img src="/img/svg/buoy.svg" style="height:calc(24em); float: left;">
-            <h1>We're treading past the buoys at this point.</h1>
+            <h1>We're treading past the buoys.</h1>
             <p>You don't have access to this page. Please log in or join to view this page.</p>
             <% if (!cookies.loggedin){ %>
                 <a class="linkbutton" href="/signup">Join Lighthouse</a>
                 <a class="linkbutton" href="/login">Log In</a>
-                <p>Create private journals for your alters, use interactive PTSD/DID/OSDD worksheets, and more.</p>
+                <p>Create private journals for your alters, use interactive worksheets, and more.</p>
             <% } %>
         </div>
         <%- include ("../partials/footer.ejs") %>

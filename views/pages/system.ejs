@@ -51,8 +51,9 @@
         <% 
         let currentP= 0; 
         let innerWorld = session.innerworld_term || cookies.innerworld_term || "inner world"
-        
+
         %>
+      
             <h1 class="dyn">[[SYSTEMCAP]] Page</h1>
             <ul class="padLinks">
               <li><a class="dyn linkbutton" title= "<%= strings.system.links.search %>" href="/search"><%= strings.system.links.search %></a></li>
@@ -81,6 +82,8 @@
                   <form method="post">
                     <label for="sysname"><%= capitalise(cookies.system_term) %> Name: </label>
                     <input type="text" name="sysname" required><br>
+                    <label for="sysdesc">A short description: </label>
+                    <input type="text" id="sysdesc" name="sysdesc"><br>
                     <div id="subsys">
                       <label for="subsys">Nest this <%= cookies.system_term %> under: </label>
                       <select name="subsys" id="subdrop">

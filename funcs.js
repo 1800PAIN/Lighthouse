@@ -341,46 +341,54 @@ function truncateAndStringify(array, maxLength) {
     const processed = new Set(); // Track processed item IDs
     let altList= alters;
     function renderItem(item) {
-      const hasChildren = data.some(child => child.parent === item.id);
-      const listClass = hasChildren ? 'has-children' : '';
-      const indent = item.parent ? '&nbsp; &nbsp; &nbsp; ' : '';
+
+        const hasChildren = data.some(child => child.parent === item.id);
+        const listClass = hasChildren ? 'has-children' : '';
+        const indent = item.parent ? '&nbsp; &nbsp; &nbsp; ' : '';
+      
+        if (processed.has(item.id)) {
+          return ''; // Skip rendering if already processed
+        }
     
-      if (processed.has(item.id)) {
-      return ''; // Skip rendering if already processed
-      }
+        processed.add(item.id); // Mark item as processed
+      
+        let innerHTML = `
+        <li class="${listClass}${indent == '' ? '' : ' subsys'}">
+        <a class="dyn" href="/editsys/${item.id}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+        <a href="/deletesys/${item.id}" name="${item.id}" class="dyn"><i class="fa fa-trash" aria-hidden="true"></i></a>
+        <a href="/system/communal-journal?sys=${item.id}"><i class="fa fa-book" aria-hidden="true"></i></a>
+        <span class="item-name"><a href="/system/${item.id}">${base64decode(item.alias)}</a></span>`;
     
-      processed.add(item.id); // Mark item as processed
+        // Add icon
+        if (item.icon){
+          innerHTML += `<img src="/img/svg/${item.icon}.svg" class="vvtinyimg">`
+        }
     
-      let innerHTML = `
-      <li class="${listClass}${indent == '' ? '' : ' subsys'}">
-      <a class="dyn" href="/editsys/${item.id}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-      <a href="/deletesys/${item.id}" name="${item.id}" class="dyn"><i class="fa fa-trash" aria-hidden="true"></i></a>
-      <a href="/system/communal-journal?sys=${item.id}"><i class="fa fa-book" aria-hidden="true"></i></a>
-      <span class="item-name"><a href="/system/${item.id}">${Buffer.from(item.alias, "base64").toString()}</a></span>`;
-  
-      if (item.icon){
-      innerHTML += `<img src="/img/svg/${item.icon}.svg" class="vvtinyimg">`
-      }
-  
-      // Handle Alter list.
-      let altArr=[]
-      altList.forEach((alt)=>{
-      if (alt.sys_id == item.id){
-        altArr.push(`${Buffer.from(alt.name, "base64").toString()}`)
-      } 
-      });
-      if (altArr.length > 0){ 
-      innerHTML += `<div class="subsys dyn" style="font-style: italic;"><small>[[ALTERSCAP]]: ${truncateAndStringify(altArr, 5)}</small></div>`
-      }
+        
+        if (item.description !== null){
+          innerHTML += `<div class="subsys dyn"><small>${decryptWithAES(item.description)}</small></div>`
+        }
+        // Handle Alter list.
+        let altArr=[]
+        altList.forEach((alt)=>{
+          if (alt.sys_id == item.id){
+            altArr.push(`${base64decode(alt.name)}`)
+          } 
+        });
+
+        if (altArr.length > 0){ 
+          innerHTML += `<div class="subsys dyn" style="font-style: italic;"><small>[[ALTERSCAP]]: ${truncateAndStringify(altArr, 5)}</small></div>`
+        }
+      
+        // Now look for children.
+        if (hasChildren) {
+          const childData = data.filter(child => child.parent === item.id);
+          innerHTML += childData.map(renderItem).join('\n');
+        }
     
-      // Now look for children.
-      if (hasChildren) {
-      const childData = data.filter(child => child.parent === item.id);
-      innerHTML += childData.map(renderItem).join('\n');
-      }
-  
-      innerHTML += `</li>`;
-      return innerHTML;
+        innerHTML += `</li>`;
+        return innerHTML;
+        // End renderItem Function
     }
     
     // Call the recursive function on the root items (parent === null)

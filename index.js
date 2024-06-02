@@ -98,11 +98,11 @@ app.use(bodyParser.json()).use(bodyParser.urlencoded({extended: true}));
 	app.use(express.static(path.join(__dirname, "node_modules/tabulator-tables/dist/css")));
 	app.use(express.static(path.join(__dirname, "node_modules/tabulator-tables/dist/js")));
 	
-	app.use((req, res, next) => {
-		const theme = req.session.skin || getCookies(req)['skin'] || 'lighthouse';  // Set default if missing
-		app.locals.theme = theme;
-		next();
-	  });
+	// app.use((req, res, next) => {
+	// 	const theme = req.session.skin || getCookies(req)['skin'] || 'lighthouse';  // Set default if missing
+	// 	app.locals.theme = theme;
+	// 	next();
+	//   });
 	
 
 
@@ -1564,54 +1564,6 @@ app.get('/wish-d/:id', (req, res) => {
 		}
 	});
 
-  app.post('/system', function (req, res){
-	  if (req.body.sysname){
-		let subsysID= req.body.subsys == "None" ? null : req.body.subsys;
-		  client.query({text: "SELECT * FROM systems WHERE sys_alias=$1 AND user_id=$2",values: [`'${Buffer.from(req.body.sysname).toString('base64')}'`, `${req.cookies.u_id}`]}, (err, result) => {
-			  if (err) {
-				console.log(err.stack);
-				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", cookies:req.cookies });
-			  } else {
-				  // console.table(result.rows);
-				  if ((result.rows).length == 0){
-					  client.query({text: "INSERT INTO systems (sys_alias, user_id, subsys_id) VALUES ($1, $2, $3)",values: [`'${Buffer.from(req.body.sysname).toString('base64')}'`, `${getCookies(req)['u_id']}`, subsysID]}, (err, result) => {
-					      if (err) {
-					        console.log(err.stack);
-					        res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", cookies:req.cookies });
-					      } else {
-							  res.redirect("/system");
-					      }
-					  });
-				  } else {
-					res.render(`pages/system`, { session: req.session, sysArr: req.session.sys,cookies:req.cookies });
-				  }
-			  }
-		  });
-	  } else if (req.body.post) {
-		  // Comm journal.
-		  // id | u_id | created_on | title | body
-		  client.query({text: "INSERT INTO comm_posts (u_id, created_on, title, body) VALUES ($1, to_timestamp($2 / 1000.0), $3, $4)",values: [`${getCookies(req)['u_id']}`, `${Date.now()}`, `${encryptWithAES(req.body.cTitle)}`, `${encryptWithAES(req.body.cBody)}`]}, (err, result) => {
-			  if (err) {
-				console.log(err.stack);
-				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", cookies:req.cookies });
-			} else {
-				res.redirect("/system");
-			}
-		});
-	  } else {
-		// Deleting.
-		client.query({text: "DELETE FROM comm_posts WHERE id=$1; ",values: [getKeyByValue(req.body,"Remove")]}, (err, result) => {
-			if (err) {
-			   console.log(err.stack);
-			   res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", cookies:req.cookies });
-		   } else {
-			   req.session.jPost= null;
-			   res.redirect(`/system`);
-		   }
-	   });
-	  }
-  });
-
 	app.post('/deletesys/:alt', async function(req, res){
 		if (!checkUUID(req.params.alt)) return lostPage(res, req);
 		const sysData = await db.query(client, "SELECT * FROM systems WHERE sys_id=$1", [`${req.params.alt}`], res, req);
@@ -1627,7 +1579,7 @@ app.get('/wish-d/:id', (req, res) => {
 
 	app.post('/editsys/:alt', function(req, res){
 		if (!checkUUID(req.params.alt)) return;
-		client.query({text: "UPDATE systems SET sys_alias=$1 WHERE sys_id=$2;",values: [`'${Buffer.from(req.body.sysname).toString('base64')}'`, `${req.params.alt}`]}, (err, result) => {
+		client.query({text: "UPDATE systems SET sys_alias=$1, description=$3 WHERE sys_id=$2;",values: [`'${base64encode(req.body.sysname)}'`, `${req.params.alt}`, `${encryptWithAES(req.body.sysdesc)}`]}, (err, result) => {
 			if (err){
 				console.log(err.stack);
 				res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", cookies:req.cookies });

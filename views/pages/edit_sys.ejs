@@ -12,16 +12,18 @@
             <div class="splash"><%- locals.messages.flash %></div>
         <% } %>
         <section>
-            <h2>Edit <%= capitalise(cookies.system_term) %>- <%=  Buffer.from(alt.sys_alias, 'base64').toString() %></h2>
+            <h2>Edit <%= capitalise(cookies.system_term) %>- <%=  decode(alt.sys_alias) %></h2>
             <p>You can rename the <%= cookies.system_term %>.</p>
             <form method="post">
-                <label for="sysname"><%=  Buffer.from(alt.sys_alias, 'base64').toString() %> will now be known as....</label>
-                <input type="text" autocomplete="off" name="sysname" placeholder="Put a cool name here">
+                <label for="sysname"><%=  decode(alt.sys_alias) %> will now be known as...</label>
+                <input type="text" autocomplete="off" id="sysdesc" name="sysname" placeholder="Put a cool name here" value="<%=  decode(alt.sys_alias) %>"><br>
+                <label for="sysdesc" class="dyn">[[SYSTEMCAP]] description</label>
+                <input type="text" autocomplete="off" id="sysdesc" name="sysdesc" value="<%=  alt.description == null ? "" : decrypt(alt.description) %>"><br>
                 <input type="submit" name="submit" value="Make it so">
             </form>
             <div class="grid">
                 <% for (i in alters){ %>
-                    <a href="/alter/<%= alters[i].alt_id %>" class="alterbutton">Edit <br/><%- Buffer.from(alters[i].name, 'base64').toString() %></a>
+                    <a href="/alter/<%= alters[i].alt_id %>" class="alterbutton">Edit <br/><%- decode(alters[i].name) %></a>
                 <% } %>
             </div>
         </section>

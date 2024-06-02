@@ -14,7 +14,8 @@ const {isLoggedIn,
   lostPage,
   idCheck,
   paginate,
-  checkUUID} = require("./funcs.js")
+  checkUUID,
+  base64encode} = require("./funcs.js")
 
 
 // Refactoring
@@ -22,6 +23,8 @@ router.get('/', async function(req, res) {
     if (isLoggedIn(req)){
 		const innerWorlds= await db.query(client, "SELECT inner_worlds from USERS WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 		req.session.innerworld = innerWorlds[0].inner_worlds || false;
+		const worksheets= await db.query(client, "SELECT worksheets_enabled from USERS WHERE id=$1;", [getCookies(req)['u_id']], res, req);
+		req.session.worksheets_enabled = worksheets[0].worksheets_enabled || false;
 
 		const systemData = await db.query(client, "SELECT * FROM systems WHERE user_id=$1", [getCookies(req)['u_id']], res, req);
 
@@ -33,12 +36,12 @@ router.get('/', async function(req, res) {
 				id: sys.sys_id,
 				alias: sys.sys_alias,
 				icon: sys.icon,
-				parent: sys.subsys_id
+				parent: sys.subsys_id,
+				description: sys.description
 			})
 		})
 		  
 		  
-		// console.log(groupedData)
 		res.status(200).render('pages/system',{ session: req.session, cookies:req.cookies, system: systemMap, alters: alterData});
     } else {
         forbidUser(res, req);
@@ -127,7 +130,7 @@ router.get('/:id/:pg?', async function(req, res, next){
 			const wsEn= await db.query(client, "SELECT worksheets_enabled FROM users WHERE id=$1;", [getCookies(req)['u_id']], res, req);
 			req.session.worksheets_enabled= wsEn[0].worksheets_enabled;
 		}
-		const sysMap= await db.query(client, "SELECT systems.sys_id, systems.subsys_id, systems.user_id, systems.sys_alias, alters.alt_id, systems.icon FROM systems LEFT JOIN alters ON systems.sys_id = alters.sys_id WHERE systems.sys_id=$1 ORDER BY alters.name ASC", [`${req.params.id}`], res, req);
+		const sysMap= await db.query(client, "SELECT systems.sys_id, systems.subsys_id, systems.user_id, systems.sys_alias, alters.alt_id, systems.icon, systems.description FROM systems LEFT JOIN alters ON systems.sys_id = alters.sys_id WHERE systems.sys_id=$1 ORDER BY alters.name ASC", [`${req.params.id}`], res, req);
 		if (!idCheck(req, sysMap[0].user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", cookies:req.cookies });
 		req.session.chosenSys= sysMap[0];
 		if (req.session.chosenSys.subsys_id != null){
@@ -208,6 +211,41 @@ router.get('/:id/:pg?', async function(req, res, next){
 				res.status(403).render('pages/403',{ session: req.session, code:"Forbidden", cookies:req.cookies });
 			}
 	});
+
+
+	router.post('/', async function (req, res){
+
+		if (req.body.sysname){
+
+		  let subsysID= req.body.subsys == "None" ? null : req.body.subsys;
+		  await db.query(client, "INSERT INTO systems (sys_alias, user_id, subsys_id, description) VALUES ($1, $2, $3, $4)", [`'${base64encode(req.body.sysname)}'`, `${getCookies(req)['u_id']}`, subsysID, `${encryptWithAES(req.body.sysdesc)}`], res, req);
+			return res.redirect(`/system`);
+
+		} else if (req.body.post) {
+			// Comm journal.
+			// id | u_id | created_on | title | body
+			client.query({text: "INSERT INTO comm_posts (u_id, created_on, title, body) VALUES ($1, to_timestamp($2 / 1000.0), $3, $4)",values: [`${getCookies(req)['u_id']}`, `${Date.now()}`, `${encryptWithAES(req.body.cTitle)}`, `${encryptWithAES(req.body.cBody)}`]}, (err, result) => {
+				if (err) {
+				  console.log(err.stack);
+				  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", cookies:req.cookies });
+			  } else {
+				  res.redirect("/system");
+			  }
+		  });
+		} else {
+		  // Deleting.
+		  client.query({text: "DELETE FROM comm_posts WHERE id=$1; ",values: [getKeyByValue(req.body,"Remove")]}, (err, result) => {
+			  if (err) {
+				 console.log(err.stack);
+				 res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", cookies:req.cookies });
+			 } else {
+				 req.session.jPost= null;
+				 res.redirect(`/system`);
+			 }
+		 });
+		}
+	});
+  
 
 
 console.log(`System Router Loaded.`);
