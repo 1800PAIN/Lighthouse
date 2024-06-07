@@ -54,7 +54,7 @@
                                                         <% } %>
                                                     </select>
                                                     <br><label for="author">Topic Author</label>
-                                                    <select name="author" id="author" required>
+                                                    <select name="author" id="author" class="selectize" required>
                                                     </select>
                                                     <br><input type="submit" name="editop" value="Edit Topic">
                                                 </form>
@@ -288,7 +288,8 @@
                       <input type="submit" name="newtop" value="Submit Reply">
                     </form>
                       <script>
-                      $("#replyauthor").selectize({ 
+                     
+                    $("#replyauthor").selectize({ 
                       // sortField: 'text' 
                     });
                     var Font = Quill.import('formats/font');
@@ -472,7 +473,7 @@ $("#hidden-text").text(editor)
             } else {
               $("#author").append('<option value="blur">Blurry</option>')
             }
-            
+            $("#author").selectize({});
         }
         getAlters();
         $("#go").on("click", function(){
