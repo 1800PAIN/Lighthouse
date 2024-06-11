@@ -6,7 +6,6 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
-            <% console.log(session.chosenAlt) %>
             <ul class="breadcrumb">
                 <li><a href="/system" title=""><%= capitalise(cookies.system_term) %></a></li>
                 <li><a href="/system/<%= sender.sys_id %>" title="Back to <%= decode(sender.sys_alias) %>"><%= decode(sender.sys_alias) %></a></li>

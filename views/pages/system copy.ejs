@@ -230,7 +230,6 @@ async function fetchPosts(){
             
               for (i in sysInfo.nonPinned){
                 var bodyArr= (sysInfo.nonPinned[i].body).replace(/\r/gi, '').split("\n").filter(function() { return true; });
-                console.log(bodyArr, sysInfo.nonPinned[i].title)
                 var postStr= new String();
                 var postDate= new Date(sysInfo.nonPinned[i].created_on);
                 if (sysInfo.nonPinned[i].title){ 
