@@ -113,7 +113,7 @@
                 %>
                 
             <hgroup style="text-align:center;">
-                <h2>Journal Together</h2></hgroup>
+                <h2><%- strings.homepage.slogan %></h2></hgroup>
                 
                 <section id="desktopsection">                 
                 </section>
@@ -125,8 +125,7 @@
                
             </section>
             <article style="float:none;border:0;">
-                <p>We use cookies to keep your experience running smoothly while logged in. <a href="/cookies">Read more here.</a></p>
-            <p>Lighthouse is a safe and supportive space for people with PTSD and DID to explore their thoughts and feelings, identify their different <%- pluralize(altTerm) %>, and develop healthy and positive communication internally.<%  if (!cookies.loggedin){ %> <a href="/signup">Sign up today and start your journey.</a><% } %></p>
+            <p class="dyn">Lighthouse is a safe and supportive space for people with PTSD and DID to explore their thoughts and feelings, identify their different <%- pluralize(altTerm) %>, and develop healthy and positive communication internally.<%  if (!cookies.loggedin){ %> <a href="/signup">Sign up today and start your journey.</a><% } %></p>
                 <p><small>
                     <i class="fa fa-anchor" aria-hidden="true"></i>
                     Lighthouse was not developed by a medical professional, and is not intended to be a substitute for professional advice, diagnosis, or treatment. Always seek the advice of your mental health professional or other qualified health provider with any questions you may have regarding your condition.</small></p>

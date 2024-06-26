@@ -12,6 +12,7 @@
         "deleted": "Cleared mood."
     },
     "system": {
+        "createButton": "Lumikha",
         "addSystem": "Magdagdag ng [[SYSTEM]]",
         "created": "Nagawa ang [[SYSTEM]]",
         "updated": "[[SYSTEMCAP]] na-update!",
@@ -80,5 +81,30 @@
         "unlock": "I-unlock",
         "setMood": "I-update ang Mood",
         "clearMood": "Clear Mood"
+    },
+    "homepage":{
+        "slogan": "Magsulat ng Sama-sama",
+        "helping": "We're helping [[x]] [[SYSTEMS]]!",
+        "desc": "Lighthouse is a safe and supportive space for people with PTSD and DID to explore their thoughts and feelings, identify their different [[ALTERS]], and develop healthy and positive communication internally.",
+        "disclaimer": " Lighthouse was not developed by a medical professional, and is not intended to be a substitute for professional advice, diagnosis, or treatment. Always seek the advice of your mental health professional or other qualified health provider with any questions you may have regarding your condition.",
+        "imgCredits": "Image Credits Here",
+        "author": "Designed and programmed by The Lighthouse System.",
+        "supportKoFi": "Support Us On Ko-Fi!",
+        
+        "bullet1": "Create a Space for Your [[ALTERSCAP]]",
+        "bullet1Desc": "[[ALTERSCAP]] get a private journal for their own thoughts and feelings that can be safe-guarded with a password.",
+        "bullet2": "Keep Your [[SYSTEMCAP]] Informed",
+        "bullet2desc": "Users get both a Communal Journal and an Internal Forum that can be used by all [[ALTERS]] to keep everyone up-to-date.",
+        "bullet3": "Get to the Root of Feelings",
+        "bullet3desc": "Each [[ALTER]] can set a mood with a short reason as to why they feel that way.",
+        "bullet4": "Understand Your [[ALTERSCAP]] Better",
+        "bullet4desc": "[[ALTERSCAP]] can provide basic information on themselves, but can also address what makes them feel safe, what they would want from the [[SYSTEM]], and what they would like accommodations for. Users can also create nested [[SUBSYSTEMS]], or a second standalone [[SYSTEM]], for those with complex [[SYSTEMS]].",
+        "bullet5": "Import from Pluralkit & Simply Plural",
+        "bullet5desc": "If you already use the popular Discord bot <strong>Pluralkit</strong> or the app <strong>Simply Plural</strong>, you can import your [[SYSTEM]] into Lighthouse!",
+        "bullet6": "Interactive Worksheets",
+        "bullet6desc": "If you have a trauma-based [[SYSTEM]] or would like to use trauma worksheets, Lighthouse has a growing number of interactive pages to help process emotions, make a safety plan, or prepare for an event that you know will be stressful or triggering.",
+        "bullet6disclaimer": "*These worksheets are intended for educational and informational purposes only and should not be used as a substitute for professional mental health care.",
+
+        "supporters": "Thank You to Our Supporters"
     }
 }

@@ -1,9 +1,9 @@
 {
-    "test": "Hello World",
+    "test": "Dia duit Domhanda",
     "alter": {
-        "created": "[[ALTERNAME]] added successfully!",
-        "updated": "[[ALTERNAME]] updated successfully!",
-        "deleted": "[[ALTERNAME]] removed successfully.",
+        "created": "[[ALTERNAME]] curtha leis!",
+        "updated": "[[ALTERNAME]] nuashonraithe!",
+        "deleted": "[[ALTERNAME]] bainte.",
         "delete": "Delete [[ALTERNAME]]",
         "archive": "Archive [[ALTERNAME]]"
     },
@@ -12,8 +12,8 @@
         "deleted": "Cleared mood."
     },
     "system": {
-        "createButton": "Creare",
-        "addSystem": "Crea [[SYSTEM]]",
+        "createButton": "Create",
+        "addSystem": "Add [[SYSTEMCAP]]",
         "created": "[[SYSTEMCAP]] created!",
         "updated": "[[SYSTEM]] updated!",
         "deleted": "Deleted [[SYSTEM]].",
@@ -71,19 +71,19 @@
         "updateSkin": "Update Journal Skin"
     },
     "actions":{
-        "rename": "Rename",
-        "delete": "Delete",
-        "startOver": "Start Over",
-        "setIcon": "Set Icon",
-        "editAlter": "Edit [[ALTERNAME]]",
-        "update": "Update",
-        "lock": "Lock",
-        "unlock": "Unlock",
-        "setMood": "Update Mood",
-        "clearMood": "Clear Mood"
+        "rename": "Athainmnigh",
+        "delete": "Scrios",
+        "startOver": "Thosaigh arís",
+        "setIcon": "Socraigh Deilbhín",
+        "editAlter": "Athraigh [[ALTERNAME]]",
+        "update": "Nuashonrú",
+        "lock": "Glasáil",
+        "unlock": "Díghlasáil",
+        "setMood": "Nuashonraigh Mood",
+        "clearMood": "Bain Mood"
     },
     "homepage":{
-        "slogan": "Scrivere Insieme",
+        "slogan": "Scríobh le Chéile",
         "helping": "We're helping [[x]] [[SYSTEMS]]!",
         "desc": "Lighthouse is a safe and supportive space for people with PTSD and DID to explore their thoughts and feelings, identify their different [[ALTERS]], and develop healthy and positive communication internally.",
         "disclaimer": " Lighthouse was not developed by a medical professional, and is not intended to be a substitute for professional advice, diagnosis, or treatment. Always seek the advice of your mental health professional or other qualified health provider with any questions you may have regarding your condition.",
