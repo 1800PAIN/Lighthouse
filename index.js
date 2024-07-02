@@ -22,7 +22,7 @@ const { isLoggedIn, getCookies, apiEyesOnly, encryptWithAES, decryptWithAES, for
 		lostPage, idCheck, paginate, checkUUID, truncate, capitalise, 
 		getKeyByValue, splitByGroup, randomise, getRandomInt, generateToken, 
 		stripHTML, distill, getOrdinal, base64encode, base64decode, 
-		truncateAndStringify, renderNestedList } = require("./funcs.js")
+		truncateAndStringify, renderNestedList, errorPage } = require("./funcs.js")
 const tuning= require('./js/genVars.js');
 var strings= require("./lang/en.json");
 const langVar= require("./js/languages.js");
@@ -151,23 +151,8 @@ app.locals.timeOptions={
 app.locals.truncateAndStringify= truncateAndStringify;
 app.locals.renderNestedList = renderNestedList;
 
-// Other routes 
-app.use('/api', apiRouter); // For the Public API
-app.use("/system", systemRouter); // For the /system stuff (WIP)
-app.use("", alterRouter); // For the /alter stuff (WIP)
-app.use("", staticRouter); // For pages that require almost no extra checks beforehand. Think the about page, philosophy etc. 
-app.use("", wsRouter); // For worksheet routes. 
-app.use("", botRouter); // For the web crawling routes. 
-app.use("", forumRouter); // For the forums routes. 
-app.use("/inbox", messagesRouter); // For the messages routes. 
-
-
-// ------ //
-app.set('views', path.join(__dirname, 'views'))
-app.set('view engine', 'ejs');
-
 // Middleware...?
-app.all('*', async function (req, res){
+app.use(async function (req, res){
 	// Loads before all other routes.
 	if (isLoggedIn(req)){
 		// Let's only grab the database if we need to.
@@ -197,6 +182,7 @@ app.all('*', async function (req, res){
 					app.locals.strings= strings;
 			} catch (e){
 				// They're likely logged out.
+				// console.error(e)
 			}
 			
 
@@ -207,10 +193,31 @@ app.all('*', async function (req, res){
 		req.session.innerworld_term= "inner world";
 		req.session.plural_term= "plural";
 		req.session.font="Lexend";
-		strings= require(`./lang/en.json`);
+		try{
+			strings= require(`./lang/${req.headers["accept-language"].split("-")[0]}.json`);
+
+		} catch(e){
+			strings= require(`./lang/en.json`);
+		}
+		app.locals.strings= strings;
+		
 	}
 	req.next();
   });
+
+// Other routes 
+app.use('/api', apiRouter); // For the Public API
+app.use("/system", systemRouter); // For the /system stuff (WIP)
+app.use("", alterRouter); // For the /alter stuff (WIP)
+app.use("", staticRouter); // For pages that require almost no extra checks beforehand. Think the about page, philosophy etc. 
+app.use("", wsRouter); // For worksheet routes. 
+app.use("", botRouter); // For the web crawling routes. 
+app.use("", forumRouter); // For the forums routes. 
+app.use("/inbox", messagesRouter); // For the messages routes. 
+  
+// ------ //
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'ejs');
 
  if (process.env.maintenance== "true"){
 	// Maintenance mode on.
@@ -2160,16 +2167,18 @@ if (process.env["environment"]== "dev"){
 	})
 	
 }
-  // ERROR ROUTES. DO NOT PUT NEW PAGES BENEATH THESE.
 
-  app.use(function (err, req, res, next) {
-	if (err) {
-	  console.error(err.stack);
-	  res.status(500).render('pages/error', { session: req.session, code:"General Error", cookies:req.cookies });
-	} else if (!res.headersSent) { // Check if response headers are already sent
-	  next(err); // Pass on other errors, including 404
-	}
+app.use(function(err, req, res, next) {
+	// set locals, only providing error in development
+	res.locals.message = err.message;
+	res.locals.error = req.app.get('env') === 'development' ? err : {};
+  
+	// render the error page
+	res.status(err.status || 500);
+	functions.errorPage(500, res,req, res.locals.error);
+	next(err)
   });
+
 
 	app.use(function(req,res){
 			res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", cookies:req.cookies });

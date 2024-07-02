@@ -6,7 +6,7 @@ const client= db.client;
 const crypto= require('crypto');
 const CryptoJS = require("crypto-js");
 var strings= require("./lang/en.json");
-
+const {errorPage} = require("./funcs.js");
 
   router.get('/philosophy', (req, res, next) => { res.render(`pages/phil`, { session: req.session, cookies:req.cookies })});
   
@@ -36,7 +36,6 @@ var strings= require("./lang/en.json");
     });
     router.get('/login', (req, res) => {
         // Bookmark: login page
-        // req.flash('info', 'Welcome');
           res.render(`pages/login`, { session: req.session, cookies:req.cookies });
     
       });
@@ -62,5 +61,11 @@ var strings= require("./lang/en.json");
  router.get('/tutorial', (req, res) => {
   res.render(`pages/tutorial`, { session: req.session, cookies:req.cookies});
 });
+
+router.get("/lighthouse-system", (req, res)=>{
+  res.render("pages/lighthouse-sys", { session: req.session, cookies:req.cookies})
+});
   console.log(`Static Page Router Loaded.`);
+
+
   module.exports = router;

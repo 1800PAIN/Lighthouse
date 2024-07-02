@@ -174,6 +174,26 @@ function lostPage(res, req){
 	return res.status(404).render('pages/404',{ session: req.session, code:"Not Found",cookies:req.cookies });
 }
 
+/**
+ * Renders an error page.
+ * @param {Number} err Error Code.
+ * @param {object} res ExpressJS API response.
+ * @param {object} req ExpressJS API request.
+ * @param {object} errorStack The error message (so the console shows it)
+ * @returns {*} An API response that serves an error 403 page.
+ */
+function errorPage(err, res, req, errorStack){
+  console.error(errorStack)
+  let page = err == 0 ? "error" : err; // If error code is 0, then do a general error page. Otherwise, use our code.
+  try{
+     return res.status(err).render(`pages/${page}`, {error: err}); 
+  } catch (e){
+      // Wrong Error code.
+      return res.status(err).render(`pages/error`, {error: err}); 
+  }
+
+}
+
 
 function checkUUID(str){
 	let uuidRegex= /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
@@ -465,5 +485,6 @@ module.exports = {
     renderNestedList,
     getSystems,
     authUser,
-    validateParam
+    validateParam,
+    errorPage
 }

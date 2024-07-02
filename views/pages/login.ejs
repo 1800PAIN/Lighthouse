@@ -14,6 +14,7 @@
     <body>
         <%- include ("../partials/nav.ejs") %>
         <div id="wrapper">
+            <% if (!isLoggedIn(cookies)){ %>
             <div id="loggedIn" class="splash" style="display:none">Hi, <span id="greeting">friend</span>! You are now logged in. Redirecting you now...</div>
             <div id="wrongpass" class="splash" style="display:none">Incorrect email and/or password. <a href="/forgot-password">Need to reset your password?</a></div>
             <h2>Log In to Lighthouse</h2>
@@ -28,6 +29,14 @@
             </form>
             <br/>
             <a id="fgglow" href="/forgot-password">Forgot your password, or need to reset it?</a>
+            <% } else { %>
+                <h2>You are Already Logged In!</h2>
+                <p class="dyn">You are currently logged in as: <b><%- cookies.username %></b>. Would you like to log out, or go to your [[SYSTEMCAP]] page?</p>
+                <div>
+                    <a class="linkbutton dyn" href="/system">Go to My [[SYSTEMCAP]]</a>
+                    <a class="linkbutton dyn" href="/logout">Log Out</a>
+                </div>
+            <% } %>
         </div>
         <%- include ("../partials/footer.ejs") %>
         <script>

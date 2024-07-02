@@ -120,60 +120,59 @@
                 
                 <section style="text-align:center;">
                     <img src="/img/<%= Math.floor(Math.random() * (18 - 1 + 1)) + 1  %>.png" alt="a journal book" style="display:inline; height: 256px; width: auto;margin-bottom:-1em;" class="pixelart">
-                </center>
-                <h4>We're helping  <span style="color:var(--col1)"><%= (parseInt(userCount)).toLocaleString() %></span> <%= pluralize(sysTerm) %>!</h4>
+                
+                 <h4 class="dyn"><%- (strings.homepage.helping).replace("[[x]]", parseInt(userCount).toLocaleString()) %></h4>
                
             </section>
             <article style="float:none;border:0;">
-            <p class="dyn">Lighthouse is a safe and supportive space for people with PTSD and DID to explore their thoughts and feelings, identify their different <%- pluralize(altTerm) %>, and develop healthy and positive communication internally.<%  if (!cookies.loggedin){ %> <a href="/signup">Sign up today and start your journey.</a><% } %></p>
+            <p class="dyn"><%- strings.homepage.desc %><%  if (!cookies.loggedin){ %> <a href="/signup">Sign up today and start your journey.</a><% } %></p>
                 <p><small>
-                    <i class="fa fa-anchor" aria-hidden="true"></i>
-                    Lighthouse was not developed by a medical professional, and is not intended to be a substitute for professional advice, diagnosis, or treatment. Always seek the advice of your mental health professional or other qualified health provider with any questions you may have regarding your condition.</small></p>
-                    <p><a href="/about#credits">Image Credits Here.</a></p>
-                    <center>
-                        <p>Designed and programmed by The Lighthouse System.</p>
-                        <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('Support Us on Ko-fi!', '#29abe0', 'M4M81XKEG');kofiwidget2.draw();</script></center> 
+                    <i class="fa fa-anchor" aria-hidden="true"></i><%- strings.homepage.disclaimer %></small></p>
+                    <p><a href="/about#credits"><%- strings.homepage.imgCredits %></a></p>
+                    <div style="text-align:center;">
+                        <p><%- strings.homepage.author %></p>
+                        <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('<%- strings.homepage.supportKoFi %>', '#29abe0', 'M4M81XKEG');kofiwidget2.draw();</script></div> 
             </article>
             
         <hr>
         <section id="features">
             <div>
-                <div><h2>Create a Space for Your <%- capitalise(pluralize(altTerm)) %></h2>
-                    <p><%- capitalise(pluralize(altTerm)) %> get a private journal for their own thoughts and feelings that can be safe-guarded with a password.</p></div>
+                <div><h2 class="dyn"><%- strings.homepage.bullet1 %></h2>
+                    <p class="dyn"><%- strings.homepage.bullet1Desc %></p></div>
                 
             </div>
             <div>
-                <div><h2>Keep Your <%- capitalise(sysTerm) %> Informed</h2>
-                    <p>Users get both a Communal Journal and an Internal Forum that can be used by all <%- pluralize(altTerm) %> to keep everyone up-to-date.</p></div>
+                <div><h2 class="dyn"><%- strings.homepage.bullet2 %></h2>
+                    <p class="dyn"><%- strings.homepage.bullet2desc %></p></div>
                 
             </div>
             <div>
-                <div><h2>Get to the Root of Feelings</h2>
-                    <p>Each <%- altTerm %> can set a mood with a short reason as to why they feel that way.</p></div>
+                <div><h2><%- strings.homepage.bullet3 %></h2>
+                    <p class="dyn"><%- strings.homepage.bullet3desc %></p></div>
                 
             </div>
             <div>
-                <div><h2>Understand Your <%- capitalise(pluralize(altTerm)) %> Better</h2>
-                    <p><%- capitalise(pluralize(altTerm)) %> can provide basic information on themselves, but can also address what makes them feel safe, what they would want from the <%- sysTerm %>, and what they would like accommodations for.</p>
-                    <p>Users can also <strong>create nested <%= pluralize(subsysTerm) %>, or a second standalone <%= sysTerm %></strong>, for those with complex <%= pluralize(sysTerm) %>.</p>
+                <div><h2 class="dyn"><%- strings.homepage.bullet4 %></h2>
+                    <p class="dyn"><%- strings.homepage.bullet4desc %></p>
                 </div>
                 
             </div>
             <div>
-                <div><h2>Import from Pluralkit & Simply Plural</h2>
-                    <p>If you already use the popular Discord bot <strong>Pluralkit</strong> or the app <strong>Simply Plural</strong>, you can import your <%- sysTerm %> into Lighthouse!</p></div>
+                <div><h2><%- strings.homepage.bullet5 %></h2>
+                    <p class="dyn"><%- strings.homepage.bullet5desc %></p></div>
                 
             </div>
             <div>
-                <div><h2>Interactive Worksheets</h2>
-                    <p>If you have a trauma-based <%= sysTerm %> or would like to use trauma worksheets, Lighthouse has a growing number of interactive pages to help process emotions, make a safety plan, or prepare for an event that you know will be stressful or triggering.</p><p><small>*These worksheets are intended for educational and informational purposes only and should not be used as a substitute for professional mental health care.</small></p></div>
+                <div><h2><%- strings.homepage.bullet6 %></h2>
+                    <p class="dyn"><%- strings.homepage.bullet6desc %></p>
+                    <p class="dyn"><small><%- strings.homepage.bullet6disclaimer %></small></p></div>
                 
             </div>
         </section>
         <% if (donators.length > 0){ %>
             <hr>
             <section>
-            <h2>Thank You to Our Supporters</h2>
+            <h2><%- strings.homepage.supporters %></h2>
             <div style="display:grid;grid-template-columns: 1fr 1fr 1fr 1fr;line-height: 2;">
                 <% for (i in donators) { %> 
                     <div style="padding:1em;line-height:1;text-align:center;"><%- donators[i].nickname %></div>

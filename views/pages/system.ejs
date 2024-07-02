@@ -53,8 +53,7 @@
         let innerWorld = session.innerworld_term || cookies.innerworld_term || "inner world"
 
         %>
-      
-            <h1 class="dyn">[[SYSTEMCAP]] Page</h1>
+            
             <ul class="padLinks">
               <li><a class="dyn linkbutton" title= "<%= strings.system.links.search %>" href="/search"><%= strings.system.links.search %></a></li>
               <li><a class="dyn linkbutton" title= "<%= strings.system.links.rules %>" href="/rules"><%= strings.system.links.rules %></a></li>
@@ -65,11 +64,14 @@
               <li><a class="dyn linkbutton" title="<%= strings.system.links.combine %>" href="/combine/alts"><%= strings.system.links.combine %></a></li>
               <li><a class="dyn linkbutton" title="<%= siteLanguage[session.language || "en"].comm %>" href="/system/communal-journal/"><%= siteLanguage[session.language || "en"].comm %></a></li>
             </ul>
-            <h2 id="sysHeader">Your <%= capitalise(system.length == 1 ? session.system_term : pluralize(session.system_term)) %></h2>
+            <div style="display:flex;">
+              <h2 class="dyn" id="sysHeader">Your <%= capitalise(system.length == 1 ? '[[SYSTEMCAP]]' : '[[SYSTEMSCAP]]') %></h2> <button id="tbutton" class="dyn"><%= strings.system.createButton %></button>
+            </div>
+            
             <ul id="sysList" style="list-style-type: none;">
               <%- renderNestedList(system, alters) %>
               </ul>
-            <button id="tbutton" class="dyn"><%= strings.system.createButton %></button>
+            
               <!-- The Modal -->
               <div id="myModal" class="modal">
 
