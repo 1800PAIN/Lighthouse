@@ -57,7 +57,12 @@ xsi:schemaLocation="http://www.writelighthouse.com/sitemap.xml">
 })
 router.get("/robots.txt", function(req, res) {
 res.setHeader('content-type', 'text/plain');
-res.send(`User-Agent: GPTBot
+res.send(`
+User-Agent: Claude-Bot
+Disallow: /
+User-Agent: Google-Extended
+Disallow: /
+User-Agent: GPTBot
 Disallow: /
 User-Agent: CCBot
 Disallow: /
