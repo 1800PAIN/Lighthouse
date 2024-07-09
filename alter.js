@@ -247,14 +247,11 @@ router.post("/alter/edit-journal/:id", authUser, validateParam('id'), async (req
 
             } else if (req.body.modify){
               // Edit alter.
-                client.query({text: "UPDATE alters SET sys_id=$1, name=$2 WHERE alt_id=$3;",values: [req.body.alterSys, `'${Buffer.from(req.body.altname).toString('base64')}'`, req.params.id]}, (err, result) => {
-                  if (err) {
-                    console.log(err.stack);
-                    res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", cookies:req.cookies });
-                  } else {
-                    res.redirect(`/alter/${req.params.id}`);
-                  }
-                });
+              if (req.body.altname){
+                await db.query(client, "UPDATE alters SET sys_id=$1, name=$2 WHERE alt_id=$3",[req.body.alterSys, `'${base64encode(req.body.altname)}'`,  req.params.id], res, req);
+              } else {
+                await db.query(client, "UPDATE alters SET sys_id=$1 WHERE alt_id=$3", [req.body.alterSys, req.params.id], res, req);
+              }
             } else if (req.body.changePass){
               // Change alter password.
               client.query({text: "UPDATE journals SET password=$1 WHERE alt_id=$2;",values: [`'${CryptoJS.SHA3(req.body.jPassNew)}'`, req.params.id]}, (err, result) => {
