@@ -1712,11 +1712,9 @@ app.get('/wish-d/:id', (req, res) => {
 			return res.render(`pages/signup`, { session: req.session, cookies:req.cookies });
 		} 
 			// Write to the db
-			await db.query(client, "INSERT INTO users (email, username, pass, email_link, worksheets_enabled, system_term, alter_term, email_pin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", [`'${Buffer.from(email).toString('base64')}'`,`'${Buffer.from(req.body.username).toString('base64')}'`,`'${CryptoJS.SHA3(req.body.password)}'`,`'${Math.random().toString(36).substr(2, 16)}'`,req.body.ws || true,req.body.system_term || "system",req.body.alter_term || "alter",getRandomInt(1111,9999)], res, req);
+			await db.query(client, "INSERT INTO users (email, username, pass, email_link, worksheets_enabled, system_term, alter_term, email_pin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", [`'${base64encode(email)}'`,`'${Buffer.from(req.body.username).toString('base64')}'`,`'${CryptoJS.SHA3(req.body.password)}'`,`'${Math.random().toString(36).substr(2, 16)}'`,req.body.ws || true,req.body.system_term || "system",req.body.alter_term || "alter",getRandomInt(1111,9999)], res, req);
 	
-			const userDat = await db.query(client, "SELECT * FROM users WHERE email=$1;", [`'${Buffer.from(req.body.email).toString('base64')}'`], res, req);
-	
-			
+			const userDat = await db.query(client, "SELECT * FROM users WHERE email=$1;", [`'${base64encode(email)}'`], res, req);
 	
 			ejs.renderFile(__dirname + '/views/pages/email-welcome.ejs', { alias: req.body.username || randomise(["Buddy", "Friend", "Pal"]), userid: userDat[0].id }, (err, data) => {
 				if (err) {
