@@ -2175,7 +2175,7 @@ app.use(function(err, req, res, next) {
   
 	// render the error page
 	res.status(err.status || 500);
-	functions.errorPage(500, res,req, res.locals.error);
+	errorPage(500, res,req, res.locals.error);
 	next(err)
   });
 
