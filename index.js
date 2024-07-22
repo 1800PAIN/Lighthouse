@@ -5,7 +5,6 @@ var bodyParser=require("body-parser");
 var cookieParser = require('cookie-parser');
 const session = require('cookie-session');
 const path = require('path');
-const PORT = process.env.PORT || 5000;
 const CryptoJS = require("crypto-js");
 const fs = require('fs');
 var pdf = require("html-pdf");
@@ -48,6 +47,8 @@ const twoWeeks = 1000 * 60 * 60 * 24 * 7 * 2;
 // const { start } = require('repl');
 
 require('dotenv').config();
+
+const PORT = process.env.PORT;
 
 // #endregion ------------------------------------------------------------------
 
@@ -2198,6 +2199,6 @@ app.use(function(err, req, res, next) {
   // End pages.
   app.listen(PORT, async function(res, req){
 	let rn= await db.query(client, "SELECT NOW();", [], res, req);
-	console.log(`⚓ Docked at Port ${ PORT }. The time is ${(rn[0].now).toLocaleString('en-GB', { timeZone: 'EST' })}`)
+	console.log(`⚓ Docked at Port ${ PORT }. The time is ${(rn[0].now).toLocaleString('en-GB', { timeZone: 'EST' })}\nOpen in browser: http://localhost:${PORT}/`)
 });
 
