@@ -1712,6 +1712,7 @@ app.get('/wish-d/:id', (req, res) => {
 
 	app.post('/signup', async function(req, res) {
 		// Bookmarks: signup post, post signup
+		return;
 	
 		if (req.body.mjl2fbbz8s) return res.send("(:"); // It's a bot. Do not let them load anything.
 	
