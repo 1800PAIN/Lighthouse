@@ -570,53 +570,51 @@ ul.breadcrumb {
     -webkit-filter: drop-shadow(0 5px 5px black); */
     filter: drop-shadow(0 5px 5px black);
 }
-.vvtinyimg{
-    width: calc(1em);
-    /* height: calc(1em); */
-    height: auto;
-    margin:auto;
-    vertical-align: middle;
-    object-fit: cover;
+.vvtinyimg {
+  width: calc(1em);
+  height: calc(1em); /* Set height to match width for square ratio */
+  margin: auto;
+  vertical-align: middle;
+  object-fit: cover; /* Ensures the image covers the area */
 }
 
-.vtinyimg{
-    width: calc(2em);
-    /* height: calc(2em); */
-    height: auto;
-    margin:auto;
-    vertical-align: middle;
-    object-fit: cover;
-    object-position: top;
+.vtinyimg {
+  width: calc(2em);
+  height: calc(2em); /* Set height to match width for square ratio */
+  margin: auto;
+  vertical-align: middle;
+  object-fit: cover; /* Ensures the image covers the area */
+  object-position: top; /* Adjusts the position of the image */
 }
-.tinyimg{
-    width: calc(4em);
-    /* height: calc(4em); */
-    height: auto;
-    object-fit: cover;
-    object-position: top;
-}
-.smallimg{
-    width: calc(6em);
-    /* height: calc(6em); */
-    height: auto;
-    object-fit: cover;
-    object-position: top;
-}
-.medimg{
-    width: calc(8em);
-    /* height: calc(8em); */
-    height: auto;
-    object-fit: cover;
-    object-position: top;
-}
-.lgimg{
-    width: calc(10em);
-    /* height: calc(10em); */
-    height: auto;
-    object-fit: cover;
-    object-position: top;
 
+.tinyimg {
+  width: calc(4em);
+  height: calc(4em); /* Set height to match width for square ratio */
+  object-fit: cover; /* Ensures the image covers the area */
+  object-position: top; /* Adjusts the position of the image */
 }
+
+.smallimg {
+  width: calc(6em);
+  height: calc(6em); /* Set height to match width for square ratio */
+  object-fit: cover; /* Ensures the image covers the area */
+  object-position: top; /* Adjusts the position of the image */
+}
+
+.medimg {
+  width: calc(8em);
+  height: calc(8em); /* Set height to match width for square ratio */
+  object-fit: cover; /* Ensures the image covers the area */
+  object-position: top; /* Adjusts the position of the image */
+}
+
+.lgimg {
+  width: calc(10em);
+  height: calc(10em); /* Set height to match width for square ratio */
+  object-fit: cover; /* Ensures the image covers the area */
+  object-position: top; /* Adjusts the position of the image */
+}
+
 .splash{
     width: 50vw;
     background: var(--col2);

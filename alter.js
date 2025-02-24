@@ -298,21 +298,49 @@ router.post("/alter/edit-journal/:id", authUser, validateParam('id'), async (req
           let spId= req.body.spid ? `${encryptWithAES(req.body.spid)}` : null;
           let colourEn= req.body.colourenabled =="on" ? true : false;
           let outlineEn= req.body.outlineenabled =="on" ? true : false;
+          const maxBytes = 524288;
           // First-- Let's handle files.
           if (req.files){
             
             if (req.files.imgupload){
               // This is for the icons!
+              const uploadedFile = req.files.imgupload;
+              if (uploadedFile.size > maxBytes) {
+                // Bookmark
+                req.flash("flash",`File size must be under ${maxBytes / 1024 / 1024}MB`);
+                
+                let sysInfo= await getSystems(getCookies(req)['u_id'], res, req)
+                let altInfo= await db.query(client, "SELECT alters.*, systems.sys_alias, systems.user_id FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alters.alt_id=$1", [`${req.params.id}`], res, req, true);
+                if (!altInfo) return;
+                let chosenAlter= altInfo[0];
+                if (!idCheck(req, chosenAlter.user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", cookies:req.cookies });
+                res.render(`pages/edit_alter`, { session: req.session, cookies:req.cookies, alterTypes:alterTypes,chosenAlter:chosenAlter, sysInfo: sysInfo });
+            } else {
               await db.query(client, "UPDATE alters SET img_blob=$2, blob_mimetype=$3 WHERE alt_id=$1", [ `${req.params.id}`, req.body.clear ? null : req.files.imgupload.data, req.body.clear ? null : req.files.imgupload.mimetype,], res, req); 
               await db.query(client, "UPDATE alters SET img_url=null WHERE alt_id=$1", [ `${req.params.id}`], res, req); 
+            }
             }
             
             if (req.files.headeralt){
               // This is for the header!
+              const uploadedHeader = req.files.headeralt;
+              if (uploadedHeader.size > maxBytes) {
+                // Bookmark
+                req.flash("flash",`File size must be under ${maxBytes / 1024 / 1024}MB`);
+                
+                let sysInfo= await getSystems(getCookies(req)['u_id'], res, req)
+                let altInfo= await db.query(client, "SELECT alters.*, systems.sys_alias, systems.user_id FROM alters INNER JOIN systems ON systems.sys_id = alters.sys_id WHERE alters.alt_id=$1", [`${req.params.id}`], res, req, true);
+                if (!altInfo) return;
+                let chosenAlter= altInfo[0];
+                if (!idCheck(req, chosenAlter.user_id)) return res.status(404).render(`pages/404`, { session: req.session, code:"Not Found", cookies:req.cookies });
+                res.render(`pages/edit_alter`, { session: req.session, cookies:req.cookies, alterTypes:alterTypes,chosenAlter:chosenAlter, sysInfo: sysInfo });
+            } else {
               await db.query(client, "UPDATE alters SET header_blob=$2, header_mimetype=$3 WHERE alt_id=$1", [`${req.params.id}`,
               req.files.headeralt.data,
               req.files.headeralt.mimetype], 
               res, req);
+            }
+              
             }
 
           } 
