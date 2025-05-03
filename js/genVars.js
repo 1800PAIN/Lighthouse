@@ -46,7 +46,7 @@ var tuning={
     cookietime: 1000 * 60 * 60 * 24 * 7 * 2 //2 weeks
 }
 
-var skinGroups=["Default", "Misc. User Skins", "Galaxii Kingdom", "Constellation Collection", "Chaotic Troop", "Pax Vesania Collective", "Pride", "DivineChrysalism", "GOOPYGAMER9000", "Era vulgaris", "Unlockables", "Metallic"] 
+var skinGroups=["Default", "Misc. User Skins", "Galaxii Kingdom", "Constellation Collection", "Chaotic Troop", "Pax Vesania Collective", "Pride", "DivineChrysalism", "GOOPYGAMER9000", "Era vulgaris", "Unlockables", "DNA System"] 
 
 // Group 1: Default Skins.
 // Group 2: Single user skins (These users didn't make more than 2 skins)
