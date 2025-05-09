@@ -211,6 +211,19 @@ var journals=[
 	{val: '148', c: "Transandrogynous (🎨 dna system)", group:7, ext:"png"},
 	{val: '149', c: "Transfemmasc (🎨 dna system)", group:7, ext:"png"},
 	{val: '150', c: "Transxenine (🎨 dna system)", group:7, ext:"png"},
+	{val: '151', c: "Plural Peafowl (🎨 Ceefax)", group:7, ext:"png"},
+	{val: '152', c: "Overgrown (🎨 DivineChrysalism)", group:8, ext:"png"},
+	{val: '153', c: "Modern Bubble Pop (🎨 DivineChrysalism)", group:8, ext:"png"},
+	{val: '154', c: "Purple Eclipse (🎨 Solar Union)", group:2, ext:"png"},
+	{val: '155', c: "Sculked (🎨 Solar Union)", group:2, ext:"png"},
+	{val: '156', c: "Skaia (🎨 Solar Union)", group:2, ext:"png"},
+	{val: '157', c: "Boygirl (🎨 Redgrave System)", group:7, ext:"png"},
+	{val: '158', c: "Paint Spill, Blue (🎨 neoteric wilds)", group:2, ext:"png"},
+	{val: '159', c: "Paint Spill, Red (🎨 neoteric wilds)", group:2, ext:"png"},
+	{val: '160', c: "Paint Spill, Yellow (🎨 neoteric wilds)", group:2, ext:"png"},
+	{val: '161', c: "Paint Spill, Green (🎨 neoteric wilds)", group:2, ext:"png"},
+	{val: '162', c: "Icing and Sprinkles (🎨 neoteric wilds)", group:2, ext:"png"},
+	{val: '163', c: "In da Jungle (🎨 The Saturniid System)", group:2, ext:"png"},
 ]
 
 var editorColours=[
