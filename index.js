@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 const session = require('cookie-session');
 const path = require('path');
 const CryptoJS = require("crypto-js");
+const crypto = require('crypto');
 const fs = require('fs');
 var pdf = require("html-pdf");
 const nodemailer = require('nodemailer');
@@ -892,7 +893,7 @@ app.get('/wish-d/:id', (req, res) => {
 			// ${Buffer.from(req.body.email).toString('base64')}
 			if (req.headers.email){
 				// Look for an email.
-				client.query({text: "SELECT * FROM users WHERE email=$1;", values:[`'${Buffer.from(req.headers.email).toString("base64")}'`]}, (err, result)=>{
+				client.query({text: "SELECT id FROM users WHERE email=$1;", values:[`'${Buffer.from(req.headers.email).toString("base64")}'`]}, (err, result)=>{
 					if (err){
 						console.log(err.stack);
 						res.status(400);
@@ -1782,7 +1783,24 @@ app.get('/wish-d/:id', (req, res) => {
 			return res.render(`pages/signup`, { session: req.session, cookies:req.cookies });
 		} 
 			// Write to the db
-			await db.query(client, "INSERT INTO users (email, username, pass, email_link, worksheets_enabled, system_term, alter_term, email_pin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", [`'${base64encode(email)}'`,`'${Buffer.from(req.body.username).toString('base64')}'`,`'${CryptoJS.SHA3(req.body.password)}'`,`'${Math.random().toString(36).substr(2, 16)}'`,req.body.ws || true,req.body.system_term || "system",req.body.alter_term || "alter",getRandomInt(1111,9999)], res, req);
+			const salt = crypto.randomBytes(32).toString('hex');
+			await db.query(
+				client,
+				"INSERT INTO users (email, username, pass, email_link, worksheets_enabled, system_term, alter_term, email_pin, salt) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+				[
+					`'${base64encode(email)}'`,
+					`'${base64encode(req.body.username)}'`,
+					`'${CryptoJS.SHA3(req.body.password + salt)}'`, // Hash password with salt
+					`'${Math.random().toString(36).substr(2, 16)}'`,
+					req.body.ws || true,
+					req.body.system_term || "system",
+					req.body.alter_term || "alter",
+					getRandomInt(1111,9999),
+					`${salt}`
+				],
+				res,
+				req
+			);
 	
 			const userDat = await db.query(client, "SELECT * FROM users WHERE email=$1;", [`'${base64encode(email)}'`], res, req);
 	

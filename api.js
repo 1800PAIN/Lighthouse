@@ -54,18 +54,28 @@ function generateToken(n) {
 	const token = crypto.randomBytes(n).toString('hex');
 	return token;
   }
-  function encryptWithAES(text){
-    const passphrase = process.env.cryptkey;
-    return CryptoJS.AES.encrypt(text, passphrase).toString();
-    }
 
-     
-    function decryptWithAES(ciphertext){
-    const passphrase = process.env.cryptkey;
-    const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase);
-    const originalText = bytes.toString(CryptoJS.enc.Utf8);
-    return originalText;
-    }
+/**
+ * Encrypts a string using AES encryption. DO NOT USE FOR PASSWORDS.
+ * @param {String} text - The text to encrypt.
+ * @param {String} passphrase - The passphrase to use for encryption.
+ * @returns {String} The encrypted text.
+ */
+function encryptWithAES(text, passphrase = process.env.cryptkey){
+  return CryptoJS.AES.encrypt(text, passphrase).toString();
+}
+
+/**
+ * Decrypts a string using AES encryption. DO NOT USE FOR PASSWORDS.
+ * @param {String} ciphertext - The encrypted text to decrypt.
+ * @param {String} passphrase - The passphrase to use for decryption.
+ * @returns {String} The decrypted text.
+ */
+function decryptWithAES(ciphertext, passphrase = process.env.cryptkey){
+  const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase);
+  const originalText = bytes.toString(CryptoJS.enc.Utf8);
+  return originalText;
+}
 /*
 
    ____      _     ____                            _       
@@ -211,43 +221,100 @@ router.get('/journals/:id', async function (req, res){
 });
 
 
+  // router.get("/user/auth", async function(req, res){
+  //   // Grab user info. This is for logging in.
+  //   let userCheck = await db.query(client, 
+  //     "SELECT * FROM users WHERE email=$1 AND pass=$2;", 
+  //     [
+  //       `'${Buffer.from((req.headers.email).toLowerCase()).toString('base64')}'`, 
+  //       `'${CryptoJS.SHA3(req.headers.tok)}'`,
+  //     ], res, req);
+  //   if (userCheck.length > 0){
+
+  //     req.session.alter_term= userCheck[0].alter_term;
+  //     req.session.system_term= userCheck[0].system_term;
+  //     req.session.subsystem_term= userCheck[0].subsystem_term;
+  //     req.session.innerworld_term= userCheck[0].innerworld_term;
+  //     req.session.plural_term= userCheck[0].plural_term;
+  //     req.session.loggedin = true;
+  //     req.session.u_id= userCheck[0].id;
+  //     req.session.username = Buffer.from(userCheck[0].username, 'base64').toString();
+  //     req.session.is_legacy= userCheck[0].is_legacy;
+  //     req.session.textsize= userCheck[0].textsize;
+  //     req.session.worksheets_enabled= userCheck[0].worksheets_enabled;
+
+  //     // Cookies.
+  //     res
+  //     .cookie('loggedin', true, { maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+  //     .cookie('username',  Buffer.from(userCheck[0].username, 'base64').toString(),{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+  //     .cookie('u_id', userCheck[0].id,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+  //     .cookie('alter_term', userCheck[0].alter_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+  //     .cookie('system_term', userCheck[0].system_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+  //     .cookie('is_legacy', userCheck[0].is_legacy,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+  //     .cookie('skin', userCheck[0].skin,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+  //     .cookie('subsystem_term', userCheck[0].subsystem_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+  //     .cookie('innerworld_term', userCheck[0].innerworld_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+  //     .cookie('plural_term', userCheck[0].plural_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+  //     .cookie('textsize', userCheck[0].textsize,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
+  //     .cookie('worksheets_enabled', userCheck[0].worksheets_enabled,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true });
+
+  //     // Retroactively salt passwords that aren't salted.
+  //     if (userCheck[0].salt == null){
+  //       let newsalt= crypto.randomBytes(32).toString('hex');
+  //       let newpass= CryptoJS.SHA3(req.headers.tok + newsalt);
+  //       await db.query(client, "UPDATE users SET pass=$1, salt=$2 WHERE id=$3;", [newpass, newsalt, userCheck[0].id], res, req);
+  //     }
+
+  //     return res.status(200).json({
+  //       name: Buffer.from(userCheck[0].username, 'base64').toString()
+  //     });
+  //   }  else {
+  //     return res.status(401).send("???");
+  //   }
+  // })
   router.get("/user/auth", async function(req, res){
     // Grab user info. This is for logging in.
-    let userCheck = await db.query(client, "SELECT * FROM users WHERE email=$1 AND pass=$2;", [`'${Buffer.from((req.headers.email).toLowerCase()).toString('base64')}'`, `'${CryptoJS.SHA3(req.headers.tok)}'`], res, req);
-    if (userCheck.length > 0){
-      req.session.alter_term= userCheck[0].alter_term;
-      req.session.system_term= userCheck[0].system_term;
-      req.session.subsystem_term= userCheck[0].subsystem_term;
-      req.session.innerworld_term= userCheck[0].innerworld_term;
-      req.session.plural_term= userCheck[0].plural_term;
-      req.session.loggedin = true;
-      req.session.u_id= userCheck[0].id;
-      req.session.username = Buffer.from(userCheck[0].username, 'base64').toString();
-      req.session.is_legacy= userCheck[0].is_legacy;
-      req.session.textsize= userCheck[0].textsize;
-      req.session.worksheets_enabled= userCheck[0].worksheets_enabled;
+    let userCheck = await db.query(client, 
+      "SELECT * FROM users WHERE email=$1;", 
+      [`${Buffer.from((req.headers.email).toLowerCase()).toString('base64')}`], res, req);
 
-      // Cookies.
-      res
-      .cookie('loggedin', true, { maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-      .cookie('username',  Buffer.from(userCheck[0].username, 'base64').toString(),{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-      .cookie('u_id', userCheck[0].id,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-      .cookie('alter_term', userCheck[0].alter_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-      .cookie('system_term', userCheck[0].system_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-      .cookie('is_legacy', userCheck[0].is_legacy,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-      .cookie('skin', userCheck[0].skin,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-      .cookie('subsystem_term', userCheck[0].subsystem_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-      .cookie('innerworld_term', userCheck[0].innerworld_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-      .cookie('plural_term', userCheck[0].plural_term,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-      .cookie('textsize', userCheck[0].textsize,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true })
-      .cookie('worksheets_enabled', userCheck[0].worksheets_enabled,{ maxAge: 1000 * 60 * 60 * 24 * 7 * 2, httpOnly: true });
-      return res.status(200).json({
-        name: Buffer.from(userCheck[0].username, 'base64').toString()
-      });
+    if (userCheck.length > 0){
+      console.log(`User found. Verifying password...`);
+      let storedHash = userCheck[0].pass;
+      let storedSalt = userCheck[0].salt;
+      let inputHash;
+
+      if (storedSalt) {
+        storedSalt = decryptWithAES(storedSalt, process.env.SALT_KEY);
+        inputHash = CryptoJS.SHA3(req.headers.tok + storedSalt).toString();
+      } else {
+        // Legacy: no salt, hash as before
+        inputHash = CryptoJS.SHA3(req.headers.tok).toString();
+      }
+
+      console.log(`Input Hash: ${inputHash}`);
+      console.log(`Stored Hash: ${storedHash}`);
+
+      if (inputHash === storedHash) {
+        // ...existing session and cookie code...
+
+        // Retroactively salt passwords that aren't salted.
+        if (userCheck[0].salt == null){
+          let newsalt= encryptWithAES(crypto.randomBytes(32).toString('hex'), process.env.SALT_KEY);
+          let newpass= CryptoJS.SHA3(req.headers.tok + newsalt).toString();
+          await db.query(client, "UPDATE users SET pass=$1, salt=$2 WHERE id=$3;", [newpass, newsalt, userCheck[0].id], res, req);
+        }
+
+        return res.status(200).json({
+          name: Buffer.from(userCheck[0].username, 'base64').toString()
+        });
+      } else {
+        return res.status(401).send("???");
+      }
     }  else {
       return res.status(401).send("???");
     }
-  })
+})
 
 /*
   ____        _     ____                            _       

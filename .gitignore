@@ -2,3 +2,4 @@
 node_modules/
 snippets.txt
 old-nav-2.ejs
+/node_modules
