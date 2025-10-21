@@ -25,6 +25,7 @@
     };
 
     function stripQuotes(str) {
+        if (!str) return str;
         return str.replace(/^'|'$/g, "");
     }
 %>
