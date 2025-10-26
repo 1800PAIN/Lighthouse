@@ -1268,7 +1268,11 @@ app.get('/wish-d/:id', (req, res) => {
 					});
 				}
 				if (req.body.changePass){
-					client.query({text: 'UPDATE users SET pass=$1 WHERE id=$2', values: [`'${CryptoJS.SHA3(req.body.newPass1)}'`, getCookies(req)['u_id']]}, async (err, result)=>{
+					let rawSalt = crypto.randomBytes(32).toString('hex');
+					let newsalt = encryptWithAES(rawSalt, process.env.SALT_KEY);
+					let newpass = CryptoJS.SHA3(req.body.newPass1 + rawSalt).toString();
+					// await db.query(client, "UPDATE users SET pass=$1, salt=$2 WHERE id=$3;", [newpass, newsalt, userCheck[0].id], res, req);
+					client.query({text: 'UPDATE users SET pass=$1, salt=$3 WHERE id=$2', values: [newpass, getCookies(req)['u_id'], newsalt]}, async (err, result)=>{
 						if (err) {
 						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", cookies:req.cookies });
 						} else {
@@ -1378,7 +1382,11 @@ app.get('/wish-d/:id', (req, res) => {
 		  } else {
 		     // Does the PIN match the one in the DB?
 				 if (result.rows[0].email_pin == req.body.pin){
-					 client.query({text: 'UPDATE users SET pass=$1 WHERE email_link=$2', values: [`'${CryptoJS.SHA3(req.body.newpass)}'`,`'${req.params.id}'`]}, (err, result)=>{
+					let rawSalt = crypto.randomBytes(32).toString('hex');
+					let newsalt = encryptWithAES(rawSalt, process.env.SALT_KEY);
+					let newpass = CryptoJS.SHA3(req.body.newpass + rawSalt).toString();
+					// await db.query(client, "UPDATE users SET pass=$1, salt=$2 WHERE id=$3;", [newpass, newsalt, userCheck[0].id], res, req);
+					 client.query({text: 'UPDATE users SET pass=$1, salt=$3 WHERE email_link=$2', values: [newpass,`'${req.params.id}'`, newsalt]}, (err, result)=>{
 					   if (err) {
 							 console.log(err.stack);
 					     res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", cookies:req.cookies });
