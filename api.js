@@ -235,10 +235,8 @@ router.get('/journals/:id', async function (req, res){
         // Decrypt the stored salt and use to compare.
         try {
           storedSalt = decryptWithAES(userCheck[0].salt, process.env.SALT_KEY);
-          if (!storedSalt) throw new Error("Decryption returned null or empty salt.");
           inputHash = CryptoJS.SHA3(req.headers.tok + storedSalt).toString();
         } catch (err) {
-          console.error("Error decrypting salt:", err);
           return res.status(500).send("Internal server error.");
         }
       } else {
