@@ -23,7 +23,7 @@ const { isLoggedIn, getCookies, apiEyesOnly, encryptWithAES, decryptWithAES, for
 		lostPage, idCheck, paginate, checkUUID, truncate, capitalise, 
 		getKeyByValue, splitByGroup, randomise, getRandomInt, generateToken, 
 		stripHTML, distill, getOrdinal, base64encode, base64decode, 
-		truncateAndStringify, renderNestedList, errorPage } = require("./funcs.js")
+		truncateAndStringify, renderNestedList, errorPage, createPassword } = require("./funcs.js")
 const tuning= require('./js/genVars.js');
 var strings= require("./lang/en.json");
 const langVar= require("./js/languages.js");
@@ -1296,9 +1296,7 @@ app.get('/wish-d/:id', (req, res) => {
 					});
 				}
 				if (req.body.changePass){
-					let rawSalt = crypto.randomBytes(32).toString('hex');
-					let newsalt = encryptWithAES(rawSalt, process.env.SALT_KEY);
-					let newpass = CryptoJS.SHA3(req.body.newPass1 + rawSalt).toString();
+					let { hash: newpass, salt: newsalt } = createPassword(req.body.newPass1);
 					client.query({text: 'UPDATE users SET pass=$1, salt=$2 WHERE id=$3', values: [newpass, newsalt, getCookies(req)['u_id']]}, async (err, result)=>{
 						if (err) {
 						  res.status(400).render('pages/400',{ session: req.session, code:"Bad Request", cookies:req.cookies });
@@ -1406,9 +1404,7 @@ app.get('/wish-d/:id', (req, res) => {
 
 		if (userInfo[0].email_pin == req.body.pin){
 			// Pin matches! Let them reset their password.
-			let rawSalt = crypto.randomBytes(32).toString('hex');
-			let newsalt = encryptWithAES(rawSalt, process.env.SALT_KEY);
-			let newpass = CryptoJS.SHA3(req.body.newpass + rawSalt).toString();
+			 let { hash: newpass, salt: newsalt } = createPassword(req.body.newpass);
 			await db.query(client, "UPDATE users SET pass=$1, salt=$2 WHERE id=$3;", [newpass, newsalt, userInfo[0].id], res, req);
 			res.redirect("/login");
 			return;
@@ -1809,9 +1805,7 @@ app.get('/wish-d/:id', (req, res) => {
 			return res.render(`pages/signup`, { session: req.session, cookies:req.cookies });
 		} 
 			// Write to the db
-			let rawSalt = crypto.randomBytes(32).toString('hex');
-			let newsalt = encryptWithAES(rawSalt, process.env.SALT_KEY);
-			let newpass = CryptoJS.SHA3(req.body.password + rawSalt).toString();
+			let { hash: newpass, salt: newsalt } = createPassword(req.body.password);
 			await db.query(
 				client,
 				"INSERT INTO users (email, username, pass, email_link, worksheets_enabled, system_term, alter_term, email_pin, salt) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",

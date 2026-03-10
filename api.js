@@ -8,7 +8,7 @@ const CryptoJS = require("crypto-js");
 var strings= require("./lang/en.json");
 const archiver = require('archiver');
 const { Readable } = require('stream');
-const { getCookies, checkUUID, apiEyesOnly, generateToken, encryptWithAES, decryptWithAES } = require('./helpers');
+const { getCookies, checkUUID, apiEyesOnly, generateToken, encryptWithAES, decryptWithAES, createPassword } = require('./funcs');
 
 /*
 
@@ -161,14 +161,15 @@ router.get('/journals/:id', async function (req, res){
       [`'${Buffer.from((req.headers.email).toLowerCase()).toString('base64')}'`], res, req);
 
     if (userCheck.length > 0){
-      let storedHash = (userCheck[0].pass).replace(/'/g, "");
+      let storedHash = userCheck[0].pass.replace(/'/g, ""); // <-- I was stupid and included single quotes in the hash when I first made it, so now I have to remove them every time I read it. Fun.
       let storedSalt;
       let inputHash;
 
       if (typeof userCheck[0].salt === 'string' && userCheck[0].salt.length > 0){ 
         // Decrypt the stored salt and use to compare.
         try {
-          storedSalt = decryptWithAES(userCheck[0].salt, process.env.SALT_KEY);
+          let cleanSalt = userCheck[0].salt.replace(/'/g, "");
+          storedSalt = decryptWithAES(cleanSalt, process.env.SALT_KEY);
           inputHash = CryptoJS.SHA3(req.headers.tok + storedSalt).toString();
         } catch (err) {
           console.error("Error decrypting salt: ", err);
@@ -182,9 +183,7 @@ router.get('/journals/:id', async function (req, res){
       if (inputHash === storedHash) {
         // Retroactively salt passwords that aren't salted.
         if (userCheck[0].salt == null){
-          let rawSalt = crypto.randomBytes(32).toString('hex');
-          let newsalt = encryptWithAES(rawSalt, process.env.SALT_KEY);
-          let newpass = CryptoJS.SHA3(req.headers.tok + rawSalt).toString();
+          let { hash: newpass, salt: newsalt } = createPassword(req.headers.tok);
           await db.query(client, "UPDATE users SET pass=$1, salt=$2 WHERE id=$3;", [newpass, newsalt, userCheck[0].id], res, req);
         }
 

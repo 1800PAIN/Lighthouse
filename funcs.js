@@ -500,6 +500,23 @@ function formatGMTToLocal(gmtTimestamp) {
 
     return localDateTimeString;
 }
+
+/**
+ * Generates a hashed password and an encrypted salt.
+ * @param {string} plainTextPassword 
+ * @returns {Object} An object containing the hashed password and the encrypted salt.
+ */
+function createPassword(plainTextPassword) {
+    const rawSalt = crypto.randomBytes(32).toString('hex');
+    const encryptedSalt = encryptWithAES(rawSalt, process.env.SALT_KEY);
+    const passwordHash = CryptoJS.SHA3(plainTextPassword + rawSalt).toString();
+    
+    return {
+        hash: passwordHash,
+        salt: encryptedSalt
+    };
+}
+
 module.exports = {
     isLoggedIn,
     getCookies,
@@ -535,5 +552,6 @@ module.exports = {
     validateParam,
     errorPage,
     getHourFormat,
-    formatGMTToLocal
+    formatGMTToLocal,
+    createPassword
 }
