@@ -1,0 +1,57 @@
+/* This is used for making more skin templates for Lighthouse! This is not an actual skin I want to submit as it is pretty ugly honestly. */
+
+/* Light Theme Colors */
+[data-theme="light"]{
+    --col1: #fff; /* Text link color; text box outline */
+    --col2: #fff; /* Button background color */
+    --col3: #fff; /* Arrow under "information" in navigation */
+    --col4: #000; /* Pinned icon on forum topic; system description callout */
+    --col5: #000; /* Header color */
+	--col6: #000; /* Banner & navigation colors */
+    --col7: #fff; /* Text box color */
+    --col8: #000; /* Interactable icon colors */
+    --forum-shade: rgba(255, 100, 100, 0.09); /* Alternating color on forum categories */
+    --input: rgba(126, 126, 126, 0.2); /* Text input color */
+    --bg: rgba(255, 100, 100, 0); /* Background (Goes in front of "--page") */
+    /* --bg-img: ; */ /* Background image overlay. If left blank, it will be black */
+    --wrapper: rgba(255, 255, 255, 0.8); /* Body color */
+    --text: #000; /* Main text color */
+    --button: red; /* Member deletion button hover */
+    --polar: #fff; /* Member background */
+    --archivedtxt: black; /* Archived member text color */
+    --archivedbg: #aaa; /* Archived member background color */
+    --lighthouse: #fff; /* "Lighthouse" name on top of browser */
+    --nav-txt: #fff; /* Navigation text */
+    --page: #fff; /* Page background (goes behind "--bg") */ 
+}
+
+/* Dark Theme Colors */
+[data-theme="dark"]{
+    --col1: #000; /* Text link color; text box outline */
+    --col2: #fff; /* Button background color */
+    --col3: #fff; /* Arrow under "information" in navigation */
+    --col4: #000; /* Pinned icon on forum topic; system description callout */
+    --col5: #000; /* Header color */
+	--col6: #000; /* Banner & navigation colors */
+    --col7: #fff; /* Text box color */
+    --col8: #000; /* Interactable icon colors */
+    --forum-shade: rgba(255, 100, 100, 0.09); /* Alternating color on forum categories */
+    --input: rgba(126, 126, 126, 0.2); /* Text input color */
+    --bg: rgba(255, 100, 100, 0); /* Background (Goes in front of "--page") */
+    /* --bg-img: ; */ /* Background image overlay. If left blank, it will be black */
+    --wrapper: rgba(255, 255, 255, 0.8); /* Body color */
+    --text: #000; /* Main text color */
+    --button: red; /* Member deletion button hover */
+    --polar: #fff; /* Member background */
+    --archivedtxt: black; /* Archived member text color */
+    --archivedbg: #aaa; /* Archived member background color */
+    --lighthouse: #fff; /* "Lighthouse" name on top of browser */
+    --nav-txt: #fff; /* Navigation text */
+    --page: #000; /* Page background (goes behind "--bg") */ 
+}
+
+/* Horizontal Rule (or, the divider used to separate content) */
+hr {
+    height:3em;
+    background-image:url('../img/svg/horizontal_rule_mermaid.svg');
+}
